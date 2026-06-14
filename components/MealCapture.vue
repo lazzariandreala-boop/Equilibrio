@@ -122,8 +122,11 @@ async function onPick(e: Event) {
   try {
     const list = await recognize(file);
     items.value = list.length ? list : [blank()];
-  } catch {
-    err.value = "Non sono riuscito a leggere la foto. Puoi inserire i dati a mano.";
+  } catch (e: any) {
+    err.value =
+      e?.data?.statusMessage ||
+      e?.statusMessage ||
+      "Non sono riuscito a leggere la foto. Puoi inserire i dati a mano.";
     items.value = [blank()];
   }
   phase.value = "edit";

@@ -40,7 +40,14 @@ export default defineEventHandler(async (event) => {
       },
     });
   } catch (e: any) {
-    throw createError({ statusCode: 502, statusMessage: "Errore dal servizio di riconoscimento." });
+    // Propaga il messaggio reale di Anthropic (es. credito esaurito, immagine troppo grande)
+    // così la UI può mostrarlo invece di un generico "non riconosce nulla".
+    const apiMsg =
+      e?.data?.error?.message || e?.response?._data?.error?.message || e?.data?.message;
+    throw createError({
+      statusCode: 502,
+      statusMessage: apiMsg ? `Riconoscimento non disponibile: ${apiMsg}` : "Errore dal servizio di riconoscimento.",
+    });
   }
 
   const text: string = (raw?.content || [])
