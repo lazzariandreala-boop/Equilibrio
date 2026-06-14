@@ -1,0 +1,71 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ── Tema chiaro (default) ── */
+:root {
+  --surface: #f4eee6;
+  --card: #ffffff;
+  --raised: #fbf6ef;
+  --line: #e7dccf;
+  --ink: #2a211b;
+  --dim: #7a6e63;
+  --faint: #a99c8f;
+  --water: #2e8da6;
+  --water-soft: rgba(46, 141, 166, 0.12);
+  --alcohol: #97608f;
+  --alcohol-soft: rgba(151, 96, 143, 0.12);
+  --move: #5e8a48;
+  --move-soft: rgba(94, 138, 72, 0.12);
+  --food: #c07e33;
+  --food-soft: rgba(192, 126, 51, 0.12);
+  --shadow: 0 1px 2px rgba(60, 40, 20, 0.04), 0 12px 28px rgba(120, 90, 60, 0.1);
+  --on-food: #ffffff;
+}
+
+/* ── Tema scuro ── */
+html.dark {
+  --surface: #14110f;
+  --card: #211c19;
+  --raised: #2b2421;
+  --line: #3a2f29;
+  --ink: #f2ebe4;
+  --dim: #a89b90;
+  --faint: #6f635a;
+  --water: #5fb0c4;
+  --water-soft: rgba(95, 176, 196, 0.14);
+  --alcohol: #c28fb8;
+  --alcohol-soft: rgba(194, 143, 184, 0.14);
+  --move: #88b073;
+  --move-soft: rgba(136, 176, 115, 0.14);
+  --food: #e0a86a;
+  --food-soft: rgba(224, 168, 106, 0.14);
+  --shadow: 0 1px 0 rgba(255, 255, 255, 0.03), 0 10px 30px rgba(0, 0, 0, 0.45);
+  --on-food: #1b130a;
+}
+
+html,
+body {
+  background: var(--surface);
+  color: var(--ink);
+  font-family: "Inter", ui-sans-serif, system-ui, sans-serif;
+  -webkit-tap-highlight-color: transparent;
+}
+
+* {
+  transition: background-color 0.25s ease, border-color 0.25s ease, color 0.25s ease;
+}
+
+.tabular {
+  font-variant-numeric: tabular-nums;
+}
+
+/* rispetta chi preferisce meno animazioni */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    transition-duration: 0.001ms !important;
+  }
+}
