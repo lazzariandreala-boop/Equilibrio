@@ -7,3 +7,6 @@ dist
 .DS_Store
 android
 ios
+
+# Claude Code (config locale)
+.claude
