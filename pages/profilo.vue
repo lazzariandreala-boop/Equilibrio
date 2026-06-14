@@ -47,7 +47,14 @@
     <AppCard>
       <div style="font-weight: 600" class="mb-1">Connessioni</div>
       <Row label="Sincronizza con Withings">
-        <a href="/api/withings/login" class="text-water" style="font-size: 13px">Collega</a>
+        <button v-if="wLoading" class="text-faint" style="font-size: 13px" disabled>…</button>
+        <button v-else-if="!wConnected" class="text-water" style="font-size: 13px" @click="wConnect">Collega</button>
+        <button v-else class="text-faint" style="font-size: 13px" @click="wDisconnect">Collegato · Scollega</button>
+      </Row>
+      <Row v-if="wConnected && wWeight != null" label="Ultimo peso">
+        <span class="text-ink" style="font-size: 13px">
+          {{ wWeight.toFixed(1) }} kg<template v-if="wFat != null"> · {{ wFat.toFixed(1) }}% grasso</template>
+        </span>
       </Row>
       <Row label="Backup su Firebase">
         <span class="text-faint" style="font-size: 12px">{{ isDemo ? "non configurato" : "attivo" }}</span>
@@ -67,6 +74,36 @@ const { user, isDemo, signOut } = useAuth();
 const { requestPermission, schedule, testNow } = useNotifications();
 
 const inp = "bg-raised border border-line text-ink rounded-xl px-2.5 py-1.5 text-right tabular";
+
+// ── Withings ──
+const { connect: connectWithings, status: withingsStatus, fetchMeasures, disconnect: disconnectWithings } = useWithings();
+const wLoading = ref(true);
+const wConnected = ref(false);
+const wWeight = ref<number | null>(null);
+const wFat = ref<number | null>(null);
+
+async function loadWithings() {
+  wLoading.value = true;
+  const s = await withingsStatus();
+  wConnected.value = !!s.connected;
+  if (wConnected.value) {
+    const m = await fetchMeasures();
+    wWeight.value = m?.weight ?? null;
+    wFat.value = m?.fatRatio ?? null;
+  }
+  wLoading.value = false;
+}
+function wConnect() {
+  connectWithings();
+}
+async function wDisconnect() {
+  await disconnectWithings();
+  wConnected.value = false;
+  wWeight.value = null;
+  wFat.value = null;
+}
+
+onMounted(loadWithings);
 
 async function enable() {
   const ok = await requestPermission();

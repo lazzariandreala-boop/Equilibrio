@@ -31,9 +31,8 @@ export default defineEventHandler(async (event) => {
   }
 
   const token = res.body; // { access_token, refresh_token, userid, expires_in, ... }
-  // TODO: persistere il token cifrato per l'utente (es. Firestore) e poi
-  //       chiamare https://wbsapi.withings.net/measure?action=getmeas per peso/composizione.
-
-  setCookie(event, "withings_token", token.access_token, { httpOnly: true, sameSite: "lax", path: "/" });
+  // Salva access + refresh + scadenza (cookie httpOnly). Il refresh permette di
+  // rinnovare l'access_token scaduto senza rifare il login.
+  setWithingsTokens(event, token);
   return sendRedirect(event, "/profilo?withings=ok");
 });
