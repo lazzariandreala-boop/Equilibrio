@@ -10,3 +10,7 @@ ios
 
 # Claude Code (config locale)
 .claude
+
+# APK build
+Equilibrio-debug.apk
+.iconsrc
