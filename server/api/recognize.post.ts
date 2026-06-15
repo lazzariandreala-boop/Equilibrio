@@ -1,10 +1,11 @@
 // POST /api/recognize  { image: base64, media: "image/jpeg" }  ->  { alimenti: [...] }
+// Riconoscimento foto del cibo con Google Gemini (tier gratuito).
 export default defineEventHandler(async (event) => {
-  const { anthropicApiKey } = useRuntimeConfig();
+  const { geminiApiKey } = useRuntimeConfig();
   const body = await readBody<{ image?: string; media?: string }>(event);
 
-  if (!anthropicApiKey) {
-    throw createError({ statusCode: 503, statusMessage: "Riconoscimento non configurato (manca NUXT_ANTHROPIC_API_KEY)." });
+  if (!geminiApiKey) {
+    throw createError({ statusCode: 503, statusMessage: "Riconoscimento non configurato (manca NUXT_GEMINI_API_KEY)." });
   }
   if (!body?.image) {
     throw createError({ statusCode: 400, statusMessage: "Immagine mancante." });
@@ -16,43 +17,37 @@ export default defineEventHandler(async (event) => {
     '{"alimenti":[{"nome":"","qty":"es. 1 piatto","kcal":0,"cho":0,"pro":0,"fat":0,"alc":0}]}. ' +
     "'alc' = grammi di alcol (0 se non alcolico). Tutti i numeri interi.";
 
+  const model = "gemini-2.5-flash";
+  const url = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${geminiApiKey}`;
+
   let raw: any;
   try {
-    raw = await $fetch("https://api.anthropic.com/v1/messages", {
+    raw = await $fetch(url, {
       method: "POST",
-      headers: {
-        "x-api-key": anthropicApiKey,
-        "anthropic-version": "2023-06-01",
-        "content-type": "application/json",
-      },
+      headers: { "content-type": "application/json" },
       body: {
-        model: "claude-sonnet-4-6",
-        max_tokens: 1000,
-        messages: [
+        contents: [
           {
-            role: "user",
-            content: [
-              { type: "image", source: { type: "base64", media_type: body.media || "image/jpeg", data: body.image } },
-              { type: "text", text: prompt },
+            parts: [
+              { inline_data: { mime_type: body.media || "image/jpeg", data: body.image } },
+              { text: prompt },
             ],
           },
         ],
+        generationConfig: { responseMimeType: "application/json", temperature: 0.2 },
       },
     });
   } catch (e: any) {
-    // Propaga il messaggio reale di Anthropic (es. credito esaurito, immagine troppo grande)
-    // così la UI può mostrarlo invece di un generico "non riconosce nulla".
-    const apiMsg =
-      e?.data?.error?.message || e?.response?._data?.error?.message || e?.data?.message;
+    // Propaga il messaggio reale di Gemini (es. quota, chiave non valida) così la UI può mostrarlo.
+    const apiMsg = e?.data?.error?.message || e?.response?._data?.error?.message;
     throw createError({
       statusCode: 502,
       statusMessage: apiMsg ? `Riconoscimento non disponibile: ${apiMsg}` : "Errore dal servizio di riconoscimento.",
     });
   }
 
-  const text: string = (raw?.content || [])
-    .filter((c: any) => c.type === "text")
-    .map((c: any) => c.text)
+  const text: string = (raw?.candidates?.[0]?.content?.parts || [])
+    .map((p: any) => p?.text || "")
     .join("\n");
 
   try {

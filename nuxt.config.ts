@@ -27,7 +27,8 @@ export default defineNuxtConfig({
 
   // Variabili lette SOLO lato server (non finiscono nel bundle client).
   runtimeConfig: {
-    anthropicApiKey: "", // NUXT_ANTHROPIC_API_KEY
+    anthropicApiKey: "", // NUXT_ANTHROPIC_API_KEY (non più usata: riconoscimento su Gemini)
+    geminiApiKey: "", // NUXT_GEMINI_API_KEY (riconoscimento foto, tier gratuito)
     withingsClientId: "", // NUXT_WITHINGS_CLIENT_ID
     withingsClientSecret: "", // NUXT_WITHINGS_CLIENT_SECRET
     public: {

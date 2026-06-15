@@ -67,6 +67,7 @@
 
 <script setup lang="ts">
 import { User, Bell } from "lucide-vue-next";
+import { doc, getDoc, setDoc } from "firebase/firestore";
 import { useSettingsStore } from "~/stores/settings";
 
 const settings = useSettingsStore();
@@ -75,29 +76,56 @@ const { requestPermission, schedule, testNow } = useNotifications();
 
 const inp = "bg-raised border border-line text-ink rounded-xl px-2.5 py-1.5 text-right tabular";
 
-// ── Withings ──
+// ── Withings (con sincronizzazione token tra dispositivi via Firestore) ──
 const { connect: connectWithings, status: withingsStatus, fetchMeasures, disconnect: disconnectWithings } = useWithings();
+const { $firebase } = useNuxtApp();
+const apiBase = useRuntimeConfig().public.apiBase || "";
 const wLoading = ref(true);
 const wConnected = ref(false);
 const wWeight = ref<number | null>(null);
 const wFat = ref<number | null>(null);
 
+function withingsDocRef() {
+  if (!$firebase?.db || !user.value || user.value.demo) return null;
+  return doc($firebase.db, "users", user.value.uid);
+}
+
 async function loadWithings() {
   wLoading.value = true;
-  const s = await withingsStatus();
+  let s = await withingsStatus();
+
+  // Non collegato su questo device ma ho i token nel cloud -> ripristina la sessione.
+  const ref = withingsDocRef();
+  if (!s.connected && ref) {
+    const snap = await getDoc(ref);
+    const w = snap.exists() ? (snap.data() as any)?.withings : null;
+    if (w?.refresh_token || w?.access_token) {
+      await $fetch(`${apiBase}/api/withings/restore`, { method: "POST", body: w }).catch(() => null);
+      s = await withingsStatus();
+    }
+  }
+
   wConnected.value = !!s.connected;
   if (wConnected.value) {
+    // Salva/aggiorna i token nel cloud così seguono l'utente sugli altri dispositivi.
+    if (ref) {
+      const tok = await $fetch(`${apiBase}/api/withings/token`).catch(() => null);
+      if (tok) await setDoc(ref, { withings: tok }, { merge: true });
+    }
     const m = await fetchMeasures();
     wWeight.value = m?.weight ?? null;
     wFat.value = m?.fatRatio ?? null;
   }
   wLoading.value = false;
 }
+
 function wConnect() {
   connectWithings();
 }
 async function wDisconnect() {
   await disconnectWithings();
+  const ref = withingsDocRef();
+  if (ref) await setDoc(ref, { withings: null }, { merge: true }); // rimuove anche dal cloud
   wConnected.value = false;
   wWeight.value = null;
   wFat.value = null;
