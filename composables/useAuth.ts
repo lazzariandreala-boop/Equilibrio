@@ -1,6 +1,7 @@
 import {
   GoogleAuthProvider,
   signInWithPopup,
+  signInWithCredential,
   signOut as fbSignOut,
   onAuthStateChanged,
   type User,
@@ -43,12 +44,29 @@ export function useAuth() {
 
   async function signInWithGoogle() {
     if (!$firebase) return; // in demo non serve
+    const { Capacitor } = await import("@capacitor/core");
+    if (Capacitor.isNativePlatform()) {
+      // App nativa: il popup web è bloccato da Google nelle WebView -> login Google nativo,
+      // poi accediamo al JS SDK con la credenziale così Firestore vede l'utente.
+      const { FirebaseAuthentication } = await import("@capacitor-firebase/authentication");
+      const result = await FirebaseAuthentication.signInWithGoogle();
+      const idToken = result.credential?.idToken;
+      const accessToken = result.credential?.accessToken;
+      const cred = GoogleAuthProvider.credential(idToken, accessToken);
+      await signInWithCredential($firebase.auth!, cred);
+      return;
+    }
     const provider = new GoogleAuthProvider();
     await signInWithPopup($firebase.auth!, provider);
   }
 
   async function signOut() {
     if (!$firebase) return;
+    const { Capacitor } = await import("@capacitor/core");
+    if (Capacitor.isNativePlatform()) {
+      const { FirebaseAuthentication } = await import("@capacitor-firebase/authentication");
+      await FirebaseAuthentication.signOut().catch(() => null);
+    }
     await fbSignOut($firebase.auth!);
   }
 

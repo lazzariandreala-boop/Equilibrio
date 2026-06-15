@@ -10,6 +10,11 @@ const config: CapacitorConfig = {
       smallIcon: "ic_stat_icon",
       iconColor: "#5FB0C4",
     },
+    FirebaseAuthentication: {
+      // login Google nativo; poi accediamo al JS SDK con la credenziale (per Firestore)
+      skipNativeAuth: true,
+      providers: ["google.com"],
+    },
   },
   // Per avere parità completa con le API (riconoscimento foto, Withings),
   // l'app nativa può caricare direttamente il deploy invece dei file statici:
