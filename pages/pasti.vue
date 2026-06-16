@@ -1,8 +1,9 @@
 <template>
   <div class="space-y-4">
+    <DayNav />
     <AppCard class="!p-5">
       <div class="flex items-baseline justify-between mb-3">
-        <span class="text-dim" style="font-size: 14px">Oggi</span>
+        <span class="text-dim" style="font-size: 14px">{{ day.isToday ? "Oggi" : "Giorno selezionato" }}</span>
         <span class="tabular" style="font-size: 28px; font-weight: 700">
           {{ day.totals.kcal }} <span class="text-dim" style="font-size: 15px">kcal</span>
         </span>

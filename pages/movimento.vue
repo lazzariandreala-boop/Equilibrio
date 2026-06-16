@@ -1,8 +1,9 @@
 <template>
   <div class="space-y-4">
+    <DayNav />
     <AppCard class="!p-5">
       <div class="flex items-baseline justify-between mb-3">
-        <span class="text-dim" style="font-size: 14px">Movimento di oggi</span>
+        <span class="text-dim" style="font-size: 14px">{{ day.isToday ? "Movimento di oggi" : "Movimento del giorno" }}</span>
         <span class="tabular" style="font-size: 28px; font-weight: 700">{{ day.moveMin }}′</span>
       </div>
       <div class="bg-line rounded-full overflow-hidden" style="height: 8px">

@@ -1,5 +1,6 @@
 <template>
   <div class="space-y-4">
+    <DayNav />
     <AppCard class="!p-5">
       <BalanceRing :segments="segments" />
       <p class="text-dim" style="font-size: 13px; text-align: center; margin-top: 8px">

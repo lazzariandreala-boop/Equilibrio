@@ -15,12 +15,13 @@
 </template>
 
 <script setup lang="ts">
-import { Home, Utensils, Activity, User } from "lucide-vue-next";
+import { Home, Utensils, Activity, CalendarDays, User } from "lucide-vue-next";
 const route = useRoute();
 const items = [
   { to: "/", icon: Home, label: "Oggi" },
   { to: "/pasti", icon: Utensils, label: "Pasti" },
   { to: "/movimento", icon: Activity, label: "Movimento" },
+  { to: "/storico", icon: CalendarDays, label: "Storico" },
   { to: "/profilo", icon: User, label: "Profilo" },
 ];
 </script>
