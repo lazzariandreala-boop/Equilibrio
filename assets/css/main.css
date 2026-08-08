@@ -2,65 +2,158 @@
 @tailwind components;
 @tailwind utilities;
 
-/* ── Tema chiaro (default) ── */
+/* ═══════════════════════════════════════════
+   Equilibrio — design tokens
+   Palette viva a 4 voci: acqua, alcol, movimento, cibo.
+   Ogni voce ha: tinta piena, seconda tinta per il gradiente,
+   fondo tenue e alone colorato.
+   ═══════════════════════════════════════════ */
+
 :root {
-  --surface: #f4eee6;
+  --surface: #f5f1ec;
+  --surface-2: #ebe4da;
   --card: #ffffff;
-  --raised: #fbf6ef;
-  --line: #e7dccf;
-  --ink: #2a211b;
-  --dim: #7a6e63;
-  --faint: #a99c8f;
-  --water: #2e8da6;
-  --water-soft: rgba(46, 141, 166, 0.12);
-  --alcohol: #97608f;
-  --alcohol-soft: rgba(151, 96, 143, 0.12);
-  --move: #5e8a48;
-  --move-soft: rgba(94, 138, 72, 0.12);
-  --food: #c07e33;
-  --food-soft: rgba(192, 126, 51, 0.12);
-  --shadow: 0 1px 2px rgba(60, 40, 20, 0.04), 0 12px 28px rgba(120, 90, 60, 0.1);
-  --on-food: #ffffff;
+  --raised: #f4efe8;
+  --line: #e3d9cc;
+
+  --ink: #1f1a17;
+  --dim: #6f645b;
+  --faint: #a2968a;
+
+  --water: #1e88c7;
+  --water-2: #22c1e0;
+  --water-soft: rgba(30, 136, 199, 0.1);
+  --water-glow: rgba(34, 193, 224, 0.35);
+
+  --alcohol: #8b46d9;
+  --alcohol-2: #c25ce8;
+  --alcohol-soft: rgba(139, 70, 217, 0.1);
+  --alcohol-glow: rgba(194, 92, 232, 0.32);
+
+  --move: #12a05c;
+  --move-2: #34d07f;
+  --move-soft: rgba(18, 160, 92, 0.1);
+  --move-glow: rgba(52, 208, 127, 0.32);
+
+  --food: #ef7327;
+  --food-2: #ffb03a;
+  --food-soft: rgba(239, 115, 39, 0.1);
+  --food-glow: rgba(255, 176, 58, 0.32);
+
+  --on-tone: #ffffff;
+  --shadow: 0 1px 2px rgba(60, 40, 20, 0.05), 0 14px 34px rgba(120, 90, 60, 0.11);
+  --shadow-lift: 0 18px 44px rgba(70, 50, 30, 0.16);
 }
 
-/* ── Tema scuro ── */
 html.dark {
-  --surface: #14110f;
-  --card: #211c19;
-  --raised: #2b2421;
-  --line: #3a2f29;
-  --ink: #f2ebe4;
-  --dim: #a89b90;
-  --faint: #6f635a;
-  --water: #5fb0c4;
-  --water-soft: rgba(95, 176, 196, 0.14);
-  --alcohol: #c28fb8;
-  --alcohol-soft: rgba(194, 143, 184, 0.14);
-  --move: #88b073;
-  --move-soft: rgba(136, 176, 115, 0.14);
-  --food: #e0a86a;
-  --food-soft: rgba(224, 168, 106, 0.14);
-  --shadow: 0 1px 0 rgba(255, 255, 255, 0.03), 0 10px 30px rgba(0, 0, 0, 0.45);
-  --on-food: #1b130a;
+  --surface: #100e0d;
+  --surface-2: #1a1614;
+  --card: #1c1918;
+  --raised: #262120;
+  --line: #352e2a;
+
+  --ink: #f5efe9;
+  --dim: #ab9e94;
+  --faint: #74675e;
+
+  --water: #3aa8e0;
+  --water-2: #4fd6f0;
+  --water-soft: rgba(58, 168, 224, 0.13);
+  --water-glow: rgba(79, 214, 240, 0.28);
+
+  --alcohol: #a76ce8;
+  --alcohol-2: #d488f5;
+  --alcohol-soft: rgba(167, 108, 232, 0.13);
+  --alcohol-glow: rgba(212, 136, 245, 0.26);
+
+  --move: #2cc47a;
+  --move-2: #5ce89e;
+  --move-soft: rgba(44, 196, 122, 0.13);
+  --move-glow: rgba(92, 232, 158, 0.26);
+
+  --food: #ff8f45;
+  --food-2: #ffc26a;
+  --food-soft: rgba(255, 143, 69, 0.13);
+  --food-glow: rgba(255, 194, 106, 0.26);
+
+  --on-tone: #ffffff;
+  --shadow: 0 1px 0 rgba(255, 255, 255, 0.03), 0 14px 34px rgba(0, 0, 0, 0.5);
+  --shadow-lift: 0 20px 46px rgba(0, 0, 0, 0.6);
 }
 
 html,
 body {
   background: var(--surface);
   color: var(--ink);
-  font-family: "Inter", ui-sans-serif, system-ui, sans-serif;
+  font-family: "Outfit", ui-sans-serif, system-ui, sans-serif;
   -webkit-tap-highlight-color: transparent;
+  overscroll-behavior-y: none;
 }
 
-* {
-  transition: background-color 0.25s ease, border-color 0.25s ease, color 0.25s ease;
+/* display face — usata con parsimonia su titoli e numeri grandi */
+.display {
+  font-family: "Bricolage Grotesque", "Outfit", sans-serif;
+  letter-spacing: -0.02em;
 }
 
 .tabular {
   font-variant-numeric: tabular-nums;
 }
 
-/* rispetta chi preferisce meno animazioni */
+/* ── gradienti di tinta ── */
+.grad-water {
+  background: linear-gradient(135deg, var(--water-2), var(--water));
+}
+.grad-alcohol {
+  background: linear-gradient(135deg, var(--alcohol-2), var(--alcohol));
+}
+.grad-move {
+  background: linear-gradient(135deg, var(--move-2), var(--move));
+}
+.grad-food {
+  background: linear-gradient(135deg, var(--food-2), var(--food));
+}
+
+/* ── feedback al tocco ── */
+.tap {
+  transition: transform 160ms cubic-bezier(0.22, 1, 0.36, 1), box-shadow 160ms ease;
+}
+.tap:active {
+  transform: scale(0.972);
+}
+
+/* ── ingresso scaglionato delle card ── */
+@keyframes rise {
+  from {
+    opacity: 0;
+    transform: translateY(14px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+.rise {
+  animation: rise 520ms cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+:focus-visible {
+  outline: 2px solid var(--water);
+  outline-offset: 3px;
+  border-radius: 14px;
+}
+
+.track {
+  background: var(--line);
+  border-radius: 99px;
+  overflow: hidden;
+}
+.fill {
+  height: 100%;
+  border-radius: 99px;
+  transition: width 620ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
 @media (prefers-reduced-motion: reduce) {
   *,
   *::before,

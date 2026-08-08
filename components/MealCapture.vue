@@ -7,13 +7,14 @@
       </p>
       <input ref="fileRef" type="file" accept="image/*" capture="environment" class="hidden" @change="onPick" />
       <button
-        class="bg-food w-full py-3 rounded-2xl font-semibold flex items-center justify-center gap-2"
-        style="color: var(--on-food)"
+        class="tap grad-food w-full py-3.5 rounded-3xl font-semibold flex items-center justify-center gap-2"
+        style="color: #fff; font-size: 15px"
         @click="fileRef?.click()">
         <Camera :size="18" /> Scegli o scatta una foto
       </button>
       <button
-        class="bg-raised text-ink w-full py-3 rounded-2xl font-semibold flex items-center justify-center gap-2"
+        class="tap bg-raised text-ink w-full py-3.5 rounded-3xl font-semibold flex items-center justify-center gap-2"
+        style="font-size: 15px"
         @click="startManual">
         <Pencil :size="16" /> Inserisci a mano
       </button>
@@ -29,7 +30,7 @@
     <div v-else class="space-y-4">
       <p v-if="err" class="text-alcohol" style="font-size: 13px">{{ err }}</p>
 
-      <div v-for="(it, i) in items" :key="i" class="border border-line rounded-3xl p-3 space-y-2">
+      <div v-for="(it, i) in items" :key="i" class="rounded-4xl p-3.5 space-y-2.5" style="background: var(--raised)">
         <div class="flex gap-2">
           <div class="flex-1" style="flex: 2">
             <div class="text-faint" style="font-size: 11px">Nome</div>
@@ -69,14 +70,14 @@
         <Plus :size="16" /> Aggiungi voce
       </button>
 
-      <div class="bg-raised rounded-2xl p-3 text-dim tabular" style="font-size: 13px">
+      <div class="rounded-3xl p-3.5 text-dim tabular" style="font-size: 13px; background: var(--food-soft)">
         Totale: <b class="text-ink">{{ sum.kcal }} kcal</b> · C {{ sum.cho }} · P {{ sum.pro }} · G {{ sum.fat }}
         <span v-if="sum.alc > 0"> · alcol {{ sum.alc }}g</span>
       </div>
 
       <button
-        class="bg-food w-full py-3 rounded-2xl font-semibold"
-        style="color: var(--on-food)"
+        class="tap grad-food w-full py-3.5 rounded-3xl font-semibold"
+        style="color: #fff; font-size: 15px"
         @click="save">
         Salva nel diario
       </button>
@@ -97,7 +98,7 @@ const err = ref("");
 const fileRef = ref<HTMLInputElement | null>(null);
 
 const inputCls =
-  "bg-raised border border-line text-ink rounded-xl px-2.5 py-2 w-full";
+  "bg-card border border-line text-ink rounded-2xl px-3 py-2.5 w-full";
 
 const blank = (): RecognizedItem => ({ name: "", qty: "", kcal: 0, cho: 0, pro: 0, fat: 0, alc: 0 });
 

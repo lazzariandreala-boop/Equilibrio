@@ -1,69 +1,98 @@
 <template>
-  <div class="space-y-4">
+  <div class="space-y-5">
     <!-- Account -->
-    <AppCard>
-      <div class="flex items-center gap-3">
-        <img v-if="user?.photo" :src="user.photo" class="rounded-full" style="width: 44px; height: 44px" />
-        <div v-else class="bg-raised rounded-full flex items-center justify-center" style="width: 44px; height: 44px">
-          <User :size="20" class="text-dim" />
-        </div>
-        <div class="flex-1">
-          <div style="font-weight: 600">{{ user?.name }}</div>
-          <div class="text-faint" style="font-size: 12px">{{ user?.demo ? "Modalità demo (dati locali)" : user?.email }}</div>
-        </div>
-        <button v-if="!user?.demo" class="text-dim" style="font-size: 13px" @click="signOut">Esci</button>
+    <div class="rise rounded-5xl p-4 flex items-center gap-3.5" style="background: var(--card); border: 1px solid var(--line); box-shadow: var(--shadow)">
+      <img v-if="user?.photo" :src="user.photo" class="rounded-full object-cover" style="width: 52px; height: 52px" />
+      <div v-else class="rounded-full flex items-center justify-center grad-water" style="width: 52px; height: 52px">
+        <User :size="22" color="#fff" />
       </div>
-    </AppCard>
+      <div class="flex-1 min-w-0">
+        <div class="display truncate" style="font-weight: 700; font-size: 17px">{{ user?.name }}</div>
+        <div class="text-faint truncate" style="font-size: 12.5px">{{ user?.demo ? "Modalità demo (dati locali)" : user?.email }}</div>
+      </div>
+      <button v-if="!user?.demo" class="tap text-dim bg-raised rounded-2xl px-3.5 py-2" style="font-size: 13px; font-weight: 600" @click="signOut">
+        Esci
+      </button>
+    </div>
 
     <!-- Obiettivi -->
-    <div>
-      <div style="font-weight: 600" class="mb-2.5 px-1">Obiettivi giornalieri</div>
+    <div class="rise" style="animation-delay: 60ms">
+      <div class="display mb-3 px-1" style="font-weight: 700; font-size: 18px">Obiettivi giornalieri</div>
       <div class="space-y-2.5">
         <GoalCard :icon="Droplet" tone="water" label="Acqua" :value="settings.goals.water" unit="ml" @click="goalOpen = 'water'" />
         <GoalCard :icon="Bike" tone="move" label="Movimento" :value="settings.goals.moveMin" unit="min" @click="goalOpen = 'move'" />
         <GoalCard :icon="Apple" tone="food" label="Calorie" :value="settings.goals.kcal" unit="kcal" @click="goalOpen = 'food'" />
       </div>
-      <p class="text-faint" style="font-size: 12px; margin-top: 10px; padding: 0 4px">
+      <p class="text-faint px-1" style="font-size: 12.5px; margin-top: 10px; line-height: 1.5">
         Per i valori calorici, conviene impostarli con il medico o un nutrizionista.
       </p>
     </div>
 
     <!-- Promemoria -->
-    <AppCard>
-      <div class="flex items-center gap-2 mb-1">
-        <Bell :size="16" class="text-water" /><span style="font-weight: 600">Promemoria</span>
-      </div>
-      <Row label="Bevi acqua"><Toggle :on="settings.reminders.water" @click="settings.reminders.water = !settings.reminders.water" /></Row>
-      <Row label="Registra i pasti"><Toggle :on="settings.reminders.meal" @click="settings.reminders.meal = !settings.reminders.meal" /></Row>
-      <Row label="Check serale (alcol)"><Toggle :on="settings.reminders.evening" @click="settings.reminders.evening = !settings.reminders.evening" /></Row>
-      <div class="flex gap-2 mt-3">
-        <button class="flex-1 bg-water-soft text-water rounded-xl py-2.5 font-semibold" style="font-size: 14px" @click="enable">Attiva promemoria</button>
-        <button class="bg-raised text-dim rounded-xl px-3" @click="test">Prova</button>
-      </div>
-      <p class="text-faint" style="font-size: 12px; margin-top: 8px">
-        Le notifiche pianificate in background funzionano nell'app nativa (Capacitor). Nel browser arrivano solo a finestra aperta.
-      </p>
-    </AppCard>
+    <div class="rise" style="animation-delay: 120ms">
+      <div class="display mb-3 px-1" style="font-weight: 700; font-size: 18px">Promemoria</div>
+      <AppCard>
+        <SettingRow label="Bevi acqua">
+          <Toggle :on="settings.reminders.water" @click="settings.reminders.water = !settings.reminders.water" />
+        </SettingRow>
+        <SettingRow label="Registra i pasti">
+          <Toggle :on="settings.reminders.meal" @click="settings.reminders.meal = !settings.reminders.meal" />
+        </SettingRow>
+        <SettingRow label="Check serale (alcol)" :last="true">
+          <Toggle :on="settings.reminders.evening" @click="settings.reminders.evening = !settings.reminders.evening" />
+        </SettingRow>
+        <div class="flex gap-2 mt-4">
+          <button class="tap flex-1 grad-water rounded-2xl py-3 font-semibold" style="color: #fff; font-size: 14px" @click="enable">
+            Attiva promemoria
+          </button>
+          <button class="tap bg-raised text-dim rounded-2xl px-4 font-semibold" style="font-size: 14px" @click="test">Prova</button>
+        </div>
+        <p class="text-faint" style="font-size: 12px; margin-top: 10px; line-height: 1.5">
+          In background funzionano nell'app nativa. Nel browser arrivano solo a finestra aperta.
+        </p>
+      </AppCard>
+    </div>
 
     <!-- Connessioni -->
-    <AppCard>
-      <div style="font-weight: 600" class="mb-1">Connessioni</div>
-      <Row label="Sincronizza con Withings">
-        <button v-if="wLoading" class="text-faint" style="font-size: 13px" disabled>…</button>
-        <button v-else-if="!wConnected" class="text-water" style="font-size: 13px" @click="wConnect">Collega</button>
-        <button v-else class="text-faint" style="font-size: 13px" @click="wDisconnect">Collegato · Scollega</button>
-      </Row>
-      <Row v-if="wConnected && wWeight != null" label="Ultimo peso">
-        <span class="text-ink" style="font-size: 13px">
-          {{ wWeight.toFixed(1) }} kg<template v-if="wFat != null"> · {{ wFat.toFixed(1) }}% grasso</template>
-        </span>
-      </Row>
-      <Row label="Backup su Firebase">
-        <span class="text-faint" style="font-size: 12px">{{ isDemo ? "non configurato" : "attivo" }}</span>
-      </Row>
-    </AppCard>
+    <div class="rise" style="animation-delay: 180ms">
+      <div class="display mb-3 px-1" style="font-weight: 700; font-size: 18px">Connessioni</div>
 
-    <p class="text-faint text-center" style="font-size: 12px">Equilibrio · un passo per volta</p>
+      <div class="rounded-4xl p-4 mb-2.5" :style="{ background: wConnected ? 'var(--move-soft)' : 'var(--raised)' }">
+        <div class="flex items-center gap-3">
+          <div class="rounded-2xl flex items-center justify-center shrink-0" :class="wConnected ? 'grad-move' : ''"
+            style="width: 44px; height: 44px" :style="wConnected ? {} : { background: 'var(--line)' }">
+            <Scale :size="21" :color="wConnected ? '#fff' : 'var(--dim)'" />
+          </div>
+          <div class="flex-1 min-w-0">
+            <div style="font-weight: 600; font-size: 15px">Withings</div>
+            <div class="text-dim" style="font-size: 12.5px">
+              <template v-if="wLoading">Verifico…</template>
+              <template v-else-if="wConnected && wWeight != null">
+                {{ wWeight.toFixed(1) }} kg<template v-if="wFat != null"> · {{ wFat.toFixed(1) }}% grasso</template>
+              </template>
+              <template v-else-if="wConnected">Collegato</template>
+              <template v-else>Non collegato</template>
+            </div>
+          </div>
+          <button v-if="!wLoading" class="tap rounded-2xl px-4 py-2.5 font-semibold shrink-0" style="font-size: 13px"
+            :class="wConnected ? 'bg-raised text-dim' : 'grad-move'" :style="wConnected ? {} : { color: '#fff' }"
+            @click="wConnected ? wDisconnect() : wConnect()">
+            {{ wConnected ? "Scollega" : "Collega" }}
+          </button>
+        </div>
+      </div>
+
+      <AppCard pad="p-4">
+        <SettingRow label="Backup su Firebase" :last="true">
+          <span class="rounded-full px-3 py-1" style="font-size: 12px; font-weight: 600"
+            :style="isDemo ? { background: 'var(--raised)', color: 'var(--faint)' } : { background: 'var(--move-soft)', color: 'var(--move)' }">
+            {{ isDemo ? "non configurato" : "attivo" }}
+          </span>
+        </SettingRow>
+      </AppCard>
+    </div>
+
+    <p class="text-faint text-center" style="font-size: 12.5px">Equilibrio · un passo per volta</p>
 
     <BottomSheet :model-value="goalOpen === 'water'" title="Obiettivo acqua" @update:model-value="goalOpen = null">
       <GoalPicker tone="water" unit="ml" :model-value="settings.goals.water" :presets="[1500, 2000, 2500]" :min="500" :max="4000" :step="100" @save="saveGoal('water', $event)" />
@@ -78,7 +107,7 @@
 </template>
 
 <script setup lang="ts">
-import { User, Bell, Droplet, Bike, Apple } from "lucide-vue-next";
+import { User, Droplet, Bike, Apple, Scale } from "lucide-vue-next";
 import { doc, getDoc, setDoc } from "firebase/firestore";
 import { useSettingsStore } from "~/stores/settings";
 
@@ -94,7 +123,7 @@ function saveGoal(kind: "water" | "move" | "food", value: number) {
   goalOpen.value = null;
 }
 
-// ── Withings (con sincronizzazione token tra dispositivi via Firestore) ──
+// ── Withings (token sincronizzati tra dispositivi via Firestore) ──
 const { connect: connectWithings, status: withingsStatus, fetchMeasures, disconnect: disconnectWithings } = useWithings();
 const { $firebase } = useNuxtApp();
 const apiBase = useRuntimeConfig().public.apiBase || "";
@@ -112,7 +141,6 @@ async function loadWithings() {
   wLoading.value = true;
   let s = await withingsStatus();
 
-  // Non collegato su questo device ma ho i token nel cloud -> ripristina la sessione.
   const ref = withingsDocRef();
   if (!s.connected && ref) {
     const snap = await getDoc(ref);
@@ -125,7 +153,6 @@ async function loadWithings() {
 
   wConnected.value = !!s.connected;
   if (wConnected.value) {
-    // Salva/aggiorna i token nel cloud così seguono l'utente sugli altri dispositivi.
     if (ref) {
       const tok = await $fetch(`${apiBase}/api/withings/token`).catch(() => null);
       if (tok) await setDoc(ref, { withings: tok }, { merge: true });
@@ -143,7 +170,7 @@ function wConnect() {
 async function wDisconnect() {
   await disconnectWithings();
   const ref = withingsDocRef();
-  if (ref) await setDoc(ref, { withings: null }, { merge: true }); // rimuove anche dal cloud
+  if (ref) await setDoc(ref, { withings: null }, { merge: true });
   wConnected.value = false;
   wWeight.value = null;
   wFat.value = null;
@@ -159,40 +186,4 @@ async function test() {
   await requestPermission();
   await testNow();
 }
-
-// componenti locali leggeri
-const Row = defineComponent({
-  props: { label: String },
-  setup(props, { slots }) {
-    return () =>
-      h("div", { class: "flex items-center justify-between py-3 border-b border-line" }, [
-        h("span", { class: "text-ink" }, props.label),
-        slots.default?.(),
-      ]);
-  },
-});
-const Toggle = defineComponent({
-  props: { on: Boolean },
-  setup(props) {
-    return () =>
-      h(
-        "button",
-        {
-          style: {
-            width: "46px", height: "28px", borderRadius: "99px",
-            background: props.on ? "var(--move)" : "var(--line)",
-            position: "relative", transition: "background 200ms",
-          },
-        },
-        [
-          h("span", {
-            style: {
-              position: "absolute", top: "3px", left: props.on ? "21px" : "3px",
-              width: "22px", height: "22px", borderRadius: "99px", background: "#fff", transition: "left 200ms",
-            },
-          }),
-        ],
-      );
-  },
-});
 </script>

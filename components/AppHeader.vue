@@ -1,15 +1,16 @@
 <template>
-  <header class="flex items-center justify-between px-5 pt-6 pb-2">
+  <header class="flex items-center justify-between px-5 pt-6 pb-3">
     <div class="flex items-center gap-3">
-      <img :src="logo" alt="Equilibrio" width="36" height="36" class="rounded-xl shadow-soft" />
+      <img :src="logo" alt="" width="40" height="40" class="rounded-2xl shadow-soft" />
       <div>
-        <div class="text-ink" style="font-size: 22px; font-weight: 700; letter-spacing: -0.5px">Equilibrio</div>
+        <div class="display text-ink" style="font-size: 23px; font-weight: 800; line-height: 1.1">Equilibrio</div>
         <div class="text-faint" style="font-size: 12px; text-transform: capitalize">{{ date }}</div>
       </div>
     </div>
-    <button class="bg-card border border-line text-ink rounded-2xl p-2.5" @click="toggle">
-      <Sun v-if="isDark" :size="18" />
-      <Moon v-else :size="18" />
+    <button class="tap rounded-2xl p-2.5" style="background: var(--card); border: 1px solid var(--line)"
+      :aria-label="isDark ? 'Passa al tema chiaro' : 'Passa al tema scuro'" @click="toggle">
+      <Sun v-if="isDark" :size="18" class="text-food" />
+      <Moon v-else :size="18" class="text-alcohol" />
     </button>
   </header>
 </template>

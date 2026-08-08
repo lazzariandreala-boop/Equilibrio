@@ -1,53 +1,61 @@
 <template>
   <div class="space-y-4">
     <DayNav />
-    <AppCard class="!p-5">
-      <div class="flex items-baseline justify-between mb-3">
-        <span class="text-dim" style="font-size: 14px">{{ day.isToday ? "Oggi" : "Giorno selezionato" }}</span>
-        <span class="tabular" style="font-size: 28px; font-weight: 700">
-          {{ day.totals.kcal }} <span class="text-dim" style="font-size: 15px">kcal</span>
-        </span>
-      </div>
-      <div class="bg-line rounded-full overflow-hidden mb-4" style="height: 8px">
-        <div class="bg-food h-full" :style="{ width: pct }" />
-      </div>
-      <div class="flex gap-3">
-        <div class="flex-1 text-center">
-          <div class="text-food tabular" style="font-weight: 700; font-size: 18px">{{ day.totals.cho }}g</div>
-          <div class="text-faint" style="font-size: 11px">Carboidrati</div>
-        </div>
-        <div class="flex-1 text-center">
-          <div class="text-move tabular" style="font-weight: 700; font-size: 18px">{{ day.totals.pro }}g</div>
-          <div class="text-faint" style="font-size: 11px">Proteine</div>
-        </div>
-        <div class="flex-1 text-center">
-          <div class="text-alcohol tabular" style="font-weight: 700; font-size: 18px">{{ day.totals.fat }}g</div>
-          <div class="text-faint" style="font-size: 11px">Grassi</div>
-        </div>
-      </div>
-      <div v-if="day.totals.alc > 0" class="text-alcohol text-center" style="font-size: 12px; margin-top: 10px">
-        Contiene alcol — registrato anche nella sezione Alcol
-      </div>
-    </AppCard>
 
-    <button class="bg-food-soft text-food w-full py-3 rounded-3xl font-semibold flex items-center justify-center gap-2" @click="mealOpen = true">
+    <div class="rise rounded-5xl overflow-hidden grad-food relative" style="box-shadow: 0 14px 34px var(--food-glow)">
+      <div class="absolute rounded-full" style="width: 180px; height: 180px; left: -64px; bottom: -80px; background: rgba(255,255,255,.14)" />
+      <div class="relative p-6">
+        <div class="text-center">
+          <div style="color: rgba(255,255,255,.82); font-size: 13px; font-weight: 500">
+            {{ day.isToday ? "Oggi" : "Giorno selezionato" }}
+          </div>
+          <div class="display tabular" style="color: #fff; font-size: 52px; font-weight: 800; line-height: 1.05; margin: 4px 0 2px">
+            {{ day.totals.kcal }}<span style="font-size: 20px; font-weight: 600; opacity: .8"> kcal</span>
+          </div>
+          <div style="color: rgba(255,255,255,.78); font-size: 13px">obiettivo {{ settings.goals.kcal }} kcal</div>
+          <div class="rounded-full overflow-hidden mt-4 mb-5" style="height: 8px; background: rgba(255,255,255,.28)">
+            <div class="fill" style="background: #fff" :style="{ width: pct }" />
+          </div>
+        </div>
+
+        <div class="flex">
+          <div v-for="m in macros" :key="m.label" class="flex-1 text-center">
+            <div class="display tabular" style="color: #fff; font-weight: 700; font-size: 20px">{{ m.value }}<span style="font-size: 12px"> g</span></div>
+            <div style="color: rgba(255,255,255,.75); font-size: 11px; letter-spacing: .3px">{{ m.label }}</div>
+          </div>
+        </div>
+
+        <div v-if="day.totals.alc > 0" class="text-center" style="color: rgba(255,255,255,.85); font-size: 12px; margin-top: 14px">
+          Contiene alcol — registrato anche in Alcol
+        </div>
+      </div>
+    </div>
+
+    <button class="tap w-full rounded-4xl py-3.5 font-semibold flex items-center justify-center gap-2 grad-food rise"
+      style="color: #fff; font-size: 15px; box-shadow: 0 12px 28px var(--food-glow); animation-delay: 80ms"
+      @click="mealOpen = true">
       <Camera :size="18" /> Scatta o aggiungi un pasto
     </button>
 
-    <p v-if="today.meals.length === 0" class="text-faint text-center" style="font-size: 14px; padding-top: 12px">
-      Nessun pasto registrato. Inizia con una foto.
-    </p>
+    <div v-if="today.meals.length === 0" class="rise text-center" style="padding: 18px 24px; animation-delay: 140ms">
+      <div class="rounded-3xl mx-auto flex items-center justify-center mb-3" style="width: 56px; height: 56px; background: var(--food-soft)">
+        <Utensils :size="24" class="text-food" />
+      </div>
+      <p class="text-dim" style="font-size: 14px; line-height: 1.5">Nessun pasto registrato. Inizia con una foto: ci pensa l'app a stimare i valori.</p>
+    </div>
 
-    <div class="space-y-3">
-      <AppCard v-for="(m, i) in today.meals" :key="i" class="!p-3.5">
-        <div class="flex items-center justify-between">
+    <div v-else class="space-y-2.5 rise" style="animation-delay: 140ms">
+      <AppCard v-for="(m, i) in today.meals" :key="i" pad="p-3.5">
+        <div class="flex items-center justify-between gap-3">
           <div class="min-w-0">
-            <div class="truncate" style="font-weight: 600">{{ m.name }}</div>
-            <div class="text-dim" style="font-size: 12px">
-              {{ m.kcal }} kcal · C {{ m.cho }} · P {{ m.pro }} · G {{ m.fat }}<span v-if="m.alc > 0"> · alc {{ m.alc }}g</span>
+            <div class="truncate" style="font-weight: 600; font-size: 15px">{{ m.name }}</div>
+            <div class="text-dim tabular" style="font-size: 12.5px">
+              {{ m.kcal }} kcal · C {{ m.cho }} · P {{ m.pro }} · G {{ m.fat }}<span v-if="m.alc > 0" class="text-alcohol"> · alc {{ m.alc }} g</span>
             </div>
           </div>
-          <button class="text-faint p-2" @click="day.removeMeal(i)"><Trash2 :size="16" /></button>
+          <button class="tap text-faint p-2 rounded-xl shrink-0 bg-raised" aria-label="Elimina pasto" @click="day.removeMeal(i)">
+            <Trash2 :size="16" />
+          </button>
         </div>
       </AppCard>
     </div>
@@ -59,7 +67,7 @@
 </template>
 
 <script setup lang="ts">
-import { Camera, Trash2 } from "lucide-vue-next";
+import { Camera, Trash2, Utensils } from "lucide-vue-next";
 import { useDayStore } from "~/stores/day";
 import { useSettingsStore } from "~/stores/settings";
 
@@ -68,6 +76,12 @@ const settings = useSettingsStore();
 const today = computed(() => day.today);
 const mealOpen = ref(false);
 const pct = computed(() => `${Math.min(100, (day.totals.kcal / settings.goals.kcal) * 100)}%`);
+
+const macros = computed(() => [
+  { label: "Carboidrati", value: day.totals.cho },
+  { label: "Proteine", value: day.totals.pro },
+  { label: "Grassi", value: day.totals.fat },
+]);
 
 function onMeal(m: any) {
   day.addMeal(m);

@@ -12,7 +12,7 @@ export default defineNuxtConfig({
       title: "Equilibrio",
       meta: [
         { name: "viewport", content: "width=device-width, initial-scale=1, viewport-fit=cover" },
-        { name: "theme-color", content: "#14110F" },
+        { name: "theme-color", content: "#100E0D" },
         { name: "description", content: "Un passo per volta: idratazione, alcol, movimento e pasti." },
       ],
       link: [
@@ -20,7 +20,10 @@ export default defineNuxtConfig({
         { rel: "apple-touch-icon", href: "/apple-touch-icon.png" },
         { rel: "preconnect", href: "https://fonts.googleapis.com" },
         { rel: "preconnect", href: "https://fonts.gstatic.com", crossorigin: "" },
-        { rel: "stylesheet", href: "https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" },
+        {
+          rel: "stylesheet",
+          href: "https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,700;12..96,800&family=Outfit:wght@400;500;600;700&display=swap",
+        },
       ],
     },
   },
@@ -54,8 +57,8 @@ export default defineNuxtConfig({
       short_name: "Equilibrio",
       description: "Un passo per volta.",
       lang: "it",
-      theme_color: "#14110F",
-      background_color: "#14110F",
+      theme_color: "#100E0D",
+      background_color: "#100E0D",
       display: "standalone",
       start_url: "/",
       icons: [

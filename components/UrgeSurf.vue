@@ -1,14 +1,18 @@
 <template>
   <div class="space-y-3">
-    <div v-for="(tip, i) in tips" :key="i" class="bg-raised rounded-2xl p-3.5 text-ink" style="font-size: 14px">
-      {{ tip }}
+    <div v-for="(tip, i) in tips" :key="i" class="rounded-3xl p-4 flex gap-3" style="background: var(--raised)">
+      <span class="display tabular shrink-0" :style="{ color: `var(--water)`, fontWeight: 700, fontSize: '15px', lineHeight: 1.5 }">
+        {{ i + 1 }}
+      </span>
+      <p class="text-ink" style="font-size: 14px; line-height: 1.5">{{ tip }}</p>
     </div>
-    <button
-      class="bg-water-soft text-water w-full py-3 rounded-2xl font-semibold flex items-center justify-center gap-2"
-      @click="$emit('water')">
+
+    <button class="tap grad-water w-full py-3.5 rounded-3xl font-semibold flex items-center justify-center gap-2"
+      style="color: #fff; font-size: 15px" @click="$emit('water')">
       <Droplet :size="18" /> Bevo un bicchiere d'acqua invece
     </button>
-    <p class="text-faint" style="font-size: 12px; text-align: center">
+
+    <p class="text-faint text-center" style="font-size: 12.5px; line-height: 1.5">
       Se la voglia è forte e costante ogni giorno, parlarne col medico è la mossa più forte, non la più debole.
     </p>
   </div>
