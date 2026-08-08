@@ -68,25 +68,45 @@
       </div>
     </AppCard>
 
-    <!-- Riepilogo -->
-    <div class="flex gap-3">
-      <AppCard class="flex-1" style="min-width: 0">
-        <div class="flex items-center gap-2 mb-2">
-          <div class="bg-move-soft text-move rounded-xl p-1.5"><Bike :size="16" /></div>
-          <span class="text-dim truncate" style="font-size: 13px">Movimento</span>
+    <!-- Movimento -->
+    <button class="w-full text-left" style="border: none; background: none; padding: 0" @click="navigateTo('/movimento')">
+      <AppCard :style="{ background: 'var(--move-soft)', border: 'none' }">
+        <div class="flex items-center justify-between mb-3">
+          <div class="flex items-center gap-2">
+            <Bike :size="18" class="text-move" />
+            <span style="font-weight: 600">Movimento</span>
+          </div>
+          <ChevronRight :size="16" class="text-faint" />
         </div>
-        <div class="text-ink tabular" style="font-size: 22px; font-weight: 700">{{ day.moveMin }}′</div>
-        <div class="text-faint" style="font-size: 12px">obiettivo {{ settings.goals.moveMin }}′</div>
-      </AppCard>
-      <AppCard class="flex-1" style="min-width: 0">
-        <div class="flex items-center gap-2 mb-2">
-          <div class="bg-food-soft text-food rounded-xl p-1.5"><Apple :size="16" /></div>
-          <span class="text-dim truncate" style="font-size: 13px">Pasti</span>
+        <div class="flex items-end gap-2 mb-3">
+          <span class="text-move tabular" style="font-size: 34px; font-weight: 700; line-height: 1">{{ day.moveMin }}</span>
+          <span class="text-dim" style="font-size: 14px; margin-bottom: 4px">′ · obiettivo {{ settings.goals.moveMin }}′</span>
         </div>
-        <div class="text-ink tabular" style="font-size: 22px; font-weight: 700">{{ day.totals.kcal }} kcal</div>
-        <div class="text-faint" style="font-size: 12px">{{ today.meals.length }} voci</div>
+        <div class="bg-line rounded-full overflow-hidden" style="height: 10px">
+          <div class="bg-move h-full rounded-full" :style="{ width: pct(day.moveMin, settings.goals.moveMin), transition: 'width 500ms' }" />
+        </div>
       </AppCard>
-    </div>
+    </button>
+
+    <!-- Pasti -->
+    <button class="w-full text-left" style="border: none; background: none; padding: 0" @click="navigateTo('/pasti')">
+      <AppCard :style="{ background: 'var(--food-soft)', border: 'none' }">
+        <div class="flex items-center justify-between mb-3">
+          <div class="flex items-center gap-2">
+            <Apple :size="18" class="text-food" />
+            <span style="font-weight: 600">Pasti</span>
+          </div>
+          <ChevronRight :size="16" class="text-faint" />
+        </div>
+        <div class="flex items-end gap-2 mb-3">
+          <span class="text-food tabular" style="font-size: 34px; font-weight: 700; line-height: 1">{{ day.totals.kcal }}</span>
+          <span class="text-dim" style="font-size: 14px; margin-bottom: 4px">kcal · {{ today.meals.length }} {{ today.meals.length === 1 ? "voce" : "voci" }}</span>
+        </div>
+        <div class="bg-line rounded-full overflow-hidden" style="height: 10px">
+          <div class="bg-food h-full rounded-full" :style="{ width: pct(day.totals.kcal, settings.goals.kcal), transition: 'width 500ms' }" />
+        </div>
+      </AppCard>
+    </button>
 
     <!-- FAB -->
     <button
@@ -109,7 +129,7 @@
 </template>
 
 <script setup lang="ts">
-import { Droplet, Minus, Wine, Check, Wind, Plus, X, Bike, Apple, Camera } from "lucide-vue-next";
+import { Droplet, Minus, Wine, Check, Wind, Plus, X, Bike, Apple, Camera, ChevronRight } from "lucide-vue-next";
 import { useDayStore } from "~/stores/day";
 import { useSettingsStore } from "~/stores/settings";
 

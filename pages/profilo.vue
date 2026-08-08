@@ -16,15 +16,17 @@
     </AppCard>
 
     <!-- Obiettivi -->
-    <AppCard>
-      <div style="font-weight: 600" class="mb-1">Obiettivi giornalieri</div>
-      <Row label="Acqua (ml)"><input v-model.number="settings.goals.water" type="number" :class="inp" /></Row>
-      <Row label="Movimento (min)"><input v-model.number="settings.goals.moveMin" type="number" :class="inp" /></Row>
-      <Row label="Calorie (kcal)"><input v-model.number="settings.goals.kcal" type="number" :class="inp" /></Row>
-      <p class="text-faint" style="font-size: 12px; margin-top: 8px">
+    <div>
+      <div style="font-weight: 600" class="mb-2.5 px-1">Obiettivi giornalieri</div>
+      <div class="space-y-2.5">
+        <GoalCard :icon="Droplet" tone="water" label="Acqua" :value="settings.goals.water" unit="ml" @click="goalOpen = 'water'" />
+        <GoalCard :icon="Bike" tone="move" label="Movimento" :value="settings.goals.moveMin" unit="min" @click="goalOpen = 'move'" />
+        <GoalCard :icon="Apple" tone="food" label="Calorie" :value="settings.goals.kcal" unit="kcal" @click="goalOpen = 'food'" />
+      </div>
+      <p class="text-faint" style="font-size: 12px; margin-top: 10px; padding: 0 4px">
         Per i valori calorici, conviene impostarli con il medico o un nutrizionista.
       </p>
-    </AppCard>
+    </div>
 
     <!-- Promemoria -->
     <AppCard>
@@ -62,11 +64,21 @@
     </AppCard>
 
     <p class="text-faint text-center" style="font-size: 12px">Equilibrio · un passo per volta</p>
+
+    <BottomSheet :model-value="goalOpen === 'water'" title="Obiettivo acqua" @update:model-value="goalOpen = null">
+      <GoalPicker tone="water" unit="ml" :model-value="settings.goals.water" :presets="[1500, 2000, 2500]" :min="500" :max="4000" :step="100" @save="saveGoal('water', $event)" />
+    </BottomSheet>
+    <BottomSheet :model-value="goalOpen === 'move'" title="Obiettivo movimento" @update:model-value="goalOpen = null">
+      <GoalPicker tone="move" unit="min" :model-value="settings.goals.moveMin" :presets="[20, 30, 45]" :min="5" :max="120" :step="5" @save="saveGoal('move', $event)" />
+    </BottomSheet>
+    <BottomSheet :model-value="goalOpen === 'food'" title="Obiettivo calorie" @update:model-value="goalOpen = null">
+      <GoalPicker tone="food" unit="kcal" :model-value="settings.goals.kcal" :presets="[1600, 1800, 2000]" :min="1000" :max="3500" :step="50" @save="saveGoal('food', $event)" />
+    </BottomSheet>
   </div>
 </template>
 
 <script setup lang="ts">
-import { User, Bell } from "lucide-vue-next";
+import { User, Bell, Droplet, Bike, Apple } from "lucide-vue-next";
 import { doc, getDoc, setDoc } from "firebase/firestore";
 import { useSettingsStore } from "~/stores/settings";
 
@@ -74,7 +86,13 @@ const settings = useSettingsStore();
 const { user, isDemo, signOut } = useAuth();
 const { requestPermission, schedule, testNow } = useNotifications();
 
-const inp = "bg-raised border border-line text-ink rounded-xl px-2.5 py-1.5 text-right tabular";
+const goalOpen = ref<"water" | "move" | "food" | null>(null);
+function saveGoal(kind: "water" | "move" | "food", value: number) {
+  if (kind === "water") settings.goals.water = value;
+  if (kind === "move") settings.goals.moveMin = value;
+  if (kind === "food") settings.goals.kcal = value;
+  goalOpen.value = null;
+}
 
 // ── Withings (con sincronizzazione token tra dispositivi via Firestore) ──
 const { connect: connectWithings, status: withingsStatus, fetchMeasures, disconnect: disconnectWithings } = useWithings();
