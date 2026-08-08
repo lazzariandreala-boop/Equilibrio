@@ -19,9 +19,9 @@
     <div class="rise" style="animation-delay: 60ms">
       <div class="display mb-3 px-1" style="font-weight: 700; font-size: 18px">Obiettivi giornalieri</div>
       <div class="space-y-2.5">
-        <GoalCard :icon="Droplet" tone="water" label="Acqua" :value="settings.goals.water" unit="ml" @click="goalOpen = 'water'" />
-        <GoalCard :icon="Bike" tone="move" label="Movimento" :value="settings.goals.moveMin" unit="min" @click="goalOpen = 'move'" />
-        <GoalCard :icon="Apple" tone="food" label="Calorie" :value="settings.goals.kcal" unit="kcal" @click="goalOpen = 'food'" />
+        <GoalCard :icon="GlassWater" tone="water" label="Acqua" :value="settings.goals.water" unit="ml" @click="goalOpen = 'water'" />
+        <GoalCard :icon="Footprints" tone="move" label="Movimento" :value="settings.goals.moveMin" unit="min" @click="goalOpen = 'move'" />
+        <GoalCard :icon="UtensilsCrossed" tone="food" label="Calorie" :value="settings.goals.kcal" unit="kcal" @click="goalOpen = 'food'" />
       </div>
       <p class="text-faint px-1" style="font-size: 12.5px; margin-top: 10px; line-height: 1.5">
         Per i valori calorici, conviene impostarli con il medico o un nutrizionista.
@@ -107,7 +107,7 @@
 </template>
 
 <script setup lang="ts">
-import { User, Droplet, Bike, Apple, Scale } from "lucide-vue-next";
+import { User, GlassWater, Footprints, UtensilsCrossed, Scale } from "lucide-vue-next";
 import { doc, getDoc, setDoc } from "firebase/firestore";
 import { useSettingsStore } from "~/stores/settings";
 

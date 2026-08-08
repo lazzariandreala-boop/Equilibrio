@@ -1,6 +1,6 @@
 <template>
   <nav class="fixed bottom-0 left-0 right-0 flex justify-center pointer-events-none" style="z-index: 45">
-    <div class="pointer-events-auto w-full" style="max-width: 520px; padding: 0 14px 14px">
+    <div class="pointer-events-auto w-full" style="max-width: 520px; padding: 0 12px 12px">
       <div class="flex rounded-4xl px-1.5 py-1.5"
         style="background: var(--card); border: 1px solid var(--line); box-shadow: var(--shadow-lift); backdrop-filter: blur(12px)">
         <NuxtLink v-for="item in items" :key="item.to" :to="item.to"

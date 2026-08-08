@@ -53,7 +53,7 @@
 </template>
 
 <script setup lang="ts">
-import { ChevronRight, Droplet, Apple, Bike, Wine } from "lucide-vue-next";
+import { ChevronRight, GlassWater, UtensilsCrossed, Footprints, Wine } from "lucide-vue-next";
 import { useDayStore } from "~/stores/day";
 import { lastNDays, monthDays, fmtShort, todayKey } from "~/utils/date";
 
@@ -82,9 +82,9 @@ const agg = computed(() => {
 });
 
 const stats = computed(() => [
-  { tone: "water", icon: Droplet, value: agg.value.waterAvg, unit: "ml", label: "acqua al giorno" },
-  { tone: "food", icon: Apple, value: agg.value.kcalAvg, unit: "kcal", label: "calorie al giorno" },
-  { tone: "move", icon: Bike, value: agg.value.moveTot, unit: "min", label: "movimento totale" },
+  { tone: "water", icon: GlassWater, value: agg.value.waterAvg, unit: "ml", label: "acqua al giorno" },
+  { tone: "food", icon: UtensilsCrossed, value: agg.value.kcalAvg, unit: "kcal", label: "calorie al giorno" },
+  { tone: "move", icon: Footprints, value: agg.value.moveTot, unit: "min", label: "movimento totale" },
   { tone: "alcohol", icon: Wine, value: `${agg.value.soberDays}/${agg.value.activeDays || keys.value.length}`, unit: "", label: "giorni senza alcol" },
 ]);
 

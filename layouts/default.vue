@@ -1,8 +1,8 @@
 <template>
   <div class="bg-surface text-ink" style="min-height: 100vh">
-    <div class="mx-auto" style="max-width: 520px; padding-bottom: 96px">
+    <div class="mx-auto" style="max-width: 520px; padding-bottom: 92px">
       <AppHeader v-if="showChrome" />
-      <main class="px-5 pt-2 space-y-4">
+      <main class="px-4 pt-1">
         <slot />
       </main>
     </div>

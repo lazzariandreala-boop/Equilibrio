@@ -13,6 +13,7 @@
           cx="100" cy="100" :r="r" fill="none" stroke="var(--line)"
           stroke-width="13" stroke-linecap="round" :stroke-dasharray="`${arc} ${C}`" />
         <circle
+          v-if="s.value > 0.01"
           cx="100" cy="100" :r="r" fill="none" :stroke="`url(#ring-${uid}-${i})`"
           stroke-width="13" stroke-linecap="round"
           :stroke-dasharray="`${Math.min(1, s.value) * arc} ${C}`"
@@ -21,10 +22,11 @@
     </svg>
 
     <div class="absolute inset-0 flex flex-col items-center justify-center">
-      <span class="display tabular text-ink" style="font-size: 46px; font-weight: 800; line-height: 1">{{ shown }}</span>
-      <span class="text-faint" style="font-size: 10px; letter-spacing: 2px; text-transform: uppercase; font-weight: 600; margin-top: 2px">
-        equilibrio
-      </span>
+      <div class="flex items-baseline gap-0.5">
+        <span class="display tabular text-ink" style="font-size: 42px; font-weight: 800; line-height: 1">{{ shown }}</span>
+        <span class="text-faint" style="font-size: 15px; font-weight: 600">%</span>
+      </div>
+      <span class="text-dim" style="font-size: 11px; font-weight: 600; margin-top: 1px">obiettivi di oggi</span>
     </div>
   </div>
 </template>
@@ -35,7 +37,7 @@ const props = withDefaults(
     segments: { from: string; to: string; glow: string; value: number }[];
     size?: number;
   }>(),
-  { size: 196 },
+  { size: 168 },
 );
 
 const uid = Math.random().toString(36).slice(2, 8);
@@ -47,41 +49,28 @@ const score = computed(() =>
   Math.round((props.segments.reduce((a, s) => a + Math.min(1, s.value), 0) / props.segments.length) * 100),
 );
 
-// il punteggio sale contando, non appare di colpo.
-// Lato server non esiste requestAnimationFrame: si mostra subito il valore finale.
+// Lato server niente requestAnimationFrame: si mostra subito il valore finale.
 const shown = ref(score.value);
 let raf = 0;
 
-watch(score, (target) => {
-  if (!import.meta.client) {
-    shown.value = target;
-    return;
-  }
+function animateTo(target: number, from: number) {
   cancelAnimationFrame(raf);
-  const start = shown.value;
   const t0 = performance.now();
   const tick = (t: number) => {
     const k = Math.min(1, (t - t0) / 850);
     const eased = 1 - Math.pow(1 - k, 3);
-    shown.value = Math.round(start + (target - start) * eased);
+    shown.value = Math.round(from + (target - from) * eased);
     if (k < 1) raf = requestAnimationFrame(tick);
   };
   raf = requestAnimationFrame(tick);
+}
+
+watch(score, (target) => {
+  if (import.meta.client) animateTo(target, shown.value);
+  else shown.value = target;
 });
 
-onMounted(() => {
-  // all'ingresso il numero parte da zero e sale fino al punteggio reale
-  const target = score.value;
-  shown.value = 0;
-  const t0 = performance.now();
-  const tick = (t: number) => {
-    const k = Math.min(1, (t - t0) / 850);
-    shown.value = Math.round(target * (1 - Math.pow(1 - k, 3)));
-    if (k < 1) raf = requestAnimationFrame(tick);
-  };
-  raf = requestAnimationFrame(tick);
-});
-
+onMounted(() => animateTo(score.value, 0));
 onBeforeUnmount(() => {
   if (import.meta.client) cancelAnimationFrame(raf);
 });

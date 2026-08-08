@@ -72,7 +72,7 @@
 </template>
 
 <script setup lang="ts">
-import { Minus, Plus, Bike, Heart, Activity, Wind } from "lucide-vue-next";
+import { Minus, Plus, Bike, StretchHorizontal, Dumbbell, Footprints } from "lucide-vue-next";
 import { useDayStore } from "~/stores/day";
 import { useSettingsStore } from "~/stores/settings";
 
@@ -84,8 +84,8 @@ const pct = computed(() => `${Math.min(100, (day.moveMin / settings.goals.moveMi
 
 const safe = [
   { title: "Giro in bici tranquillo", desc: "Schiena dritta, sella regolata: la bici scarica la colonna meglio della corsa.", icon: Bike },
-  { title: "Mobilità del bacino", desc: "5′ a terra: ginocchia al petto alternate, gatto-mucca lento.", icon: Heart },
-  { title: "Plank dolce sui gomiti", desc: "3 × 20″, schiena neutra. Niente carico assiale.", icon: Activity },
-  { title: "Camminata breve in piano", desc: "10–15′ senza forzare. Stop appena tira.", icon: Wind },
+  { title: "Mobilità del bacino", desc: "5′ a terra: ginocchia al petto alternate, gatto-mucca lento.", icon: StretchHorizontal },
+  { title: "Plank dolce sui gomiti", desc: "3 × 20″, schiena neutra. Niente carico assiale.", icon: Dumbbell },
+  { title: "Camminata breve in piano", desc: "10–15′ senza forzare. Stop appena tira.", icon: Footprints },
 ];
 </script>

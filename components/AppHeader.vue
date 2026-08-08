@@ -1,9 +1,9 @@
 <template>
-  <header class="flex items-center justify-between px-5 pt-6 pb-3">
+  <header class="flex items-center justify-between px-4 pt-4 pb-2.5">
     <div class="flex items-center gap-3">
-      <img :src="logo" alt="" width="40" height="40" class="rounded-2xl shadow-soft" />
+      <img :src="logo" alt="" width="36" height="36" class="rounded-2xl shadow-soft" />
       <div>
-        <div class="display text-ink" style="font-size: 23px; font-weight: 800; line-height: 1.1">Equilibrio</div>
+        <div class="display text-ink" style="font-size: 21px; font-weight: 800; line-height: 1.1">Equilibrio</div>
         <div class="text-faint" style="font-size: 12px; text-transform: capitalize">{{ date }}</div>
       </div>
     </div>
