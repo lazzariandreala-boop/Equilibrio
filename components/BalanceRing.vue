@@ -47,24 +47,42 @@ const score = computed(() =>
   Math.round((props.segments.reduce((a, s) => a + Math.min(1, s.value), 0) / props.segments.length) * 100),
 );
 
-// il punteggio sale contando, non appare di colpo
-const shown = ref(0);
+// il punteggio sale contando, non appare di colpo.
+// Lato server non esiste requestAnimationFrame: si mostra subito il valore finale.
+const shown = ref(score.value);
 let raf = 0;
-watch(
-  score,
-  (target) => {
-    cancelAnimationFrame(raf);
-    const start = shown.value;
-    const t0 = performance.now();
-    const tick = (t: number) => {
-      const k = Math.min(1, (t - t0) / 850);
-      const eased = 1 - Math.pow(1 - k, 3);
-      shown.value = Math.round(start + (target - start) * eased);
-      if (k < 1) raf = requestAnimationFrame(tick);
-    };
-    raf = requestAnimationFrame(tick);
-  },
-  { immediate: true },
-);
-onBeforeUnmount(() => cancelAnimationFrame(raf));
+
+watch(score, (target) => {
+  if (!import.meta.client) {
+    shown.value = target;
+    return;
+  }
+  cancelAnimationFrame(raf);
+  const start = shown.value;
+  const t0 = performance.now();
+  const tick = (t: number) => {
+    const k = Math.min(1, (t - t0) / 850);
+    const eased = 1 - Math.pow(1 - k, 3);
+    shown.value = Math.round(start + (target - start) * eased);
+    if (k < 1) raf = requestAnimationFrame(tick);
+  };
+  raf = requestAnimationFrame(tick);
+});
+
+onMounted(() => {
+  // all'ingresso il numero parte da zero e sale fino al punteggio reale
+  const target = score.value;
+  shown.value = 0;
+  const t0 = performance.now();
+  const tick = (t: number) => {
+    const k = Math.min(1, (t - t0) / 850);
+    shown.value = Math.round(target * (1 - Math.pow(1 - k, 3)));
+    if (k < 1) raf = requestAnimationFrame(tick);
+  };
+  raf = requestAnimationFrame(tick);
+});
+
+onBeforeUnmount(() => {
+  if (import.meta.client) cancelAnimationFrame(raf);
+});
 </script>
