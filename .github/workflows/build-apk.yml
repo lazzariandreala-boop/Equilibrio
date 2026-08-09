@@ -1,0 +1,78 @@
+name: Build APK Android
+
+# Builda un APK di debug a ogni push su main, e a richiesta dal tab Actions.
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Node 20
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      # Capacitor 6 usa AGP 8.2: serve JDK 17, non 21.
+      - name: JDK 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 17
+
+      - name: Android SDK
+        uses: android-actions/setup-android@v3
+
+      - name: Installa le dipendenze
+        run: npm ci
+
+      # La build statica che finisce dentro l'APK.
+      - name: Genera il bundle web
+        run: npx nuxi generate
+
+      # android/ è ignorata da git: si rigenera e si riapplicano i permessi.
+      - name: Prepara la piattaforma Android
+        run: |
+          npx cap add android
+          node scripts/patch-android-manifest.mjs
+          npx cap sync android
+
+      - name: Compila l'APK di debug
+        run: |
+          cd android
+          chmod +x gradlew
+          ./gradlew assembleDebug --no-daemon --stacktrace
+
+      - name: Rinomina l'APK
+        run: cp android/app/build/outputs/apk/debug/app-debug.apk Equilibrio.apk
+
+      # Scaricabile dalla pagina del workflow, sotto "Artifacts".
+      - name: Pubblica come artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: Equilibrio-APK
+          path: Equilibrio.apk
+          retention-days: 30
+
+      # Release "apk-latest": link diretto e stabile per il download dal telefono.
+      - name: Aggiorna la release apk-latest
+        if: github.ref == 'refs/heads/main'
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: apk-latest
+          name: APK di prova (ultima build)
+          body: |
+            APK di debug generato automaticamente dall'ultimo commit su main.
+
+            Per installarlo: scarica il file dal telefono e consenti
+            l'installazione da origini sconosciute quando Android lo chiede.
+          files: Equilibrio.apk
+          prerelease: true
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

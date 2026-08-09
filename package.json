@@ -20,6 +20,7 @@
     "@capacitor/core": "^6.1.0",
     "@capacitor/local-notifications": "^6.1.0",
     "@capacitor/preferences": "^6.0.0",
+    "capacitor-health": "^0.0.14",
     "firebase": "^10.13.0",
     "lucide-vue-next": "^0.445.0",
     "nuxt": "^3.13.0",

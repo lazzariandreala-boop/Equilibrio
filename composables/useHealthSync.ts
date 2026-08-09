@@ -13,8 +13,6 @@ import { todayKey } from "~/utils/date";
  * resta inerte e l'interfaccia lo dice, invece di far finta di funzionare.
  */
 
-const STEP_MET = 3.5; // camminata a passo normale
-
 export function useHealthSync() {
   const day = useDayStore();
   const available = useState("health:available", () => false);
@@ -27,15 +25,24 @@ export function useHealthSync() {
     if (!import.meta.client) return null;
     try {
       const cap = (window as any).Capacitor;
-      if (!cap?.isNativePlatform?.()) return null;
-      // Caricamento a runtime: il bundler non deve risolvere un pacchetto
-      // che esiste solo nella build nativa. Se manca, l'app non si rompe.
-      const load = new Function("m", "return import(/* @vite-ignore */ m)") as (m: string) => Promise<any>;
-      const mod = await load("capacitor-health").catch(() => null);
+      if (!cap?.isNativePlatform?.()) return null; // nel browser non esiste
+      const mod = await import("capacitor-health").catch(() => null);
       return (mod as any)?.Health ?? null;
     } catch {
       return null;
     }
+  }
+
+  /** Se Health Connect non è installato, lo apre nel Play Store. */
+  async function install() {
+    const H = await plugin();
+    await H?.showHealthConnectInPlayStore?.().catch(() => {});
+  }
+
+  /** Apre le impostazioni Health Connect (serve se i permessi sono stati negati). */
+  async function openSettings() {
+    const H = await plugin();
+    await H?.openHealthConnectSettings?.().catch(() => {});
   }
 
   const label = computed(() => {
@@ -62,7 +69,9 @@ export function useHealthSync() {
     if (!H) return;
     busy.value = true;
     try {
-      await H.requestHealthPermissions({ permissions: ["READ_STEPS", "READ_WORKOUTS", "READ_CALORIES"] });
+      await H.requestHealthPermissions({
+        permissions: ["READ_STEPS", "READ_WORKOUTS", "READ_ACTIVE_CALORIES", "READ_DISTANCE"],
+      });
       connected.value = true;
       await sync();
     } catch {
@@ -124,7 +133,7 @@ export function useHealthSync() {
 
   onMounted(check);
 
-  return { available, connected, busy, steps, stepsAsMinutes, lastSync, label, connect, sync };
+  return { available, connected, busy, steps, stepsAsMinutes, lastSync, label, connect, sync, install, openSettings };
 }
 
 function mapId(type = "") {
