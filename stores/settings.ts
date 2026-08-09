@@ -5,6 +5,9 @@ export interface Goals {
   moveMin: number;
   kcal: number;
 }
+export interface Profile {
+  weightKg: number; // serve a stimare le calorie bruciate
+}
 export interface Reminders {
   water: boolean;
   waterTimes: string[]; // "HH:MM"
@@ -16,6 +19,7 @@ export interface Reminders {
 export const useSettingsStore = defineStore("settings", {
   state: () => ({
     goals: <Goals>{ water: 2000, moveMin: 30, kcal: 2000 },
+    profile: <Profile>{ weightKg: 75 },
     reminders: <Reminders>{
       water: true,
       waterTimes: ["10:00", "13:00", "16:00", "19:00"],
@@ -28,6 +32,7 @@ export const useSettingsStore = defineStore("settings", {
     hydrate(raw: any) {
       if (!raw) return;
       if (raw.goals) this.goals = { ...this.goals, ...raw.goals };
+      if (raw.profile) this.profile = { ...this.profile, ...raw.profile };
       if (raw.reminders) this.reminders = { ...this.reminders, ...raw.reminders };
     },
   },

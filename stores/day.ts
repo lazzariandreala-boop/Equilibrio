@@ -14,6 +14,9 @@ export interface Move {
   type: string;
   min: number;
   at: number;
+  kcal?: number; // stima delle calorie bruciate
+  activityId?: string; // id dal catalogo attività
+  extId?: string; // id dell'allenamento importato da Health Connect / HealthKit
 }
 export interface Drink {
   name: string;
@@ -151,6 +154,9 @@ export const useDayStore = defineStore("day", {
     addMove(m: Omit<Move, "at">) {
       this.ensureDay();
       this.days[this.date].moves.push({ ...m, at: Date.now() });
+    },
+    removeMove(i: number) {
+      this.days[this.date].moves.splice(i, 1);
     },
     cleanDay() {
       this.streak += 1;

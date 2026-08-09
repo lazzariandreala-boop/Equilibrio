@@ -26,6 +26,11 @@
       <p class="text-faint px-1" style="font-size: 12.5px; margin-top: 10px; line-height: 1.5">
         Per i valori calorici, conviene impostarli con il medico o un nutrizionista.
       </p>
+
+      <div class="mt-2.5">
+        <GoalCard :icon="Scale" tone="alcohol" label="Peso (per stimare le calorie bruciate)"
+          :value="settings.profile.weightKg" unit="kg" @click="goalOpen = 'weight'" />
+      </div>
     </div>
 
     <!-- Promemoria -->
@@ -82,6 +87,31 @@
         </div>
       </div>
 
+      <!-- Health Connect: legge passi e allenamenti dal telefono -->
+      <div class="rounded-4xl p-4 mb-2.5" :style="{ background: health.connected.value ? 'var(--move-soft)' : 'var(--raised)' }">
+        <div class="flex items-center gap-3">
+          <div class="rounded-2xl flex items-center justify-center shrink-0" :class="health.connected.value ? 'grad-move' : ''"
+            style="width: 44px; height: 44px" :style="health.connected.value ? {} : { background: 'var(--line)' }">
+            <HeartPulse :size="21" :color="health.connected.value ? '#fff' : 'var(--dim)'" />
+          </div>
+          <div class="flex-1 min-w-0">
+            <div style="font-weight: 600; font-size: 15px">Salute del telefono</div>
+            <div class="text-dim" style="font-size: 12.5px; line-height: 1.35">{{ health.label.value }}</div>
+          </div>
+          <button v-if="health.available.value" class="tap rounded-2xl px-4 py-2.5 font-semibold shrink-0" style="font-size: 13px"
+            :class="health.connected.value ? 'bg-raised text-dim' : 'grad-move'"
+            :style="health.connected.value ? {} : { color: '#fff' }"
+            @click="health.connected.value ? health.sync() : health.connect()">
+            {{ health.connected.value ? "Sincronizza" : "Collega" }}
+          </button>
+        </div>
+        <p v-if="!health.available.value" class="text-faint" style="font-size: 12px; margin-top: 10px; line-height: 1.5">
+          Funziona nell'app installata su Android (Health Connect) o iPhone (Salute). Dal browser non è accessibile:
+          Huawei Health, Samsung Health, Garmin e Google Health scrivono lì i loro dati, quindi collegando Health Connect
+          arrivano passi e allenamenti di tutti insieme.
+        </p>
+      </div>
+
       <AppCard pad="p-4">
         <SettingRow label="Backup su Firebase" :last="true">
           <span class="rounded-full px-3 py-1" style="font-size: 12px; font-weight: 600"
@@ -103,23 +133,28 @@
     <BottomSheet :model-value="goalOpen === 'food'" title="Obiettivo calorie" @update:model-value="goalOpen = null">
       <GoalPicker tone="food" unit="kcal" :model-value="settings.goals.kcal" :presets="[1600, 1800, 2000]" :min="1000" :max="3500" :step="50" @save="saveGoal('food', $event)" />
     </BottomSheet>
+    <BottomSheet :model-value="goalOpen === 'weight'" title="Il tuo peso" @update:model-value="goalOpen = null">
+      <GoalPicker tone="alcohol" unit="kg" :model-value="settings.profile.weightKg" :presets="[70, 85, 100]" :min="35" :max="200" :step="1" @save="saveGoal('weight', $event)" />
+    </BottomSheet>
   </div>
 </template>
 
 <script setup lang="ts">
-import { User, GlassWater, Footprints, UtensilsCrossed, Scale } from "lucide-vue-next";
+import { User, GlassWater, Footprints, UtensilsCrossed, Scale, HeartPulse } from "lucide-vue-next";
 import { doc, getDoc, setDoc } from "firebase/firestore";
 import { useSettingsStore } from "~/stores/settings";
 
 const settings = useSettingsStore();
 const { user, isDemo, signOut } = useAuth();
+const health = useHealthSync();
 const { requestPermission, schedule, testNow } = useNotifications();
 
-const goalOpen = ref<"water" | "move" | "food" | null>(null);
-function saveGoal(kind: "water" | "move" | "food", value: number) {
+const goalOpen = ref<"water" | "move" | "food" | "weight" | null>(null);
+function saveGoal(kind: "water" | "move" | "food" | "weight", value: number) {
   if (kind === "water") settings.goals.water = value;
   if (kind === "move") settings.goals.moveMin = value;
   if (kind === "food") settings.goals.kcal = value;
+  if (kind === "weight") settings.profile.weightKg = value;
   goalOpen.value = null;
 }
 
