@@ -36,18 +36,35 @@ jobs:
       - name: Genera il bundle web
         run: npx nuxi generate
 
-      # android/ è ignorata da git: si rigenera e si riapplicano i permessi.
+      # android/ è ignorata da git: si rigenera e si riapplicano permessi e minSdk.
       - name: Prepara la piattaforma Android
         run: |
           npx cap add android
           node scripts/patch-android-manifest.mjs
           npx cap sync android
 
+      # Serve solo se si usa il login Google nativo. Senza il secret, l'app
+      # funziona lo stesso: l'autenticazione passa dal JS SDK nella webview.
+      - name: Configura Firebase (se il secret esiste)
+        if: env.GOOGLE_SERVICES_JSON != ''
+        env:
+          GOOGLE_SERVICES_JSON: ${{ secrets.GOOGLE_SERVICES_JSON }}
+        run: echo "$GOOGLE_SERVICES_JSON" > android/app/google-services.json
+
       - name: Compila l'APK di debug
         run: |
           cd android
           chmod +x gradlew
-          ./gradlew assembleDebug --no-daemon --stacktrace
+          ./gradlew assembleDebug --no-daemon --stacktrace 2>&1 | tee ../gradle-build.log
+
+      # Se la compilazione fallisce, il log resta scaricabile per capire perché.
+      - name: Salva il log di Gradle
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: gradle-log
+          path: gradle-build.log
+          retention-days: 7
 
       - name: Rinomina l'APK
         run: cp android/app/build/outputs/apk/debug/app-debug.apk Equilibrio.apk

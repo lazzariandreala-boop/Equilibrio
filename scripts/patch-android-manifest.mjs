@@ -6,6 +6,23 @@
 import { readFileSync, writeFileSync, existsSync } from "node:fs";
 
 const PATH = "android/app/src/main/AndroidManifest.xml";
+const VARS = "android/variables.gradle";
+
+// capacitor-health richiede minSdk 26 (Health Connect non esiste sotto Android 8):
+// il template Capacitor parte da 22, quindi il merge del manifest fallirebbe.
+if (existsSync(VARS)) {
+  let vars = readFileSync(VARS, "utf8");
+  if (/minSdkVersion\s*=\s*(\d+)/.test(vars)) {
+    const current = Number(RegExp.$1);
+    if (current < 26) {
+      vars = vars.replace(/minSdkVersion\s*=\s*\d+/, "minSdkVersion = 26");
+      writeFileSync(VARS, vars);
+      console.log(`✓ minSdkVersion portato da ${current} a 26 (richiesto da Health Connect)`);
+    } else {
+      console.log("• minSdkVersion già sufficiente");
+    }
+  }
+}
 
 if (!existsSync(PATH)) {
   console.error(`✗ ${PATH} non trovato. Esegui prima: npx cap add android`);
