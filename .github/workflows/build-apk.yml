@@ -6,6 +6,10 @@ on:
     branches: [main]
   workflow_dispatch:
 
+# Serve al passaggio finale per creare/aggiornare la release con l'APK.
+permissions:
+  contents: write
+
 jobs:
   build:
     runs-on: ubuntu-latest
