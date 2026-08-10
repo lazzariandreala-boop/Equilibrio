@@ -36,6 +36,13 @@ jobs:
       - name: Installa le dipendenze
         run: npm ci
 
+      # Senza queste variabili la build statica parte in modalità demo.
+      - name: Configura l'ambiente della build nativa
+        env:
+          FIREBASE_WEB_APP_ID: ${{ secrets.FIREBASE_WEB_APP_ID }}
+          API_BASE: ${{ vars.API_BASE }}
+        run: node scripts/env-from-google-services.mjs
+
       # La build statica che finisce dentro l'APK.
       - name: Genera il bundle web
         run: npx nuxi generate
@@ -49,15 +56,19 @@ jobs:
 
       # Serve al login Google nativo. Senza il secret la build riesce lo stesso,
       # ma l'accesso con Google non funziona nell'app installata.
+      # Il secret ha la precedenza; in mancanza si usa il file in android-config/.
       - name: Configura Firebase
         env:
           GOOGLE_SERVICES_JSON: ${{ secrets.GOOGLE_SERVICES_JSON }}
         run: |
           if [ -n "$GOOGLE_SERVICES_JSON" ]; then
             printf '%s' "$GOOGLE_SERVICES_JSON" > android/app/google-services.json
-            echo "✓ google-services.json scritto"
+            echo "✓ google-services.json dal secret"
+          elif [ -f android-config/google-services.json ]; then
+            cp android-config/google-services.json android/app/google-services.json
+            echo "✓ google-services.json da android-config/"
           else
-            echo "⚠ Secret GOOGLE_SERVICES_JSON assente: il login Google non funzionerà"
+            echo "⚠ google-services.json assente: il login Google non funzionerà"
           fi
 
       - name: Compila l'APK di debug

@@ -1,0 +1,55 @@
+{
+  "project_info": {
+    "project_number": "836300572071",
+    "project_id": "equilibrio-a5f6c",
+    "storage_bucket": "equilibrio-a5f6c.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:836300572071:android:a46495a6806925f719e282",
+        "android_client_info": {
+          "package_name": "it.equilibrio.app"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "836300572071-1aq46nrs0iukivh9i3tpds75koqk5af6.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "it.equilibrio.app",
+            "certificate_hash": "5ca1a6f55b89f6afd1beabc8e920c4e8d5d4e69f"
+          }
+        },
+        {
+          "client_id": "836300572071-ljcn77r0mhe7ck2fbk5s75p91gfhn6cf.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "it.equilibrio.app",
+            "certificate_hash": "87d3f06a16dca501fb34f083dda0a8671aa5b768"
+          }
+        },
+        {
+          "client_id": "836300572071-c9e1mndh72aibnbjjl03rektg4rab4of.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBSbKHSAgeAXnMqcKHd2dpUeeBa_T58k_E"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "836300572071-c9e1mndh72aibnbjjl03rektg4rab4of.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
