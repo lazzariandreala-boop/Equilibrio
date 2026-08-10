@@ -1,63 +1,62 @@
 <template>
   <div class="space-y-5">
     <!-- Account -->
-    <div class="rise rounded-5xl p-4 flex items-center gap-3.5" style="background: var(--card); border: 1px solid var(--line); box-shadow: var(--shadow)">
-      <img v-if="user?.photo" :src="user.photo" class="rounded-full object-cover"
-        style="width: 54px; height: 54px; box-shadow: 0 0 0 2px var(--water), 0 6px 18px var(--water-glow)" />
-      <div v-else class="rounded-full flex items-center justify-center grad-water"
-        style="width: 54px; height: 54px; box-shadow: 0 6px 18px var(--water-glow)">
-        <User :size="22" color="#fff" />
+    <div class="rise rounded-4xl flex items-center gap-3.5" style="padding: 13px 14px"
+      :style="{ background: 'var(--card)', boxShadow: 'inset 0 0 0 1.5px var(--water-soft), var(--tile-shadow)' }">
+      <img v-if="user?.photo" :src="user.photo" class="rounded-full object-cover shrink-0"
+        style="width: 56px; height: 56px; box-shadow: 0 0 0 1.5px var(--water), 0 0 18px -5px var(--water-glow)" />
+      <div v-else class="rounded-full flex items-center justify-center grad-water shrink-0"
+        style="width: 56px; height: 56px; box-shadow: 0 0 18px -5px var(--water-glow)">
+        <User :size="24" color="#fff" />
       </div>
       <div class="flex-1 min-w-0">
-        <div class="display truncate" style="font-weight: 700; font-size: 17px">{{ user?.name }}</div>
+        <div class="display truncate" style="font-weight: 700; font-size: 18px">{{ user?.name }}</div>
         <div class="text-faint truncate" style="font-size: 12.5px">{{ user?.demo ? "Modalità demo (dati locali)" : user?.email }}</div>
       </div>
-      <button v-if="!user?.demo" class="tap text-dim bg-raised rounded-2xl px-3.5 py-2" style="font-size: 13px; font-weight: 600" @click="signOut">
+      <button v-if="!user?.demo" class="tap text-dim rounded-full shrink-0"
+        style="padding: 9px 18px; font-size: 13.5px; font-weight: 600; border: 1px solid var(--line)"
+        @click="signOut">
         Esci
       </button>
     </div>
 
     <!-- Obiettivi -->
     <div class="rise" style="animation-delay: 60ms">
-      <div class="display mb-3 px-1" style="font-weight: 700; font-size: 18px">Obiettivi giornalieri</div>
+      <div class="display mb-2.5 px-1" style="font-weight: 700; font-size: 19px">Obiettivi giornalieri</div>
       <div class="space-y-2.5">
-        <GoalCard :icon="GlassWater" tone="water" label="Acqua" :value="settings.goals.water" unit="ml" @click="goalOpen = 'water'" />
-        <GoalCard :icon="Footprints" tone="move" label="Movimento" :value="settings.goals.moveMin" unit="min" @click="goalOpen = 'move'" />
-        <GoalCard :icon="UtensilsCrossed" tone="food" label="Calorie" :value="settings.goals.kcal" unit="kcal" @click="goalOpen = 'food'" />
-      </div>
-      <p class="text-faint px-1" style="font-size: 12.5px; margin-top: 10px; line-height: 1.5">
-        Per i valori calorici, conviene impostarli con il medico o un nutrizionista.
-      </p>
-
-      <div class="mt-2.5">
-        <GoalCard :icon="Scale" tone="alcohol" label="Peso (per stimare le calorie bruciate)"
+        <GoalCard :icon="GlassWater" tone="water" label="Acqua" :value="settings.goals.water" unit="ml"
+          @click="goalOpen = 'water'" />
+        <GoalCard :icon="Footprints" tone="move" label="Movimento" :value="settings.goals.moveMin" unit="min"
+          @click="goalOpen = 'move'" />
+        <GoalCard :icon="UtensilsCrossed" tone="food" label="Calorie" :value="settings.goals.kcal" unit="kcal"
+          note="Per i valori calorici, conviene impostarli con il medico o un nutrizionista."
+          @click="goalOpen = 'food'" />
+        <GoalCard :icon="Scale" tone="alcohol" label="Peso" hint="per stimare le calorie bruciate"
           :value="settings.profile.weightKg" unit="kg" @click="goalOpen = 'weight'" />
       </div>
     </div>
 
     <!-- Promemoria -->
     <div class="rise" style="animation-delay: 120ms">
-      <div class="display mb-3 px-1" style="font-weight: 700; font-size: 18px">Promemoria</div>
-      <AppCard>
-        <SettingRow label="Bevi acqua">
-          <Toggle :on="settings.reminders.water" @click="settings.reminders.water = !settings.reminders.water" />
-        </SettingRow>
-        <SettingRow label="Registra i pasti">
-          <Toggle :on="settings.reminders.meal" @click="settings.reminders.meal = !settings.reminders.meal" />
-        </SettingRow>
-        <SettingRow label="Check serale (alcol)" :last="true">
-          <Toggle :on="settings.reminders.evening" @click="settings.reminders.evening = !settings.reminders.evening" />
-        </SettingRow>
-        <div class="flex gap-2 mt-4">
-          <button class="tap flex-1 grad-water rounded-2xl py-3 font-semibold" style="color: #fff; font-size: 14px" @click="enable">
-            Attiva promemoria
-          </button>
-          <button class="tap bg-raised text-dim rounded-2xl px-4 font-semibold" style="font-size: 14px" @click="test">Prova</button>
-        </div>
-        <p class="text-faint" style="font-size: 12px; margin-top: 10px; line-height: 1.5">
-          In background funzionano nell'app nativa. Nel browser arrivano solo a finestra aperta.
-        </p>
-      </AppCard>
+      <div class="display mb-2.5 px-1" style="font-weight: 700; font-size: 19px">Promemoria</div>
+      <div class="grid grid-cols-2 gap-2.5">
+        <ReminderCard :icon="Droplet" tone="water" label="Acqua"
+          :detail="`${settings.reminders.waterTimes.length} volte al giorno`" :on="settings.reminders.water"
+          @toggle="settings.reminders.water = !settings.reminders.water" />
+        <ReminderCard :icon="UtensilsCrossed" tone="food" label="Pasti" detail="ai pasti principali"
+          :on="settings.reminders.meal" @toggle="settings.reminders.meal = !settings.reminders.meal" />
+        <ReminderCard :icon="Moon" tone="alcohol" label="Check serale" :detail="settings.reminders.eveningTime"
+          :on="settings.reminders.evening" @toggle="settings.reminders.evening = !settings.reminders.evening" />
+        <button class="tap rounded-4xl flex flex-col items-center justify-center gap-1.5"
+          style="padding: 12px; background: var(--raised); border: 1px solid var(--line)" @click="enable">
+          <BellRing :size="19" color="var(--move)" />
+          <span class="text-ink" style="font-size: 13px; font-weight: 600">Attiva notifiche</span>
+        </button>
+      </div>
+      <p class="text-faint px-1" style="font-size: 12px; margin-top: 9px; line-height: 1.45">
+        In background funzionano nell'app installata. Nel browser arrivano solo a finestra aperta.
+        <button class="underline" @click="test">Fai una prova</button>
+      </p>
     </div>
 
     <!-- Connessioni -->
@@ -130,14 +129,21 @@
         </p>
       </div>
 
-      <AppCard pad="p-4">
-        <SettingRow label="Backup su Firebase" :last="true">
-          <span class="rounded-full px-3 py-1" style="font-size: 12px; font-weight: 600"
-            :style="isDemo ? { background: 'var(--raised)', color: 'var(--faint)' } : { background: 'var(--move-soft)', color: 'var(--move)' }">
-            {{ isDemo ? "non configurato" : "attivo" }}
-          </span>
-        </SettingRow>
-      </AppCard>
+      <div class="rounded-4xl flex items-center gap-3" style="padding: 13px 14px"
+        :style="{ background: 'var(--card)', border: '1px solid var(--line)', boxShadow: 'var(--tile-shadow)' }">
+        <div class="rounded-2xl flex items-center justify-center shrink-0"
+          style="width: 44px; height: 44px; background: var(--water-soft)">
+          <Cloud :size="21" color="var(--water)" />
+        </div>
+        <div class="flex-1 min-w-0">
+          <div style="font-weight: 600; font-size: 15px">Backup su Firebase</div>
+          <div class="text-faint" style="font-size: 12.5px">I dati seguono l'account su ogni dispositivo</div>
+        </div>
+        <span class="rounded-full px-3 py-1.5 shrink-0" style="font-size: 12px; font-weight: 600"
+          :style="isDemo ? { background: 'var(--raised)', color: 'var(--faint)' } : { background: 'var(--move-soft)', color: 'var(--move)' }">
+          {{ isDemo ? "non configurato" : "attivo" }}
+        </span>
+      </div>
     </div>
 
     <p class="text-faint text-center" style="font-size: 12.5px">Equilibrio · un passo per volta</p>
@@ -158,7 +164,7 @@
 </template>
 
 <script setup lang="ts">
-import { User, GlassWater, Footprints, UtensilsCrossed, Scale, HeartPulse } from "lucide-vue-next";
+import { User, GlassWater, Footprints, UtensilsCrossed, Scale, HeartPulse, Droplet, Moon, BellRing, Cloud } from "lucide-vue-next";
 import { doc, getDoc, setDoc } from "firebase/firestore";
 import { useSettingsStore } from "~/stores/settings";
 
