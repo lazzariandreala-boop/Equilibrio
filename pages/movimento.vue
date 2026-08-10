@@ -2,24 +2,9 @@
   <div class="space-y-4">
     <DayNav />
 
-    <!-- hero -->
-    <div class="rise rounded-5xl overflow-hidden grad-move relative" style="box-shadow: 0 14px 34px var(--move-glow)">
-      <div class="absolute rounded-full" style="width: 180px; height: 180px; right: -60px; top: -70px; background: rgba(255,255,255,.14)" />
-      <div class="relative p-6 text-center">
-        <div style="color: rgba(255,255,255,.82); font-size: 13px; font-weight: 500">
-          {{ day.isToday ? "Movimento di oggi" : "Movimento del giorno" }}
-        </div>
-        <div class="display tabular" style="color: #fff; font-size: 50px; font-weight: 800; line-height: 1.05; margin: 4px 0 2px">
-          {{ day.moveMin }}<span style="font-size: 19px; font-weight: 600; opacity: .8"> min</span>
-        </div>
-        <div style="color: rgba(255,255,255,.78); font-size: 13px">
-          obiettivo {{ settings.goals.moveMin }} min<span v-if="burned > 0"> · ~{{ burned }} kcal bruciate</span>
-        </div>
-        <div class="rounded-full overflow-hidden mt-4" style="height: 8px; background: rgba(255,255,255,.28)">
-          <div class="fill" style="background: #fff" :style="{ width: pct }" />
-        </div>
-      </div>
-    </div>
+    <HeroCard tone="move" :icon="ActivityIcon" :title="day.isToday ? 'Movimento di oggi' : 'Movimento del giorno'"
+      :value="day.moveMin" unit="min" :caption="`obiettivo ${settings.goals.moveMin} min`"
+      :progress="(day.moveMin / settings.goals.moveMin) * 100" :stats="stats" />
 
     <!-- scelta attività -->
     <div class="rise" style="animation-delay: 80ms">
@@ -61,13 +46,9 @@
       </div>
     </div>
 
-    <div v-else class="rise text-center" style="padding: 12px 24px; animation-delay: 140ms">
-      <p class="text-dim" style="font-size: 14px; line-height: 1.5">
-        {{ day.isToday
-          ? "Niente ancora oggi. Anche dieci minuti di camminata contano."
-          : "Nessuna attività registrata in questo giorno." }}
-      </p>
-    </div>
+    <EmptyState v-else tone="move" :icon="Footprints" style="animation-delay: 140ms"
+      :title="day.isToday ? 'Niente ancora oggi' : 'Nessuna attività in questo giorno'"
+      subtitle="Anche dieci minuti di camminata contano. Scegli un'attività qui sopra." />
 
     <!-- consigli per la schiena -->
     <AppCard class="rise" style="animation-delay: 200ms">
@@ -130,7 +111,8 @@
 
 <script setup lang="ts">
 import {
-  Minus, Plus, Trash2, ShieldCheck, AlertTriangle,
+  Minus, Plus, Trash2, ShieldCheck, AlertTriangle, Timer,
+  Activity as ActivityIcon,
   Bike, Footprints, Rabbit, Waves, Dumbbell, Target, Trophy, PersonStanding,
   Mountain, Snowflake, Sailboat, Music, Sprout, Flame, Move3d, CirclePlus,
 } from "lucide-vue-next";
@@ -153,6 +135,11 @@ const customName = ref("");
 
 const pct = computed(() => `${Math.min(100, (day.moveMin / settings.goals.moveMin) * 100)}%`);
 const burned = computed(() => today.value.moves.reduce((a, m) => a + (m.kcal || 0), 0));
+
+const stats = computed(() => [
+  { icon: Timer, value: today.value.moves.length, label: "attività" },
+  { icon: Flame, value: burned.value, unit: "kcal", label: "stimate bruciate" },
+]);
 
 function iconOf(m: any) {
   return findActivity(m.activityId || "")?.icon || "Footprints";

@@ -2,12 +2,20 @@
   <nav class="fixed bottom-0 left-0 right-0 flex justify-center pointer-events-none" style="z-index: 45">
     <div class="pointer-events-auto w-full" style="max-width: 520px; padding: 0 12px 12px">
       <div class="flex rounded-4xl px-1.5 py-1.5"
-        style="background: var(--card); border: 1px solid var(--line); box-shadow: var(--shadow-lift); backdrop-filter: blur(12px)">
+        style="background: var(--card); border: 1px solid var(--line); box-shadow: var(--shadow-lift)">
         <NuxtLink v-for="item in items" :key="item.to" :to="item.to"
-          class="tap flex-1 py-2 flex flex-col items-center gap-1 rounded-3xl"
-          :style="active(item.to) ? { background: `var(--${item.tone}-soft)`, color: `var(--${item.tone})` } : { color: 'var(--faint)' }">
-          <component :is="item.icon" :size="20" />
-          <span style="font-size: 10.5px; font-weight: 600">{{ item.label }}</span>
+          class="tap flex-1 rounded-3xl flex flex-col items-center relative"
+          style="padding: 8px 0 7px"
+          :style="active(item.to) ? { background: `var(--${item.tone}-soft)` } : {}">
+          <component :is="item.icon" :size="21"
+            :color="active(item.to) ? `var(--${item.tone})` : 'var(--faint)'" />
+          <span :style="{
+            fontSize: '10.5px', fontWeight: 600, marginTop: '3px',
+            color: active(item.to) ? `var(--${item.tone})` : 'var(--faint)',
+          }">{{ item.label }}</span>
+          <!-- pallino: rende evidente la scheda attiva anche in visione periferica -->
+          <span v-if="active(item.to)" class="absolute rounded-full"
+            :style="{ bottom: '2px', width: '5px', height: '5px', background: `var(--${item.tone})` }" />
         </NuxtLink>
       </div>
     </div>

@@ -1,47 +1,44 @@
 <template>
-  <div class="space-y-4">
+  <div class="space-y-3.5">
     <DayNav />
 
-    <!-- hero: la striscia è il dato che conta -->
-    <div class="rise rounded-5xl overflow-hidden grad-alcohol relative" style="box-shadow: 0 14px 34px var(--alcohol-glow)">
-      <div class="absolute rounded-full" style="width: 190px; height: 190px; left: -70px; bottom: -86px; background: rgba(255,255,255,.13)" />
-      <div class="relative p-6 text-center">
-        <div style="color: rgba(255,255,255,.82); font-size: 13px; font-weight: 500">
-          {{ day.isToday ? "Senza alcol" : "Senza alcol, a quel giorno" }}
-        </div>
-        <div class="display tabular" style="color: #fff; font-size: 60px; font-weight: 800; line-height: 1.02; margin: 2px 0">
-          {{ day.streak }}
-        </div>
-        <div style="color: rgba(255,255,255,.85); font-size: 14px">
-          {{ day.streak === 1 ? "giorno" : "giorni" }} di fila
-        </div>
+    <HeroCard tone="alcohol" :icon="ShieldCheck" :title="day.isToday ? 'Senza alcol' : 'Senza alcol, a quel giorno'"
+      :value="day.streak" :unit="day.streak === 1 ? 'giorno' : 'giorni'" :caption="caption" :stats="stats">
+      <!-- ultimi 14 giorni: pieno = pulito -->
+      <div class="flex gap-1 justify-center" style="margin-top: 16px">
+        <span v-for="(clean, i) in dots" :key="i" class="rounded-full"
+          :style="{ width: '8px', height: '24px', background: clean ? 'rgba(255,255,255,.92)' : 'rgba(255,255,255,.26)' }" />
       </div>
+    </HeroCard>
+
+    <div class="grid grid-cols-2 gap-2.5 rise" style="animation-delay: 70ms">
+      <button class="tap rounded-4xl p-4 flex flex-col items-start gap-2.5"
+        style="background: var(--move-soft); border: 1px solid var(--line)" @click="day.cleanDay()">
+        <div class="rounded-2xl grad-move flex items-center justify-center" style="width: 40px; height: 40px">
+          <Check :size="20" color="#fff" />
+        </div>
+        <span class="text-ink text-left" style="font-weight: 600; font-size: 14.5px">Giornata pulita</span>
+      </button>
+      <button class="tap rounded-4xl p-4 flex flex-col items-start gap-2.5"
+        style="background: var(--water-soft); border: 1px solid var(--line)" @click="urgeOpen = true">
+        <div class="rounded-2xl grad-water flex items-center justify-center" style="width: 40px; height: 40px">
+          <Wind :size="20" color="#fff" />
+        </div>
+        <span class="text-ink text-left" style="font-weight: 600; font-size: 14.5px">Ho voglia</span>
+      </button>
     </div>
 
-    <!-- azioni -->
-    <div class="grid grid-cols-2 gap-3 rise" style="animation-delay: 80ms">
-      <button class="tap rounded-4xl p-4 flex flex-col items-start gap-2" style="background: var(--move-soft)" @click="day.cleanDay()">
-        <div class="rounded-2xl grad-move flex items-center justify-center" style="width: 38px; height: 38px">
-          <Check :size="19" color="#fff" />
-        </div>
-        <span class="text-ink" style="font-weight: 600; font-size: 15px; text-align: left">Giornata pulita</span>
-      </button>
-      <button class="tap rounded-4xl p-4 flex flex-col items-start gap-2" style="background: var(--water-soft)" @click="urgeOpen = true">
-        <div class="rounded-2xl grad-water flex items-center justify-center" style="width: 38px; height: 38px">
-          <Wind :size="19" color="#fff" />
-        </div>
-        <span class="text-ink" style="font-weight: 600; font-size: 15px; text-align: left">Ho voglia</span>
-      </button>
-    </div>
-
-    <button class="tap w-full rounded-4xl py-3.5 font-semibold flex items-center justify-center gap-2 grad-alcohol rise"
-      style="color: #fff; font-size: 15px; box-shadow: 0 12px 28px var(--alcohol-glow); animation-delay: 140ms"
+    <button class="tap w-full rounded-full py-4 font-semibold flex items-center justify-center gap-2.5 grad-alcohol rise"
+      style="color: #fff; font-size: 16px; box-shadow: 0 12px 30px var(--alcohol-glow); animation-delay: 120ms"
       @click="drinkOpen = true">
-      <Plus :size="18" /> Registra cosa ho bevuto
+      <Plus :size="19" /> Registra cosa ho bevuto
     </button>
 
-    <!-- elenco di oggi -->
-    <div v-if="today.drinks.length" class="rise" style="animation-delay: 200ms">
+    <EmptyState v-if="!today.drinks.length" tone="alcohol" :icon="Sparkles" style="animation-delay: 170ms"
+      :title="day.isToday ? 'Nessuna bevanda oggi' : 'Nessuna bevanda in questo giorno'"
+      subtitle="La striscia cresce da sola: basta lasciarla correre." />
+
+    <div v-else class="rise" style="animation-delay: 170ms">
       <div class="display mb-2.5 px-1" style="font-weight: 700; font-size: 17px">
         {{ day.isToday ? "Oggi" : "Quel giorno" }} · <span class="tabular text-alcohol">{{ day.alcGrams }} g</span> di alcol
       </div>
@@ -58,12 +55,6 @@
       </div>
     </div>
 
-    <p v-else class="text-faint text-center rise" style="font-size: 13px; padding: 8px 20px; line-height: 1.5; animation-delay: 200ms">
-      {{ day.isToday
-        ? "Nessuna bevanda registrata oggi. La striscia cresce da sola, basta lasciarla correre."
-        : "Nessuna bevanda registrata in questo giorno." }}
-    </p>
-
     <BottomSheet v-model="urgeOpen" title="Aspetta un attimo">
       <UrgeSurf @water="day.addWater(250); urgeOpen = false" />
     </BottomSheet>
@@ -74,13 +65,25 @@
 </template>
 
 <script setup lang="ts">
-import { Check, Wind, Plus, X } from "lucide-vue-next";
+import { Check, Wind, Plus, X, ShieldCheck, Sparkles, Wine, CalendarCheck } from "lucide-vue-next";
 import { useDayStore } from "~/stores/day";
+import { lastNDays, keyToDate } from "~/utils/date";
 
 const day = useDayStore();
 const today = computed(() => day.today);
 const urgeOpen = ref(false);
 const drinkOpen = ref(false);
+
+const dots = computed(() =>
+  lastNDays(14, keyToDate(day.date)).reverse().map((k) => day.summaryOf(k).alcGrams === 0),
+);
+const caption = computed(() =>
+  today.value.drinks.length ? `${day.alcGrams} g di alcol in questo giorno` : "nessuna bevanda in questo giorno",
+);
+const stats = computed(() => [
+  { icon: CalendarCheck, value: dots.value.filter(Boolean).length, label: "puliti su 14" },
+  { icon: Wine, value: today.value.drinks.length, label: "bevande nel giorno" },
+]);
 
 function onDrink(d: { name: string; alc: number; kcal: number }) {
   day.logDrink(d);

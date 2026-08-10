@@ -1,8 +1,8 @@
 <template>
   <div class="space-y-4">
     <!-- selettore periodo a pillola -->
-    <div class="rise flex gap-1.5 p-1.5 rounded-3xl" style="background: var(--surface-2)">
-      <button v-for="m in modes" :key="m.key" class="tap flex-1 py-2.5 rounded-2xl font-semibold" style="font-size: 14px"
+    <div class="rise flex gap-1.5 p-1.5 rounded-4xl" style="background: var(--raised); border: 1px solid var(--line)">
+      <button v-for="m in modes" :key="m.key" class="tap flex-1 py-3 rounded-3xl font-semibold" style="font-size: 14.5px"
         :style="mode === m.key ? { background: 'var(--card)', color: 'var(--ink)', boxShadow: 'var(--shadow)' } : { color: 'var(--dim)' }"
         @click="mode = m.key">
         {{ m.label }}
@@ -11,9 +11,11 @@
 
     <!-- riepilogo: quattro tinte, quattro numeri -->
     <div class="grid grid-cols-2 gap-3 rise" style="animation-delay: 60ms">
-      <div v-for="s in stats" :key="s.label" class="rounded-4xl p-4" :style="{ background: `var(--${s.tone}-soft)` }">
-        <div class="rounded-2xl flex items-center justify-center mb-2.5" :class="`grad-${s.tone}`" style="width: 34px; height: 34px">
-          <component :is="s.icon" :size="17" color="#fff" />
+      <div v-for="s in stats" :key="s.label" class="rounded-4xl p-4"
+        :style="{ background: 'var(--card)', border: `1px solid var(--${s.tone}-soft)` }">
+        <div class="rounded-full flex items-center justify-center mb-2.5" style="width: 36px; height: 36px"
+          :style="{ background: `var(--${s.tone}-soft)` }">
+          <component :is="s.icon" :size="17" :color="`var(--${s.tone})`" />
         </div>
         <div class="display tabular" :style="{ color: `var(--${s.tone})`, fontSize: '24px', fontWeight: 700, lineHeight: 1.1 }">
           {{ s.value }}<span style="font-size: 13px; font-weight: 600"> {{ s.unit }}</span>

@@ -1,11 +1,12 @@
 <template>
   <NuxtLink :to="to" class="tap block rounded-4xl overflow-hidden h-full"
-    :style="{ background: 'var(--card)', border: '1px solid var(--line)' }">
+    :style="{ background: 'var(--card)', border: `1px solid var(--${tone}-soft)` }">
     <div class="p-3.5 flex flex-col h-full">
       <div class="flex items-center justify-between">
         <div class="flex items-center gap-2">
-          <div class="rounded-xl flex items-center justify-center" :class="`grad-${tone}`" style="width: 28px; height: 28px">
-            <component :is="icon" :size="15" color="#fff" />
+          <div class="rounded-full flex items-center justify-center" style="width: 32px; height: 32px"
+            :style="{ background: `var(--${tone}-soft)` }">
+            <component :is="icon" :size="16" :color="`var(--${tone})`" />
           </div>
           <span class="text-dim" style="font-size: 12.5px; font-weight: 600">{{ label }}</span>
         </div>

@@ -2,33 +2,14 @@
   <div class="flex flex-col" style="gap: 11px; min-height: calc(100dvh - 178px)">
     <DayNav />
 
-    <!-- Senza alcol: il dato più importante, quindi in evidenza -->
-    <NuxtLink to="/alcol" class="tap block rounded-4xl overflow-hidden grad-alcohol relative rise"
-      style="box-shadow: 0 10px 26px var(--alcohol-glow)">
-      <div class="absolute rounded-full" style="width: 150px; height: 150px; right: -52px; top: -58px; background: rgba(255,255,255,.15)" />
-      <div class="relative p-4 flex items-center gap-4">
-        <div>
-          <div style="color: rgba(255,255,255,.85); font-size: 12.5px; font-weight: 600">Senza alcol</div>
-          <div class="flex items-baseline gap-1.5">
-            <span class="display tabular" style="color: #fff; font-size: 40px; font-weight: 800; line-height: 1.05">{{ day.streak }}</span>
-            <span style="color: rgba(255,255,255,.9); font-size: 14px; font-weight: 600">
-              {{ day.streak === 1 ? "giorno" : "giorni" }} di fila
-            </span>
-          </div>
-          <div style="color: rgba(255,255,255,.78); font-size: 11.5px; margin-top: 2px">
-            {{ drinksToday ? `${drinksToday} ${drinksToday === 1 ? "bevanda" : "bevande"} · ${alcToday} g` : "nessuna bevanda in questo giorno" }}
-          </div>
-        </div>
-
-        <!-- Ultimi 14 giorni: pieno = pulito, vuoto = c'era alcol -->
-        <div class="flex gap-1 ml-auto">
+    <NuxtLink to="/alcol" class="block">
+      <HeroCard tone="alcohol" :icon="ShieldCheck" title="Senza alcol" :value="day.streak"
+        :unit="day.streak === 1 ? 'giorno' : 'giorni'" :caption="caption">
+        <div class="flex gap-1 justify-center" style="margin-top: 14px">
           <span v-for="(clean, i) in soberDots" :key="i" class="rounded-full"
-            :style="{
-              width: '7px', height: '26px',
-              background: clean ? 'rgba(255,255,255,.92)' : 'rgba(255,255,255,.28)',
-            }" />
+            :style="{ width: '8px', height: '22px', background: clean ? 'rgba(255,255,255,.92)' : 'rgba(255,255,255,.26)' }" />
         </div>
-      </div>
+      </HeroCard>
     </NuxtLink>
 
     <!-- Le altre tre voci, ognuna col proprio andamento a 7 giorni -->
@@ -51,7 +32,7 @@
 </template>
 
 <script setup lang="ts">
-import { GlassWater, Footprints, UtensilsCrossed } from "lucide-vue-next";
+import { GlassWater, Footprints, UtensilsCrossed, ShieldCheck } from "lucide-vue-next";
 import { useDayStore } from "~/stores/day";
 import { useSettingsStore } from "~/stores/settings";
 import { lastNDays, keyToDate } from "~/utils/date";
@@ -84,4 +65,9 @@ const soberDots = computed(() =>
 // Cosa è successo nel giorno selezionato (non in quello odierno).
 const drinksToday = computed(() => today.value.drinks.length);
 const alcToday = computed(() => Math.round(today.value.drinks.reduce((a, d) => a + d.alc, 0)));
+const caption = computed(() =>
+  drinksToday.value
+    ? `${drinksToday.value} ${drinksToday.value === 1 ? "bevanda" : "bevande"} · ${alcToday.value} g in questo giorno`
+    : "nessuna bevanda in questo giorno",
+);
 </script>

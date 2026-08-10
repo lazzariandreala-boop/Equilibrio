@@ -2,8 +2,10 @@
   <div class="space-y-5">
     <!-- Account -->
     <div class="rise rounded-5xl p-4 flex items-center gap-3.5" style="background: var(--card); border: 1px solid var(--line); box-shadow: var(--shadow)">
-      <img v-if="user?.photo" :src="user.photo" class="rounded-full object-cover" style="width: 52px; height: 52px" />
-      <div v-else class="rounded-full flex items-center justify-center grad-water" style="width: 52px; height: 52px">
+      <img v-if="user?.photo" :src="user.photo" class="rounded-full object-cover"
+        style="width: 54px; height: 54px; box-shadow: 0 0 0 2px var(--water), 0 6px 18px var(--water-glow)" />
+      <div v-else class="rounded-full flex items-center justify-center grad-water"
+        style="width: 54px; height: 54px; box-shadow: 0 6px 18px var(--water-glow)">
         <User :size="22" color="#fff" />
       </div>
       <div class="flex-1 min-w-0">
