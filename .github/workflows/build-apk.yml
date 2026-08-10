@@ -80,6 +80,7 @@ jobs:
         run: |
           cd android
           chmod +x gradlew
+          set -o pipefail  # senza questo l'errore di Gradle veniva mascherato da tee
           ./gradlew assembleDebug --no-daemon --stacktrace 2>&1 | tee ../gradle-build.log
 
       # Se la compilazione fallisce, il log resta scaricabile per capire perché.
