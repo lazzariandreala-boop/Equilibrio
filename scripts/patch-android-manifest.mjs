@@ -29,6 +29,39 @@ if (!existsSync(PATH)) {
   process.exit(1);
 }
 
+// ── Firma stabile ──────────────────────────────────────────────
+// Il runner di GitHub genererebbe un debug keystore nuovo a ogni build:
+// la SHA-1 cambierebbe e il login Google smetterebbe di funzionare.
+// Usiamo quindi un keystore fisso versionato in android-config/.
+const APP_GRADLE = "android/app/build.gradle";
+if (existsSync(APP_GRADLE) && existsSync("android-config/debug.keystore")) {
+  let g = readFileSync(APP_GRADLE, "utf8");
+  if (!g.includes("equilibrioDebug")) {
+    g = g.replace(
+      "    buildTypes {",
+      `    signingConfigs {
+        equilibrioDebug {
+            storeFile file('../../android-config/debug.keystore')
+            storePassword 'android'
+            keyAlias 'androiddebugkey'
+            keyPassword 'android'
+            // v1 attiva: alcuni gestori di download e Android vecchi la vogliono
+            v1SigningEnabled true
+            v2SigningEnabled true
+        }
+    }
+    buildTypes {
+        debug {
+            signingConfig signingConfigs.equilibrioDebug
+        }`,
+    );
+    writeFileSync(APP_GRADLE, g);
+    console.log("✓ Firma di debug stabile configurata");
+  } else {
+    console.log("• Firma di debug già configurata");
+  }
+}
+
 let xml = readFileSync(PATH, "utf8");
 
 const RATIONALE = `

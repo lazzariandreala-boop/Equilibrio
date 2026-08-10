@@ -44,16 +44,21 @@ jobs:
       - name: Prepara la piattaforma Android
         run: |
           npx cap add android
-          node scripts/patch-android-manifest.mjs
           npx cap sync android
+          node scripts/patch-android-manifest.mjs
 
-      # Serve solo se si usa il login Google nativo. Senza il secret, l'app
-      # funziona lo stesso: l'autenticazione passa dal JS SDK nella webview.
-      - name: Configura Firebase (se il secret esiste)
-        if: env.GOOGLE_SERVICES_JSON != ''
+      # Serve al login Google nativo. Senza il secret la build riesce lo stesso,
+      # ma l'accesso con Google non funziona nell'app installata.
+      - name: Configura Firebase
         env:
           GOOGLE_SERVICES_JSON: ${{ secrets.GOOGLE_SERVICES_JSON }}
-        run: echo "$GOOGLE_SERVICES_JSON" > android/app/google-services.json
+        run: |
+          if [ -n "$GOOGLE_SERVICES_JSON" ]; then
+            printf '%s' "$GOOGLE_SERVICES_JSON" > android/app/google-services.json
+            echo "✓ google-services.json scritto"
+          else
+            echo "⚠ Secret GOOGLE_SERVICES_JSON assente: il login Google non funzionerà"
+          fi
 
       - name: Compila l'APK di debug
         run: |

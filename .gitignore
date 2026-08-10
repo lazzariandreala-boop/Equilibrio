@@ -6,6 +6,7 @@ dist
 *.log
 .DS_Store
 android
+!android-config/
 ios
 
 # Claude Code (config locale)
