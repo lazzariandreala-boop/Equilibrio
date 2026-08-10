@@ -5,11 +5,16 @@
       <p class="text-dim" style="font-size: 14px; line-height: 1.5">
         Fotografa il piatto oppure scrivi cosa hai mangiato: stimo io calorie e valori nutrizionali, poi puoi correggere tutto.
       </p>
-      <input ref="fileRef" type="file" accept="image/*" capture="environment" class="hidden" @change="onPick" />
-      <button class="tap grad-food w-full py-3.5 rounded-3xl font-semibold flex items-center justify-center gap-2"
-        style="color: #fff; font-size: 15px" @click="fileRef?.click()">
-        <Camera :size="18" /> Scatta o scegli una foto
-      </button>
+      <div class="flex gap-2.5">
+        <button class="tap grad-food flex-1 py-3.5 rounded-3xl font-semibold flex items-center justify-center gap-2"
+          style="color: #fff; font-size: 15px" @click="capture('camera')">
+          <Camera :size="18" /> Scatta ora
+        </button>
+        <button class="tap bg-raised text-ink flex-1 py-3.5 rounded-3xl font-semibold flex items-center justify-center gap-2"
+          style="font-size: 15px" @click="capture('gallery')">
+          <Images :size="17" /> Galleria
+        </button>
+      </div>
       <button class="tap bg-raised text-ink w-full py-3.5 rounded-3xl font-semibold flex items-center justify-center gap-2"
         style="font-size: 15px" @click="phase = 'describe'">
         <PenLine :size="16" /> Descrivi a parole
@@ -97,19 +102,19 @@
 </template>
 
 <script setup lang="ts">
-import { Camera, PenLine, Sparkles, X, Plus, Search } from "lucide-vue-next";
+import { Camera, Images, PenLine, Sparkles, X, Plus, Search } from "lucide-vue-next";
 import type { RecognizedItem } from "~/composables/useRecognition";
 import { estimateLocally } from "~/utils/foods";
 
 const emit = defineEmits<{ save: [any] }>();
-const { recognize, estimate } = useRecognition();
+const { recognize, recognizeBase64, estimate } = useRecognition();
+const { isNative, pickNative, pickWeb } = useImagePicker();
 
 const phase = ref<"start" | "describe" | "loading" | "edit">("start");
 const items = ref<RecognizedItem[]>([]);
 const description = ref("");
 const err = ref("");
 const loadingLabel = ref("Sto leggendo la foto…");
-const fileRef = ref<HTMLInputElement | null>(null);
 
 const inputCls = "bg-card border border-line text-ink rounded-2xl px-3 py-2.5 w-full";
 
@@ -141,15 +146,26 @@ function messageOf(e: any, fallback: string) {
   return e?.data?.statusMessage || e?.statusMessage || fallback;
 }
 
-async function onPick(e: Event) {
-  const file = (e.target as HTMLInputElement).files?.[0];
-  if (!file) return;
-  loadingLabel.value = "Sto leggendo la foto…";
-  phase.value = "loading";
+async function capture(source: "camera" | "gallery") {
   err.value = "";
   try {
-    const list = await recognize(file);
-    items.value = list.length ? list : [blank()];
+    // Nell'app installata la fotocamera si apre subito; nel browser resta
+    // l'input file, che con `capture` propone comunque lo scatto diretto.
+    if (isNative()) {
+      const shot = await pickNative(source);
+      if (!shot) return; // l'utente ha annullato
+      loadingLabel.value = "Sto leggendo la foto…";
+      phase.value = "loading";
+      const list = await recognizeBase64(shot.data, shot.media);
+      items.value = list.length ? list : [blank()];
+    } else {
+      const file = await pickWeb(source);
+      if (!file) return;
+      loadingLabel.value = "Sto leggendo la foto…";
+      phase.value = "loading";
+      const list = await recognize(file);
+      items.value = list.length ? list : [blank()];
+    }
   } catch (e: any) {
     err.value = messageOf(e, "Non sono riuscito a leggere la foto. Puoi inserire i dati a mano.");
     items.value = [blank()];

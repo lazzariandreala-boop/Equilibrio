@@ -66,6 +66,11 @@ export function useRecognition() {
 
   async function recognize(file: File): Promise<RecognizedItem[]> {
     const { data, media } = await fileToBase64(file);
+    return recognizeBase64(data, media);
+  }
+
+  /** Il plugin fotocamera restituisce già base64: si salta la conversione. */
+  async function recognizeBase64(data: string, media: string): Promise<RecognizedItem[]> {
     const res = await $fetch<{ alimenti: RecognizedItem[] }>(`${base}/api/recognize`, {
       method: "POST",
       body: { image: data, media },
@@ -82,5 +87,5 @@ export function useRecognition() {
     return (res.alimenti || []).map(normalize);
   }
 
-  return { recognize, estimate };
+  return { recognize, recognizeBase64, estimate };
 }

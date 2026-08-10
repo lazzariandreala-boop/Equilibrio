@@ -128,6 +128,23 @@ if (!xml.includes("permission.health.READ_STEPS")) {
   changed = true;
 }
 
+// Fotocamera e galleria: controllo indipendente da quello dei permessi salute,
+// altrimenti su una cartella android/ già patchata queste righe verrebbero saltate.
+if (!xml.includes("permission.CAMERA")) {
+  xml = xml.replace(
+    '<uses-permission android:name="android.permission.INTERNET" />',
+    `<uses-permission android:name="android.permission.INTERNET" />
+
+    <!-- Fotocamera e galleria per la foto del pasto -->
+    <uses-permission android:name="android.permission.CAMERA" />
+    <uses-permission android:name="android.permission.READ_MEDIA_IMAGES" />
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" android:maxSdkVersion="32" />
+    <uses-feature android:name="android.hardware.camera" android:required="false" />`,
+  );
+  changed = true;
+  console.log("✓ Permessi fotocamera e galleria aggiunti");
+}
+
 if (changed) {
   writeFileSync(PATH, xml);
   console.log("✓ Manifest aggiornato con i permessi Health Connect");
