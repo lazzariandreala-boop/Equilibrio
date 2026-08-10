@@ -38,7 +38,6 @@ export const useDayStore = defineStore("day", {
   state: () => ({
     date: todayKey(), // giorno selezionato (visualizzato e modificato)
     following: true, // true = segue automaticamente "oggi" (avanza a mezzanotte/resume)
-    streak: 0,
     days: <Record<string, DayData>>{},
   }),
 
@@ -61,6 +60,27 @@ export const useDayStore = defineStore("day", {
         }),
         { kcal: 0, cho: 0, pro: 0, fat: 0, alc: 0 },
       );
+    },
+    /**
+     * Giorni consecutivi senza alcol, contati a ritroso da oggi.
+     * Si ferma al primo giorno con una bevanda registrata, e comunque
+     * non va oltre il primo giorno in cui l'app è stata usata.
+     */
+    streak(state): number {
+      const keys = Object.keys(state.days).sort();
+      if (keys.length === 0) return 0;
+      const first = keys[0];
+
+      let count = 0;
+      const cursor = new Date();
+      for (let i = 0; i < 3650; i++) {
+        const key = todayKey(cursor);
+        if (key < first) break;
+        if ((state.days[key]?.drinks.length ?? 0) > 0) break;
+        count++;
+        cursor.setDate(cursor.getDate() - 1);
+      }
+      return count;
     },
     moveMin(): number {
       return this.today.moves.reduce((a, m) => a + m.min, 0);
@@ -140,7 +160,6 @@ export const useDayStore = defineStore("day", {
           at,
           mealAt: at,
         });
-        if (this.isToday) this.streak = 0; // la striscia si azzera solo per oggi
       }
     },
     removeMeal(i: number) {
@@ -158,20 +177,20 @@ export const useDayStore = defineStore("day", {
     removeMove(i: number) {
       this.days[this.date].moves.splice(i, 1);
     },
+    /** Registra il giorno come tracciato: la striscia si calcola da sé. */
     cleanDay() {
-      this.streak += 1;
+      this.ensureDay();
     },
     logDrink(d: { name: string; alc: number; kcal?: number }) {
       this.ensureDay();
       this.days[this.date].drinks.push({ name: d.name, alc: d.alc, kcal: d.kcal ?? 0, at: Date.now() });
-      if (this.isToday) this.streak = 0;
     },
     removeDrink(i: number) {
       this.days[this.date].drinks.splice(i, 1);
     },
     hydrate(raw: any) {
       if (!raw) return;
-      if (typeof raw.streak === "number") this.streak = raw.streak;
+      // raw.streak dei salvataggi vecchi viene ignorato: ora si calcola dai dati
       if (raw.days) this.days = raw.days;
       this.ensureDay(); // mantiene il giorno selezionato, non forza oggi
     },
