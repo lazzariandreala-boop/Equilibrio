@@ -152,28 +152,6 @@ if (changed) {
   console.log("• Manifest già a posto, nessuna modifica");
 }
 
-// ── Health Connect: libreria aggiornata ─────────────────────
-// capacitor-health porta connect-client 1.1.0-alpha03 (2023): su Android 14+,
-// dove Health Connect è un modulo di sistema, non riesce a creare il client e
-// tutte le letture falliscono. 1.1.0 è la versione stabile.
-const ROOT_GRADLE = "android/build.gradle";
-if (existsSync(ROOT_GRADLE)) {
-  let g = readFileSync(ROOT_GRADLE, "utf8");
-  if (!g.includes("connect-client")) {
-    g += `
-allprojects {
-    configurations.all {
-        resolutionStrategy {
-            force 'androidx.health.connect:connect-client:1.1.0'
-        }
-    }
-}
-`;
-    writeFileSync(ROOT_GRADLE, g);
-    console.log("✓ connect-client forzato a 1.1.0 (stabile)");
-  }
-}
-
 // ── Branding: icona dell'app ────────────────────────────────
 import { cpSync, mkdirSync, readdirSync } from "node:fs";
 
