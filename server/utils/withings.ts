@@ -5,8 +5,16 @@ import type { H3Event } from "h3";
 // access_token dura ~3h, quindi teniamo anche refresh_token e scadenza per rinnovarlo.
 const TOKEN_URL = "https://wbsapi.withings.net/v2/oauth2";
 
+// L'app installata è servita da un'origine locale e chiama queste API su un
+// altro dominio: sono richieste cross-site, quindi con "lax" i cookie non
+// verrebbero né inviati né accettati. Servono SameSite=None e Secure.
 const cookieBase = () =>
-  ({ httpOnly: true, sameSite: "lax", path: "/", secure: !import.meta.dev }) as const;
+  ({
+    httpOnly: true,
+    sameSite: import.meta.dev ? "lax" : "none",
+    path: "/",
+    secure: !import.meta.dev,
+  }) as const;
 
 export function setWithingsTokens(event: H3Event, token: any) {
   setCookie(event, "withings_token", token.access_token, { ...cookieBase(), maxAge: 60 * 60 * 24 * 30 });

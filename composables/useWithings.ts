@@ -19,15 +19,17 @@ export function useWithings() {
   }
 
   async function status(): Promise<{ connected: boolean }> {
-    return $fetch(`${base}/api/withings/status`).catch(() => ({ connected: false }));
+    // credentials: le richieste sono cross-origin, senza questo i cookie
+    // dei token non partono e l'utente risulta sempre scollegato.
+    return $fetch(`${base}/api/withings/status`, { credentials: "include" }).catch(() => ({ connected: false }));
   }
 
   async function fetchMeasures(): Promise<WithingsMeasures | null> {
-    return $fetch<WithingsMeasures>(`${base}/api/withings/measures`).catch(() => null);
+    return $fetch<WithingsMeasures>(`${base}/api/withings/measures`, { credentials: "include" }).catch(() => null);
   }
 
   async function disconnect(): Promise<void> {
-    await $fetch(`${base}/api/withings/disconnect`, { method: "POST" }).catch(() => null);
+    await $fetch(`${base}/api/withings/disconnect`, { method: "POST", credentials: "include" }).catch(() => null);
   }
 
   return { connect, status, fetchMeasures, disconnect };

@@ -79,7 +79,11 @@ export function useHealthSync() {
 
   async function check() {
     if (import.meta.client) {
-      native.value = !!(window as any).Capacitor?.isNativePlatform?.();
+      const cap = (window as any).Capacitor;
+      native.value = !!cap?.isNativePlatform?.();
+      detail.value = native.value
+        ? `app nativa · plugin ${Health ? "presente" : "ASSENTE"}`
+        : "in esecuzione nel browser: i dati salute non sono accessibili";
     }
     const H = await plugin();
     if (!H) return;

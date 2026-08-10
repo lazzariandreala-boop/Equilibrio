@@ -211,7 +211,9 @@ async function loadWithings() {
     const snap = await getDoc(ref);
     const w = snap.exists() ? (snap.data() as any)?.withings : null;
     if (w?.refresh_token || w?.access_token) {
-      await $fetch(`${apiBase}/api/withings/restore`, { method: "POST", body: w }).catch(() => null);
+      await $fetch(`${apiBase}/api/withings/restore`, {
+        method: "POST", body: w, credentials: "include",
+      }).catch(() => null);
       s = await withingsStatus();
     }
   }
@@ -219,7 +221,7 @@ async function loadWithings() {
   wConnected.value = !!s.connected;
   if (wConnected.value) {
     if (ref) {
-      const tok = await $fetch(`${apiBase}/api/withings/token`).catch(() => null);
+      const tok = await $fetch(`${apiBase}/api/withings/token`, { credentials: "include" }).catch(() => null);
       if (tok) await setDoc(ref, { withings: tok }, { merge: true });
     }
     const m = await fetchMeasures();
