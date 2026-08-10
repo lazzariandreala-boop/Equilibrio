@@ -123,3 +123,76 @@ if (changed) {
 } else {
   console.log("• Manifest già a posto, nessuna modifica");
 }
+
+// ── Branding: icona dell'app ────────────────────────────────
+import { cpSync, mkdirSync, readdirSync } from "node:fs";
+
+const BRAND = "android-config/branding/generated";
+if (existsSync(BRAND)) {
+  for (const dir of readdirSync(BRAND).filter((d) => d.startsWith("mipmap-"))) {
+    cpSync(`${BRAND}/${dir}`, `android/app/src/main/res/${dir}`, { recursive: true });
+  }
+  // Il fondo dell'adaptive icon segue la tinta scura del logo.
+  const colors = "android/app/src/main/res/values/ic_launcher_background.xml";
+  writeFileSync(
+    colors,
+    `<?xml version="1.0" encoding="utf-8"?>\n<resources>\n    <color name="ic_launcher_background">#100E0D</color>\n</resources>\n`,
+  );
+  console.log("✓ Icona dell'app aggiornata");
+}
+
+// ── Diagnostica: schermata che mostra l'ultimo crash ────────
+const JAVA_DIR = "android/app/src/main/java/it/equilibrio/app";
+if (existsSync("android-config/java/CrashActivity.java") && existsSync(JAVA_DIR)) {
+  mkdirSync(JAVA_DIR, { recursive: true });
+  cpSync("android-config/java/CrashActivity.java", `${JAVA_DIR}/CrashActivity.java`);
+
+  // MainActivity installa il gestore prima che il bridge si avvii.
+  writeFileSync(
+    `${JAVA_DIR}/MainActivity.java`,
+    `package it.equilibrio.app;
+
+import android.os.Bundle;
+import com.getcapacitor.BridgeActivity;
+
+public class MainActivity extends BridgeActivity {
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        // Registrato prima di super.onCreate(): così cattura anche i crash
+        // che avvengono durante l'inizializzazione dei plugin.
+        CrashActivity.install(this);
+        super.onCreate(savedInstanceState);
+    }
+}
+`,
+  );
+
+  // CrashActivity diventa il punto d'ingresso: se non c'è nessun crash
+  // salvato, passa immediatamente a MainActivity.
+  let m = readFileSync(PATH, "utf8");
+  if (!m.includes("CrashActivity")) {
+    m = m.replace(
+      `            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>`,
+      "",
+    );
+    m = m.replace(
+      "        <provider",
+      `        <activity
+            android:name=".CrashActivity"
+            android:exported="true"
+            android:theme="@style/AppTheme.NoActionBarLaunch">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+
+        <provider`,
+    );
+    writeFileSync(PATH, m);
+    console.log("✓ Schermata di diagnosi crash installata");
+  }
+}

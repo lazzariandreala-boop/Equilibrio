@@ -1,7 +1,7 @@
 <template>
   <header class="flex items-center justify-between px-4 pt-4 pb-2.5">
     <div class="flex items-center gap-3">
-      <img :src="logo" alt="" width="36" height="36" class="rounded-2xl shadow-soft" />
+      <img :src="isDark ? logoDark : logoLight" alt="" width="36" height="36" class="rounded-2xl shadow-soft" />
       <div>
         <div class="display text-ink" style="font-size: 21px; font-weight: 800; line-height: 1.1">Equilibrio</div>
         <div class="text-faint" style="font-size: 12px; text-transform: capitalize">{{ date }}</div>
@@ -18,7 +18,8 @@
 <script setup lang="ts">
 import { Sun, Moon } from "lucide-vue-next";
 import { fmtIT } from "~/utils/date";
-import logo from "~/assets/Logo_Equilibrio.png";
+import logoLight from "~/assets/logo-light.png";
+import logoDark from "~/assets/logo-dark.png";
 const { isDark, toggle } = useTheme();
 const date = fmtIT();
 </script>
