@@ -3,6 +3,7 @@ package it.equilibrio.app;
 import android.app.Activity;
 import android.content.Intent;
 import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.widget.Button;
 import android.widget.LinearLayout;
@@ -106,6 +107,9 @@ public class CrashActivity extends Activity {
         }
 
         final int BG = Color.parseColor("#100E0D");
+        // La finestra deve essere opaca: con il tema splash il testo finiva
+        // sopra un'immagine chiara e risultava illeggibile.
+        getWindow().setBackgroundDrawable(new ColorDrawable(BG));
 
         LinearLayout root = new LinearLayout(this);
         root.setOrientation(LinearLayout.VERTICAL);
@@ -119,7 +123,7 @@ public class CrashActivity extends Activity {
         root.addView(title);
 
         TextView hint = new TextView(this);
-        hint.setText("Fotografa questo testo (scorri fino in fondo) e mandalo a chi segue lo sviluppo.");
+        hint.setText("Fotografa questo testo e mandalo a chi segue lo sviluppo.");
         hint.setTextColor(Color.parseColor("#AB9E94"));
         hint.setTextSize(12);
         hint.setPadding(0, 10, 0, 16);
@@ -127,7 +131,7 @@ public class CrashActivity extends Activity {
 
         TextView body = new TextView(this);
         body.setText(trace);
-        body.setTextColor(Color.parseColor("#FFB07A"));
+        body.setTextColor(Color.parseColor("#FFD9B0"));
         body.setBackgroundColor(BG);
         body.setTextSize(9);
         body.setTextIsSelectable(true);

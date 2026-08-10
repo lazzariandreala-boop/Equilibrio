@@ -3,7 +3,13 @@ export default defineNuxtConfig({
   compatibilityDate: "2025-01-01",
   devtools: { enabled: true },
 
-  modules: ["@nuxtjs/tailwindcss", "@pinia/nuxt", "@vite-pwa/nuxt"],
+  // Nella build nativa il Service Worker va escluso: dentro Capacitor cachea
+  // la shell e impedisce all'app di caricare (stesso problema già visto su GlicoLog).
+  modules: [
+    "@nuxtjs/tailwindcss",
+    "@pinia/nuxt",
+    ...(process.env.NATIVE_BUILD === "1" ? [] : ["@vite-pwa/nuxt"]),
+  ],
 
   tailwindcss: { cssPath: "~/assets/css/main.css" },
 

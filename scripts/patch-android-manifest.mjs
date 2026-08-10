@@ -183,7 +183,7 @@ public class MainActivity extends BridgeActivity {
       `        <activity
             android:name=".CrashActivity"
             android:exported="true"
-            android:theme="@style/AppTheme.NoActionBarLaunch">
+            android:theme="@android:style/Theme.DeviceDefault.NoActionBar">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
