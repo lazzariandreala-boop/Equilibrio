@@ -1,23 +1,31 @@
-// POST /api/recognize  { image: base64, media: "image/jpeg" }  ->  { alimenti: [...] }
-// Riconoscimento foto del cibo con Google Gemini (tier gratuito).
+// POST /api/estimate  { text: "pasta al pomodoro, mezzo piatto" }  ->  { alimenti: [...] }
+// Stima dei valori nutrizionali a partire da una descrizione scritta:
+// serve quando non c'è una foto, così l'utente non deve digitare i grammi a mano.
 export default defineEventHandler(async (event) => {
   const { geminiApiKey } = useRuntimeConfig();
-  const body = await readBody<{ image?: string; media?: string }>(event);
+  const body = await readBody<{ text?: string }>(event);
 
   if (!geminiApiKey) {
-    throw createError({ statusCode: 503, statusMessage: "Riconoscimento non configurato (manca NUXT_GEMINI_API_KEY)." });
+    throw createError({
+      statusCode: 503,
+      statusMessage: "Stima non configurata sul server (manca NUXT_GEMINI_API_KEY).",
+    });
   }
-  if (!body?.image) {
-    throw createError({ statusCode: 400, statusMessage: "Immagine mancante." });
+  const text = (body?.text || "").trim();
+  if (!text) {
+    throw createError({ statusCode: 400, statusMessage: "Descrizione mancante." });
   }
 
   const prompt =
-    "Sei un nutrizionista. Riconosci cibi e bevande nella foto e stima i valori " +
-    "per la porzione visibile, usando quando possibile la tabella CREA. " +
+    "Sei un nutrizionista. L'utente descrive cosa ha mangiato o bevuto. " +
+    "Scomponi la descrizione nei singoli alimenti e stima i valori per la porzione indicata " +
+    "(se la quantità non è specificata, assumi una porzione media italiana). " +
+    "Usa i valori della tabella di composizione degli alimenti CREA quando possibile. " +
     'Rispondi SOLO con JSON valido, nessun testo extra, nessun markdown. Formato: ' +
-    '{"alimenti":[{"nome":"","qty":"es. 1 piatto","kcal":0,"cho":0,"pro":0,"fat":0,"fib":0,"alc":0}]}. ' +
+    '{"alimenti":[{"nome":"","qty":"es. 100 g","kcal":0,"cho":0,"pro":0,"fat":0,"fib":0,"alc":0}]}. ' +
     "cho=carboidrati g, pro=proteine g, fat=grassi g, fib=fibre g, alc=grammi di alcol (0 se analcolico). " +
-    "Tutti i numeri interi.";
+    "Tutti i numeri interi.\n\nDescrizione: " +
+    text;
 
   const model = "gemini-2.5-flash";
   const url = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${geminiApiKey}`;
@@ -28,32 +36,24 @@ export default defineEventHandler(async (event) => {
       method: "POST",
       headers: { "content-type": "application/json" },
       body: {
-        contents: [
-          {
-            parts: [
-              { inline_data: { mime_type: body.media || "image/jpeg", data: body.image } },
-              { text: prompt },
-            ],
-          },
-        ],
+        contents: [{ parts: [{ text: prompt }] }],
         generationConfig: { responseMimeType: "application/json", temperature: 0.2 },
       },
     });
   } catch (e: any) {
-    // Propaga il messaggio reale di Gemini (es. quota, chiave non valida) così la UI può mostrarlo.
     const apiMsg = e?.data?.error?.message || e?.response?._data?.error?.message;
     throw createError({
       statusCode: 502,
-      statusMessage: apiMsg ? `Riconoscimento non disponibile: ${apiMsg}` : "Errore dal servizio di riconoscimento.",
+      statusMessage: apiMsg ? `Stima non disponibile: ${apiMsg}` : "Errore dal servizio di stima.",
     });
   }
 
-  const text: string = (raw?.candidates?.[0]?.content?.parts || [])
+  const out: string = (raw?.candidates?.[0]?.content?.parts || [])
     .map((p: any) => p?.text || "")
     .join("\n");
 
   try {
-    const parsed = JSON.parse(text.replace(/```json|```/g, "").trim());
+    const parsed = JSON.parse(out.replace(/```json|```/g, "").trim());
     const alimenti = (parsed.alimenti || []).map((a: any) => ({
       name: a.nome || a.name || "Alimento",
       qty: a.qty || "",

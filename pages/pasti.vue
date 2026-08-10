@@ -20,8 +20,8 @@
 
         <div class="flex">
           <div v-for="m in macros" :key="m.label" class="flex-1 text-center">
-            <div class="display tabular" style="color: #fff; font-weight: 700; font-size: 20px">{{ m.value }}<span style="font-size: 12px"> g</span></div>
-            <div style="color: rgba(255,255,255,.75); font-size: 11px; letter-spacing: .3px">{{ m.label }}</div>
+            <div class="display tabular" style="color: #fff; font-weight: 700; font-size: 18px">{{ m.value }}<span style="font-size: 11px"> g</span></div>
+            <div style="color: rgba(255,255,255,.75); font-size: 10px; letter-spacing: .2px">{{ m.label }}</div>
           </div>
         </div>
 
@@ -54,7 +54,7 @@
           <div class="min-w-0">
             <div class="truncate" style="font-weight: 600; font-size: 15px">{{ m.name }}</div>
             <div class="text-dim tabular" style="font-size: 12.5px">
-              {{ m.kcal }} kcal · C {{ m.cho }} · P {{ m.pro }} · G {{ m.fat }}<span v-if="m.alc > 0" class="text-alcohol"> · alc {{ m.alc }} g</span>
+              {{ m.kcal }} kcal · C {{ m.cho }} · P {{ m.pro }} · G {{ m.fat }} · F {{ m.fib ?? 0 }}<span v-if="m.alc > 0" class="text-alcohol"> · alc {{ m.alc }} g</span>
             </div>
           </div>
           <button class="tap text-faint p-2 rounded-xl shrink-0 bg-raised" aria-label="Elimina pasto" @click="day.removeMeal(i)">
@@ -85,6 +85,7 @@ const macros = computed(() => [
   { label: "Carboidrati", value: day.totals.cho },
   { label: "Proteine", value: day.totals.pro },
   { label: "Grassi", value: day.totals.fat },
+  { label: "Fibre", value: day.totals.fib },
 ]);
 
 function onMeal(m: any) {

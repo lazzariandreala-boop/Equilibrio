@@ -4,10 +4,11 @@ import { todayKey, keyToDate } from "~/utils/date";
 export interface Meal {
   name: string;
   kcal: number;
-  cho: number;
-  pro: number;
-  fat: number;
-  alc: number;
+  cho: number; // carboidrati (g)
+  pro: number; // proteine (g)
+  fat: number; // grassi (g)
+  fib: number; // fibre (g)
+  alc: number; // alcol (g)
   at: number;
 }
 export interface Move {
@@ -49,16 +50,17 @@ export const useDayStore = defineStore("day", {
     isToday(state): boolean {
       return state.date === todayKey();
     },
-    totals(): { kcal: number; cho: number; pro: number; fat: number; alc: number } {
+    totals(): { kcal: number; cho: number; pro: number; fat: number; fib: number; alc: number } {
       return this.today.meals.reduce(
         (a, m) => ({
           kcal: a.kcal + m.kcal,
           cho: a.cho + m.cho,
           pro: a.pro + m.pro,
           fat: a.fat + m.fat,
+          fib: a.fib + (m.fib ?? 0), // i pasti salvati prima non avevano le fibre
           alc: a.alc + m.alc,
         }),
-        { kcal: 0, cho: 0, pro: 0, fat: 0, alc: 0 },
+        { kcal: 0, cho: 0, pro: 0, fat: 0, fib: 0, alc: 0 },
       );
     },
     /**

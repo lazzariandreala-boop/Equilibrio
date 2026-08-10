@@ -2,10 +2,24 @@ export interface RecognizedItem {
   name: string;
   qty: string;
   kcal: number;
-  cho: number;
-  pro: number;
-  fat: number;
-  alc: number;
+  cho: number; // carboidrati (g)
+  pro: number; // proteine (g)
+  fat: number; // grassi (g)
+  fib: number; // fibre (g)
+  alc: number; // alcol (g)
+}
+
+function normalize(a: any): RecognizedItem {
+  return {
+    name: a.name || "Alimento",
+    qty: a.qty || "",
+    kcal: +a.kcal || 0,
+    cho: +a.cho || 0,
+    pro: +a.pro || 0,
+    fat: +a.fat || 0,
+    fib: +a.fib || 0,
+    alc: +a.alc || 0,
+  };
 }
 
 export function useRecognition() {
@@ -56,16 +70,17 @@ export function useRecognition() {
       method: "POST",
       body: { image: data, media },
     });
-    return (res.alimenti || []).map((a) => ({
-      name: a.name || "Alimento",
-      qty: a.qty || "",
-      kcal: +a.kcal || 0,
-      cho: +a.cho || 0,
-      pro: +a.pro || 0,
-      fat: +a.fat || 0,
-      alc: +a.alc || 0,
-    }));
+    return (res.alimenti || []).map(normalize);
   }
 
-  return { recognize };
+  /** Stima i valori a partire da una descrizione scritta del pasto. */
+  async function estimate(text: string): Promise<RecognizedItem[]> {
+    const res = await $fetch<{ alimenti: RecognizedItem[] }>(`${base}/api/estimate`, {
+      method: "POST",
+      body: { text },
+    });
+    return (res.alimenti || []).map(normalize);
+  }
+
+  return { recognize, estimate };
 }
