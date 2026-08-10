@@ -51,9 +51,6 @@ jobs:
 
       # android/ è ignorata da git: si rigenera e si riapplicano permessi e minSdk.
       - name: Prepara la piattaforma Android
-        env:
-          # L'APK punta al deploy: le modifiche arrivano senza reinstallare.
-          APP_SERVER_URL: ${{ vars.APP_SERVER_URL || 'https://equilibrio-ebpu.vercel.app' }}
         run: |
           npx cap add android
           npx cap sync android
