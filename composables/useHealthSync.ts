@@ -1,3 +1,4 @@
+import { Health } from "capacitor-health";
 import { useDayStore } from "~/stores/day";
 import { todayKey } from "~/utils/date";
 
@@ -27,14 +28,16 @@ export function useHealthSync() {
 
   async function plugin(): Promise<any | null> {
     if (!import.meta.client) return null;
-    try {
-      const cap = (window as any).Capacitor;
-      if (!cap?.isNativePlatform?.()) return null; // nel browser non esiste
-      const mod = await import("capacitor-health").catch(() => null);
-      return (mod as any)?.Health ?? null;
-    } catch {
+    const cap = (window as any).Capacitor;
+    if (!cap?.isNativePlatform?.()) {
+      detail.value = "Non sei nell'app installata: il plugin nativo non è raggiungibile.";
       return null;
     }
+    if (!Health) {
+      detail.value = "Plugin salute non caricato.";
+      return null;
+    }
+    return Health;
   }
 
   /**
@@ -104,8 +107,12 @@ export function useHealthSync() {
   }
 
   async function connect() {
+    error.value = null;
     const H = await plugin();
-    if (!H) return;
+    if (!H) {
+      error.value = "Non riesco a raggiungere il servizio salute del telefono.";
+      return;
+    }
     busy.value = true;
     error.value = null;
     try {
@@ -127,8 +134,12 @@ export function useHealthSync() {
 
   /** Porta in Equilibrio passi e allenamenti di oggi, senza creare doppioni. */
   async function sync() {
+    error.value = null;
     const H = await plugin();
-    if (!H) return;
+    if (!H) {
+      error.value = "Non riesco a raggiungere il servizio salute del telefono.";
+      return;
+    }
     busy.value = true;
     error.value = null;
     try {

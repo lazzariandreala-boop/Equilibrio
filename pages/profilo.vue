@@ -241,7 +241,16 @@ async function wDisconnect() {
   wFat.value = null;
 }
 
+// Dopo una reinstallazione la sessione lato server è persa e i token si
+// recuperano solo da Firestore: serve però che l'utente sia già autenticato.
+// onMounted da solo arrivava troppo presto, quindi si riprova appena c'è.
 onMounted(loadWithings);
+watch(
+  () => user.value?.uid,
+  (uid) => {
+    if (uid && !wConnected.value) loadWithings();
+  },
+);
 
 async function enable() {
   const ok = await requestPermission();
