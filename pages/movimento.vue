@@ -26,8 +26,10 @@
       <div class="display px-1 mb-2.5" style="font-weight: 700; font-size: 17px">Aggiungi un'attività</div>
       <div class="grid grid-cols-4 gap-2">
         <button v-for="a in ACTIVITIES" :key="a.id" class="tap rounded-3xl flex flex-col items-center justify-center gap-1.5"
-          style="padding: 12px 4px; background: var(--move-soft)" @click="pick(a)">
-          <component :is="icons[a.icon]" :size="21" class="text-move" />
+          style="padding: 12px 4px"
+          :style="{ background: tint(a.color, 0.13), border: `1px solid ${tint(a.color, 0.22)}` }"
+          @click="pick(a)">
+          <component :is="icons[a.icon]" :size="21" :color="a.color" />
           <span class="text-ink text-center leading-tight" style="font-size: 10.5px; font-weight: 600">{{ a.name }}</span>
         </button>
       </div>
@@ -39,7 +41,8 @@
       <div class="space-y-2">
         <AppCard v-for="(m, i) in today.moves" :key="i" pad="p-3.5">
           <div class="flex items-center gap-3">
-            <div class="rounded-2xl grad-move flex items-center justify-center shrink-0" style="width: 38px; height: 38px">
+            <div class="rounded-2xl flex items-center justify-center shrink-0" style="width: 38px; height: 38px"
+              :style="{ background: colorOf(m) }">
               <component :is="icons[iconOf(m)]" :size="18" color="#fff" />
             </div>
             <div class="flex-1 min-w-0">
@@ -63,7 +66,7 @@
     </div>
 
     <!-- consigli per la schiena -->
-    <AppCard tone="move" class="rise" style="animation-delay: 200ms">
+    <AppCard class="rise" style="animation-delay: 200ms">
       <div class="flex items-start gap-3">
         <ShieldCheck :size="18" class="text-move shrink-0" style="margin-top: 2px" />
         <p class="text-dim" style="font-size: 13px; line-height: 1.5">
@@ -81,13 +84,14 @@
             class="bg-card border border-line text-ink rounded-2xl px-3 py-3 w-full" />
         </div>
 
-        <div v-if="chosen.note" class="rounded-2xl px-3.5 py-2.5 mb-4 flex items-start gap-2" style="background: var(--move-soft)">
+        <div v-if="chosen.note" class="rounded-2xl px-3.5 py-2.5 mb-4 flex items-start gap-2"
+          :style="{ background: tint(chosen.color, 0.13) }">
           <component :is="chosen.safe ? ShieldCheck : AlertTriangle" :size="15"
-            :class="chosen.safe ? 'text-move' : 'text-food'" style="margin-top: 2px; flex-shrink: 0" />
+            :color="chosen.safe ? chosen.color : 'var(--food)'" style="margin-top: 2px; flex-shrink: 0" />
           <span class="text-dim" style="font-size: 12.5px; line-height: 1.4">{{ chosen.note }}</span>
         </div>
 
-        <div class="display tabular text-center" style="font-size: 54px; font-weight: 800; color: var(--move); line-height: 1">
+        <div class="display tabular text-center" :style="{ fontSize: '54px', fontWeight: 800, color: chosen.color, lineHeight: 1 }">
           {{ min }}<span class="text-dim" style="font-size: 18px; font-weight: 600"> min</span>
         </div>
         <div class="text-faint text-center tabular mb-5" style="font-size: 13px; margin-top: 4px">
@@ -98,7 +102,7 @@
           <button class="tap bg-raised text-ink rounded-2xl p-3.5" aria-label="Meno" @click="min = Math.max(5, min - 5)">
             <Minus :size="18" />
           </button>
-          <input type="range" min="5" max="180" step="5" v-model.number="min" class="flex-1" style="accent-color: var(--move)" />
+          <input type="range" min="5" max="180" step="5" v-model.number="min" class="flex-1" :style="{ accentColor: chosen.color }" />
           <button class="tap bg-raised text-ink rounded-2xl p-3.5" aria-label="Più" @click="min = Math.min(180, min + 5)">
             <Plus :size="18" />
           </button>
@@ -106,13 +110,13 @@
 
         <div class="grid grid-cols-4 gap-2 mb-5">
           <button v-for="p in [15, 30, 45, 60]" :key="p" class="tap rounded-2xl py-2.5 font-semibold tabular"
-            style="font-size: 14px" :class="min === p ? 'grad-move' : 'bg-raised text-dim'"
-            :style="min === p ? { color: '#fff' } : {}" @click="min = p">
+            style="font-size: 14px" :class="min === p ? '' : 'bg-raised text-dim'"
+            :style="min === p ? { background: chosen.color, color: '#fff' } : {}" @click="min = p">
             {{ p }}′
           </button>
         </div>
 
-        <button class="tap w-full py-3.5 rounded-3xl font-semibold grad-move" style="color: #fff; font-size: 15px" @click="save">
+        <button class="tap w-full py-3.5 rounded-3xl font-semibold" :style="{ background: chosen.color, color: '#fff', fontSize: '15px' }" @click="save">
           Salva attività
         </button>
       </div>
@@ -123,20 +127,20 @@
 <script setup lang="ts">
 import {
   Minus, Plus, Trash2, ShieldCheck, AlertTriangle,
-  Bike, Footprints, Zap, Waves, Dumbbell, Goal, StretchHorizontal,
-  Mountain, Snowflake, Sailboat, Music, Sprout, CirclePlus,
+  Bike, Footprints, Rabbit, Waves, Dumbbell, Target, Trophy, PersonStanding,
+  Mountain, Snowflake, Sailboat, Music, Sprout, Flame, Move3d, CirclePlus,
 } from "lucide-vue-next";
 import { useDayStore } from "~/stores/day";
 import { useSettingsStore } from "~/stores/settings";
-import { ACTIVITIES, estimateKcal, findActivity, type Activity } from "~/utils/activities";
+import { ACTIVITIES, estimateKcal, findActivity, tint, type Activity } from "~/utils/activities";
 
 const day = useDayStore();
 const settings = useSettingsStore();
 const today = computed(() => day.today);
 
 const icons: Record<string, any> = {
-  Bike, Footprints, Zap, Waves, Dumbbell, Goal, StretchHorizontal,
-  Mountain, Snowflake, Sailboat, Music, Sprout, CirclePlus,
+  Bike, Footprints, Rabbit, Waves, Dumbbell, Target, Trophy, PersonStanding,
+  Mountain, Snowflake, Sailboat, Music, Sprout, Flame, Move3d, CirclePlus,
 };
 
 const chosen = ref<Activity | null>(null);
@@ -148,6 +152,9 @@ const burned = computed(() => today.value.moves.reduce((a, m) => a + (m.kcal || 
 
 function iconOf(m: any) {
   return findActivity(m.activityId || "")?.icon || "Footprints";
+}
+function colorOf(m: any) {
+  return findActivity(m.activityId || "")?.color || "var(--move)";
 }
 
 function pick(a: Activity) {
