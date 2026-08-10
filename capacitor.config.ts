@@ -16,9 +16,12 @@ const config: CapacitorConfig = {
       providers: ["google.com"],
     },
   },
-  // Per avere parità completa con le API (riconoscimento foto, Withings),
-  // l'app nativa può caricare direttamente il deploy invece dei file statici:
-  // server: { url: "https://equilibrio.vercel.app", cleartext: false },
+  // Se APP_SERVER_URL è impostata, l'app installata carica direttamente il
+  // deploy invece dei file impacchettati: così si aggiorna da sola a ogni
+  // push, senza reinstallare l'APK. Richiede connessione a internet.
+  ...(process.env.APP_SERVER_URL
+    ? { server: { url: process.env.APP_SERVER_URL, cleartext: false } }
+    : {}),
 };
 
 export default config;

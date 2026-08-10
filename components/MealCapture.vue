@@ -14,6 +14,10 @@
         style="font-size: 15px" @click="phase = 'describe'">
         <PenLine :size="16" /> Descrivi a parole
       </button>
+      <button class="tap bg-raised text-ink w-full py-3.5 rounded-3xl font-semibold flex items-center justify-center gap-2"
+        style="font-size: 15px" @click="startSearch">
+        <Search :size="16" /> Cerca un alimento
+      </button>
     </div>
 
     <!-- DESCRIZIONE A PAROLE -->
@@ -69,8 +73,12 @@
         </div>
       </div>
 
+      <div class="rounded-4xl p-3.5" style="background: var(--raised)">
+        <FoodSearch @pick="onSearchPick" />
+      </div>
+
       <button class="text-dim flex items-center gap-1" style="font-size: 14px" @click="addBlank">
-        <Plus :size="16" /> Aggiungi voce
+        <Plus :size="16" /> Aggiungi voce vuota
       </button>
 
       <div class="rounded-3xl p-3.5" style="background: var(--food-soft)">
@@ -89,7 +97,7 @@
 </template>
 
 <script setup lang="ts">
-import { Camera, PenLine, Sparkles, X, Plus } from "lucide-vue-next";
+import { Camera, PenLine, Sparkles, X, Plus, Search } from "lucide-vue-next";
 import type { RecognizedItem } from "~/composables/useRecognition";
 import { estimateLocally } from "~/utils/foods";
 
@@ -170,6 +178,17 @@ async function runEstimate() {
     }
   }
   phase.value = "edit";
+}
+
+function startSearch() {
+  items.value = [];
+  err.value = "";
+  phase.value = "edit";
+}
+
+/** Aggiunge alla lista un alimento scelto dalla ricerca. */
+function onSearchPick(item: RecognizedItem) {
+  items.value.push(item);
 }
 
 function startBlank() {
