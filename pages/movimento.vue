@@ -6,19 +6,10 @@
       :value="day.moveMin" unit="min" :caption="`obiettivo ${settings.goals.moveMin} min`"
       :progress="(day.moveMin / settings.goals.moveMin) * 100" :stats="stats" />
 
-    <!-- scelta attività -->
-    <div class="rise" style="animation-delay: 80ms">
-      <div class="display px-1 mb-2.5" style="font-weight: 700; font-size: 17px">Aggiungi un'attività</div>
-      <div class="grid grid-cols-4 gap-2">
-        <button v-for="a in ACTIVITIES" :key="a.id" class="tap rounded-3xl flex flex-col items-center justify-center gap-1.5"
-          style="padding: 11px 4px"
-          :style="{ background: tint(a.color, 0.13), border: `1px solid ${tint(a.color, 0.24)}`, boxShadow: `inset 0 1px 0 rgba(255,255,255,.07), 0 4px 12px -4px ${tint(a.color, 0.3)}` }"
-          @click="pick(a)">
-          <component :is="icons[a.icon]" :size="21" :color="a.color" />
-          <span class="text-ink text-center leading-tight" style="font-size: 10.5px; font-weight: 600">{{ a.name }}</span>
-        </button>
-      </div>
-    </div>
+    <button class="tap w-full rounded-full py-3.5 font-semibold flex items-center justify-center gap-2.5 grad-move rise cta-glow-move"
+      style="color: #fff; font-size: 15.5px; animation-delay: 70ms" @click="pickerOpen = true">
+      <Plus :size="19" /> Aggiungi un'attività
+    </button>
 
     <!-- registrate oggi -->
     <div v-if="today.moves.length" class="rise" style="animation-delay: 140ms">
@@ -48,17 +39,36 @@
 
     <EmptyState v-else tone="move" style="animation-delay: 140ms"
       :title="day.isToday ? 'Niente ancora oggi' : 'Nessuna attività in questo giorno'"
-      subtitle="Anche dieci minuti di camminata contano. Scegli un'attività qui sopra." />
+      subtitle="Anche dieci minuti di camminata contano." />
 
-    <!-- consigli per la schiena -->
-    <AppCard class="rise" style="animation-delay: 200ms">
-      <div class="flex items-start gap-3">
-        <ShieldCheck :size="18" class="text-move shrink-0" style="margin-top: 2px" />
-        <p class="text-dim" style="font-size: 13px; line-height: 1.5">
-          Le attività col bollino verde nella scheda sono a basso impatto sulla colonna. La corsa non lo è: se la schiena tira, meglio bici o nuoto.
+    <!-- elenco delle attività, cercabile -->
+    <BottomSheet v-model="pickerOpen" title="Che attività hai fatto?">
+      <div class="relative mb-3">
+        <Search :size="17" class="absolute text-faint" style="left: 13px; top: 50%; transform: translateY(-50%)" />
+        <input v-model="query" placeholder="Cerca fra le attività…"
+          class="bg-card border border-line text-ink rounded-2xl w-full"
+          style="padding: 11px 12px 11px 38px" />
+      </div>
+
+      <div class="space-y-1.5" style="max-height: 52vh; overflow-y: auto">
+        <button v-for="a in filtered" :key="a.id" class="tap w-full text-left rounded-3xl flex items-center gap-3"
+          style="padding: 11px 12px; background: var(--raised)" @click="pick(a)">
+          <div class="rounded-2xl flex items-center justify-center shrink-0" style="width: 38px; height: 38px"
+            :style="{ background: tint(a.color, 0.16) }">
+            <component :is="icons[a.icon]" :size="19" :color="a.color" />
+          </div>
+          <div class="flex-1 min-w-0">
+            <div class="text-ink" style="font-weight: 600; font-size: 15px">{{ a.name }}</div>
+            <div class="text-faint truncate" style="font-size: 11.5px">{{ a.note || `${a.met} MET` }}</div>
+          </div>
+          <ShieldCheck v-if="a.safe" :size="16" class="text-move shrink-0" />
+        </button>
+
+        <p v-if="!filtered.length" class="text-faint text-center" style="font-size: 13px; padding: 18px 12px">
+          Nessuna attività trovata. Scegli <strong class="text-ink">Altro</strong> e scrivi il nome che preferisci.
         </p>
       </div>
-    </AppCard>
+    </BottomSheet>
 
     <!-- scheda durata -->
     <BottomSheet :model-value="!!chosen" :title="chosen?.name || ''" @update:model-value="chosen = null">
@@ -111,7 +121,7 @@
 
 <script setup lang="ts">
 import {
-  Minus, Plus, Trash2, ShieldCheck, AlertTriangle, Timer,
+  Minus, Plus, Trash2, ShieldCheck, AlertTriangle, Timer, Search,
   Activity as ActivityIcon,
   Bike, Footprints, Rabbit, Waves, Dumbbell, Target, Trophy, PersonStanding,
   Mountain, Snowflake, Sailboat, Music, Sprout, Flame, Move3d, CirclePlus,
@@ -129,7 +139,15 @@ const icons: Record<string, any> = {
   Mountain, Snowflake, Sailboat, Music, Sprout, Flame, Move3d, CirclePlus,
 };
 
+const pickerOpen = ref(false);
+const query = ref("");
 const chosen = ref<Activity | null>(null);
+
+const filtered = computed(() => {
+  const q = query.value.trim().toLowerCase();
+  if (!q) return ACTIVITIES;
+  return ACTIVITIES.filter((a) => a.name.toLowerCase().includes(q) || a.note?.toLowerCase().includes(q));
+});
 const min = ref(30);
 const customName = ref("");
 
@@ -152,6 +170,8 @@ function pick(a: Activity) {
   chosen.value = a;
   min.value = 30;
   customName.value = "";
+  pickerOpen.value = false;
+  query.value = "";
 }
 
 function save() {
