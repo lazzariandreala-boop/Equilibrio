@@ -182,6 +182,20 @@ export const useDayStore = defineStore("day", {
       this.ensureDay();
       this.days[this.date].moves.push({ ...m, at: Date.now() });
     },
+    /** Voce "Passi" del giorno: si aggiorna invece di duplicarsi a ogni sync. */
+    upsertStepsMove(minutes: number, steps: number) {
+      this.ensureDay();
+      const moves = this.days[this.date].moves;
+      const i = moves.findIndex((m) => m.activityId === "passi");
+      const entry = {
+        type: `Passi (${steps.toLocaleString("it-IT")})`,
+        min: minutes,
+        activityId: "passi",
+        at: Date.now(),
+      };
+      if (i >= 0) moves[i] = { ...moves[i], ...entry };
+      else moves.push(entry);
+    },
     removeMove(i: number) {
       this.days[this.date].moves.splice(i, 1);
     },

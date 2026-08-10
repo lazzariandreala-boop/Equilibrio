@@ -5,12 +5,14 @@ import { todayKey } from "~/utils/date";
  * Legge passi e allenamenti dalla piattaforma salute del telefono:
  * Health Connect su Android, HealthKit su iPhone.
  *
- * Health Connect è l'hub dove Samsung Health, Huawei Health, Garmin Connect e
- * Google Health scrivono i loro dati: collegando lui arrivano tutti insieme,
- * senza dover integrare ogni servizio uno per uno.
+ * Attenzione: NON tutte le app scrivono su Health Connect. Samsung Health,
+ * Garmin Connect, Fitbit e Google Health sì; Huawei Health no, perché HMS e
+ * GMS restano ecosistemi separati e non esiste un ponte nativo. Per i dati
+ * Huawei serve un'app tramite (per esempio Health Sync) che li ricopi in
+ * Health Connect.
  *
- * Il plugin nativo esiste solo nella build Capacitor. Nel browser il composable
- * resta inerte e l'interfaccia lo dice, invece di far finta di funzionare.
+ * Il plugin nativo esiste solo nella build Capacitor: nel browser il
+ * composable resta inerte e l'interfaccia lo dichiara.
  */
 
 export function useHealthSync() {
@@ -20,6 +22,8 @@ export function useHealthSync() {
   const busy = useState("health:busy", () => false);
   const lastSync = useState<string | null>("health:lastSync", () => null);
   const steps = useState("health:steps", () => 0);
+  const native = useState("health:native", () => false);
+  const error = useState<string | null>("health:error", () => null);
 
   async function plugin(): Promise<any | null> {
     if (!import.meta.client) return null;
@@ -46,19 +50,35 @@ export function useHealthSync() {
   }
 
   const label = computed(() => {
-    if (!available.value) return "Disponibile nell'app installata";
+    if (!native.value) return "Disponibile solo nell'app installata";
+    if (!available.value) return "Health Connect non risulta installato";
     if (busy.value) return "Sincronizzo…";
     if (!connected.value) return "Non collegato";
     const s = steps.value ? `${steps.value.toLocaleString("it-IT")} passi oggi` : "Collegato";
-    return lastSync.value ? `${s} · ultimo aggiornamento ${lastSync.value}` : s;
+    return lastSync.value ? `${s} · aggiornato alle ${lastSync.value}` : s;
   });
 
   async function check() {
+    if (import.meta.client) {
+      native.value = !!(window as any).Capacitor?.isNativePlatform?.();
+    }
     const H = await plugin();
     if (!H) return;
     try {
       const res = await H.isHealthAvailable();
       available.value = !!res?.available;
+      // Se i permessi sono già stati concessi in passato, si riparte collegati.
+      const perms = await H.checkHealthPermissions({
+        permissions: ["READ_STEPS", "READ_WORKOUTS"],
+      }).catch(() => null);
+      // La risposta è un array di oggetti { NOME_PERMESSO: true|false }
+      const granted = (perms?.permissions ?? []).some((entry: any) =>
+        Object.values(entry ?? {}).some(Boolean),
+      );
+      if (granted) {
+        connected.value = true;
+        await sync();
+      }
     } catch {
       available.value = false;
     }
@@ -68,14 +88,16 @@ export function useHealthSync() {
     const H = await plugin();
     if (!H) return;
     busy.value = true;
+    error.value = null;
     try {
       await H.requestHealthPermissions({
         permissions: ["READ_STEPS", "READ_WORKOUTS", "READ_ACTIVE_CALORIES", "READ_DISTANCE"],
       });
       connected.value = true;
       await sync();
-    } catch {
+    } catch (e: any) {
       connected.value = false;
+      error.value = "Permessi non concessi. Aprili in Health Connect e riprova.";
     } finally {
       busy.value = false;
     }
@@ -122,6 +144,12 @@ export function useHealthSync() {
         } as any);
       }
 
+      // I passi diventano minuti di movimento: circa 100 passi al minuto a
+      // passo normale. Senza questo restavano un numero senza effetto.
+      if (steps.value > 300) {
+        day.upsertStepsMove(Math.round(steps.value / 100), steps.value);
+      }
+
       lastSync.value = new Date().toLocaleTimeString("it-IT", { hour: "2-digit", minute: "2-digit" });
     } finally {
       busy.value = false;
@@ -133,7 +161,10 @@ export function useHealthSync() {
 
   onMounted(check);
 
-  return { available, connected, busy, steps, stepsAsMinutes, lastSync, label, connect, sync, install, openSettings };
+  return {
+    available, connected, busy, steps, stepsAsMinutes, lastSync, label,
+    native, error, connect, sync, install, openSettings,
+  };
 }
 
 function mapId(type = "") {

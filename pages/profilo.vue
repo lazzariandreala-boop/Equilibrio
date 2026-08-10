@@ -89,8 +89,9 @@
         </div>
       </div>
 
-      <!-- Health Connect: legge passi e allenamenti dal telefono -->
-      <div class="rounded-4xl p-4 mb-2.5" :style="{ background: health.connected.value ? 'var(--move-soft)' : 'var(--raised)' }">
+      <!-- Salute del telefono -->
+      <div class="rounded-4xl p-4 mb-2.5"
+        :style="{ background: health.connected.value ? 'var(--move-soft)' : 'var(--raised)', boxShadow: 'var(--tile-shadow)' }">
         <div class="flex items-center gap-3">
           <div class="rounded-2xl flex items-center justify-center shrink-0" :class="health.connected.value ? 'grad-move' : ''"
             style="width: 44px; height: 44px" :style="health.connected.value ? {} : { background: 'var(--line)' }">
@@ -100,17 +101,32 @@
             <div style="font-weight: 600; font-size: 15px">Salute del telefono</div>
             <div class="text-dim" style="font-size: 12.5px; line-height: 1.35">{{ health.label.value }}</div>
           </div>
-          <button v-if="health.available.value" class="tap rounded-2xl px-4 py-2.5 font-semibold shrink-0" style="font-size: 13px"
+
+          <button v-if="health.native.value && health.available.value"
+            class="tap rounded-2xl px-4 py-2.5 font-semibold shrink-0" style="font-size: 13px"
             :class="health.connected.value ? 'bg-raised text-dim' : 'grad-move'"
             :style="health.connected.value ? {} : { color: '#fff' }"
             @click="health.connected.value ? health.sync() : health.connect()">
             {{ health.connected.value ? "Sincronizza" : "Collega" }}
           </button>
+
+          <button v-else-if="health.native.value" class="tap grad-move rounded-2xl px-4 py-2.5 font-semibold shrink-0"
+            style="font-size: 13px; color: #fff" @click="health.install()">
+            Installa
+          </button>
         </div>
-        <p v-if="!health.available.value" class="text-faint" style="font-size: 12px; margin-top: 10px; line-height: 1.5">
-          Funziona nell'app installata su Android (Health Connect) o iPhone (Salute). Dal browser non è accessibile:
-          Huawei Health, Samsung Health, Garmin e Google Health scrivono lì i loro dati, quindi collegando Health Connect
-          arrivano passi e allenamenti di tutti insieme.
+
+        <p v-if="health.error.value" class="text-food" style="font-size: 12.5px; margin-top: 10px; line-height: 1.45">
+          {{ health.error.value }}
+          <button class="underline" @click="health.openSettings()">Apri le impostazioni</button>
+        </p>
+
+        <!-- Va detto: senza questa nota si aspettano dati che non arriveranno mai. -->
+        <p class="text-faint" style="font-size: 12px; margin-top: 10px; line-height: 1.5">
+          Da qui arrivano passi e allenamenti scritti su <strong class="text-dim">Health Connect</strong>:
+          Samsung Health, Garmin, Fitbit e Google Health lo fanno.
+          <strong class="text-dim">Huawei Health no</strong> — usa un ecosistema separato e non scrive su Health Connect.
+          Per portarci i dati Huawei serve un'app tramite come Health Sync.
         </p>
       </div>
 
