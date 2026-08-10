@@ -91,6 +91,7 @@
 <script setup lang="ts">
 import { Camera, PenLine, Sparkles, X, Plus } from "lucide-vue-next";
 import type { RecognizedItem } from "~/composables/useRecognition";
+import { estimateLocally } from "~/utils/foods";
 
 const emit = defineEmits<{ save: [any] }>();
 const { recognize, estimate } = useRecognition();
@@ -157,8 +158,16 @@ async function runEstimate() {
     const list = await estimate(description.value);
     items.value = list.length ? list : [{ ...blank(), name: description.value }];
   } catch (e: any) {
-    err.value = messageOf(e, "Stima non riuscita. Puoi inserire i valori a mano.");
-    items.value = [{ ...blank(), name: description.value }];
+    // Il servizio non risponde: si ripiega sulla tabella alimenti locale,
+    // così l'utente ottiene comunque dei valori invece che una riga di zeri.
+    const local = estimateLocally(description.value);
+    if (local.length) {
+      items.value = local;
+      err.value = "Stima calcolata dalla tabella alimenti locale: controlla i valori, sono approssimativi.";
+    } else {
+      items.value = [{ ...blank(), name: description.value }];
+      err.value = messageOf(e, "Stima non riuscita. Puoi inserire i valori a mano.");
+    }
   }
   phase.value = "edit";
 }
