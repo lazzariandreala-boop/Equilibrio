@@ -101,24 +101,30 @@
             <div class="text-dim" style="font-size: 12.5px; line-height: 1.35">{{ health.label.value }}</div>
           </div>
 
-          <button v-if="health.native.value && health.available.value"
-            class="tap rounded-2xl px-4 py-2.5 font-semibold shrink-0" style="font-size: 13px"
+          <button v-if="health.native.value" class="tap rounded-2xl px-4 py-2.5 font-semibold shrink-0"
+            style="font-size: 13px"
             :class="health.connected.value ? 'bg-raised text-dim' : 'grad-move'"
             :style="health.connected.value ? {} : { color: '#fff' }"
+            :disabled="health.busy.value"
             @click="health.connected.value ? health.sync() : health.connect()">
-            {{ health.connected.value ? "Sincronizza" : "Collega" }}
-          </button>
-
-          <button v-else-if="health.native.value" class="tap grad-move rounded-2xl px-4 py-2.5 font-semibold shrink-0"
-            style="font-size: 13px; color: #fff" @click="health.install()">
-            Installa
+            {{ health.busy.value ? "…" : health.connected.value ? "Sincronizza" : "Collega" }}
           </button>
         </div>
 
         <p v-if="health.error.value" class="text-food" style="font-size: 12.5px; margin-top: 10px; line-height: 1.45">
           {{ health.error.value }}
-          <button class="underline" @click="health.openSettings()">Apri le impostazioni</button>
         </p>
+
+        <div v-if="health.native.value" class="flex gap-2" style="margin-top: 10px">
+          <button class="tap flex-1 rounded-2xl py-2.5 font-semibold bg-raised text-dim" style="font-size: 12.5px"
+            @click="health.openSettings()">
+            Apri Health Connect
+          </button>
+          <button v-if="health.connected.value" class="tap flex-1 rounded-2xl py-2.5 font-semibold bg-raised text-dim"
+            style="font-size: 12.5px" @click="health.connect()">
+            Richiedi di nuovo i permessi
+          </button>
+        </div>
 
         <!-- Va detto: senza questa nota si aspettano dati che non arriveranno mai. -->
         <p class="text-faint" style="font-size: 12px; margin-top: 10px; line-height: 1.5">

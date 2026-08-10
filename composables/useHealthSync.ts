@@ -51,9 +51,8 @@ export function useHealthSync() {
 
   const label = computed(() => {
     if (!native.value) return "Disponibile solo nell'app installata";
-    if (!available.value) return "Health Connect non risulta installato";
     if (busy.value) return "Sincronizzo…";
-    if (!connected.value) return "Non collegato";
+    if (!connected.value) return "Tocca Collega per autorizzare la lettura";
     const s = steps.value ? `${steps.value.toLocaleString("it-IT")} passi oggi` : "Collegato";
     return lastSync.value ? `${s} · aggiornato alle ${lastSync.value}` : s;
   });
@@ -65,7 +64,10 @@ export function useHealthSync() {
     const H = await plugin();
     if (!H) return;
     try {
-      const res = await H.isHealthAvailable();
+      // Nota: su Android 14+ Health Connect è un modulo di sistema e questo
+      // controllo può rispondere "non disponibile" pur essendo installato.
+      // Perciò il valore è solo informativo: non blocca i pulsanti.
+      const res = await H.isHealthAvailable().catch(() => null);
       available.value = !!res?.available;
       // Se i permessi sono già stati concessi in passato, si riparte collegati.
       const perms = await H.checkHealthPermissions({
@@ -97,7 +99,10 @@ export function useHealthSync() {
       await sync();
     } catch (e: any) {
       connected.value = false;
-      error.value = "Permessi non concessi. Aprili in Health Connect e riprova.";
+      const msg = String(e?.message || e || "");
+      error.value = /available|provider|sdk/i.test(msg)
+        ? "Health Connect non risponde. Aprilo, controlla che Equilibrio sia fra le app autorizzate, poi riprova."
+        : "Permessi non concessi. Aprili in Health Connect e riprova.";
     } finally {
       busy.value = false;
     }
@@ -108,6 +113,7 @@ export function useHealthSync() {
     const H = await plugin();
     if (!H) return;
     busy.value = true;
+    error.value = null;
     try {
       const start = new Date();
       start.setHours(0, 0, 0, 0);
@@ -151,6 +157,12 @@ export function useHealthSync() {
       }
 
       lastSync.value = new Date().toLocaleTimeString("it-IT", { hour: "2-digit", minute: "2-digit" });
+      if (!steps.value && !(wk?.workouts?.length ?? 0)) {
+        error.value =
+          "Nessun dato trovato per oggi. Controlla in Health Connect che Equilibrio abbia i permessi di lettura per passi e allenamenti.";
+      }
+    } catch (e: any) {
+      error.value = "Lettura non riuscita. Apri Health Connect e verifica i permessi di Equilibrio.";
     } finally {
       busy.value = false;
     }
