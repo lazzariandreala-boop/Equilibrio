@@ -2,7 +2,7 @@
   <div class="flex flex-col items-center justify-center px-8" style="min-height: 80vh">
     <div class="relative mb-6">
       <div class="absolute rounded-full" style="inset: -22px; background: radial-gradient(circle, var(--water-glow), transparent 70%)" />
-      <img :src="isDark ? logoDark : logoLight" alt="" width="112" height="112" class="relative rounded-4xl shadow-lift" />
+      <img :src="isDark ? logoDark : logoLight" alt="" width="112" height="112" style="border-radius: 26px" class="relative shadow-lift" />
     </div>
     <div class="display text-ink" style="font-size: 34px; font-weight: 800">Equilibrio</div>
     <p class="text-dim text-center mt-2.5 mb-9" style="font-size: 15px; line-height: 1.5">

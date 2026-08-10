@@ -7,11 +7,11 @@
       </p>
       <div class="flex gap-2.5">
         <button class="tap grad-food flex-1 py-3.5 rounded-3xl font-semibold flex items-center justify-center gap-2"
-          style="color: #fff; font-size: 15px" @click="capture('camera')">
+          style="color: #fff; font-size: 15px" @click="fromPhoto('camera')">
           <Camera :size="18" /> Scatta ora
         </button>
         <button class="tap bg-raised text-ink flex-1 py-3.5 rounded-3xl font-semibold flex items-center justify-center gap-2"
-          style="font-size: 15px" @click="capture('gallery')">
+          style="font-size: 15px" @click="fromPhoto('gallery')">
           <Images :size="17" /> Galleria
         </button>
       </div>

@@ -1,7 +1,6 @@
 <template>
   <div class="rise rounded-5xl relative overflow-hidden"
-    style="background: var(--card); border: 1px solid var(--line);
-           box-shadow: inset 0 1px 0 rgba(255,255,255,.06), 0 14px 34px -10px rgba(0,0,0,.5)">
+    style="background: var(--card); border: 1px solid var(--line); box-shadow: var(--tile-shadow)">
     <!-- alba dietro le colline: paesaggio appena accennato, dà profondità -->
     <svg class="absolute pointer-events-none" viewBox="0 0 200 120" aria-hidden="true"
       style="right: 0; top: 0; width: 210px; height: 126px; opacity: .5">
@@ -37,7 +36,7 @@
                    filter: drop-shadow(0 0 8px var(--food-glow))" />
         </svg>
         <div class="absolute inset-0 flex flex-col items-center justify-center">
-          <div class="display tabular flex items-baseline" style="color: #fff">
+          <div class="display tabular flex items-baseline text-ink">
             <span style="font-size: 38px; font-weight: 800; line-height: 1">{{ shown }}</span>
             <span style="font-size: 15px; font-weight: 700; opacity: .85">%</span>
           </div>

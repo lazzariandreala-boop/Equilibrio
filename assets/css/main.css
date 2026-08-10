@@ -10,39 +10,43 @@
    ═══════════════════════════════════════════ */
 
 :root {
-  --surface: #f5f1ec;
-  --surface-2: #ebe4da;
-  --card: #ffffff;
-  --raised: #f4efe8;
-  --line: #e3d9cc;
+  /* Tema chiaro: fondo caldo e leggermente colorato, non bianco piatto.
+     Le card restano più chiare del fondo, così emergono davvero. */
+  --surface: #f1ece4;
+  --surface-2: #e6dccf;
+  --card: #fffdfa;
+  --raised: #f6f0e7;
+  --line: #ded2c2;
 
-  --ink: #1f1a17;
-  --dim: #6f645b;
-  --faint: #a2968a;
+  --ink: #1d1815;
+  --dim: #6b6057;
+  --faint: #7d7064;
 
-  --water: #1e88c7;
-  --water-2: #22c1e0;
-  --water-soft: rgba(30, 136, 199, 0.1);
-  --water-glow: rgba(34, 193, 224, 0.35);
+  --water: #0a6a9e;
+  --water-2: #2ec5e3;
+  --water-soft: rgba(15, 127, 191, 0.14);
+  --water-glow: rgba(34, 193, 224, 0.45);
 
-  --alcohol: #8b46d9;
+  --alcohol: #8231d6;
   --alcohol-2: #c25ce8;
-  --alcohol-soft: rgba(139, 70, 217, 0.1);
-  --alcohol-glow: rgba(194, 92, 232, 0.32);
+  --alcohol-soft: rgba(130, 49, 214, 0.13);
+  --alcohol-glow: rgba(194, 92, 232, 0.42);
 
-  --move: #12a05c;
-  --move-2: #34d07f;
-  --move-soft: rgba(18, 160, 92, 0.1);
-  --move-glow: rgba(52, 208, 127, 0.32);
+  --move: #087a44;
+  --move-2: #36d582;
+  --move-soft: rgba(11, 149, 83, 0.13);
+  --move-glow: rgba(52, 208, 127, 0.42);
 
-  --food: #ef7327;
+  --food: #c25207;
   --food-2: #ffb03a;
-  --food-soft: rgba(239, 115, 39, 0.1);
-  --food-glow: rgba(255, 176, 58, 0.32);
+  --food-soft: rgba(232, 98, 15, 0.13);
+  --food-glow: rgba(255, 150, 40, 0.42);
 
   --on-tone: #ffffff;
-  --shadow: 0 1px 2px rgba(60, 40, 20, 0.05), 0 14px 34px rgba(120, 90, 60, 0.11);
-  --shadow-lift: 0 18px 44px rgba(70, 50, 30, 0.16);
+  --shadow: 0 1px 2px rgba(80, 55, 25, 0.06), 0 10px 26px -8px rgba(110, 80, 45, 0.22);
+  --shadow-lift: 0 20px 46px -12px rgba(90, 62, 32, 0.34);
+  --tile-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.9), 0 8px 22px -8px rgba(110, 80, 45, 0.3);
+  --nav-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.9), 0 -2px 22px -4px rgba(110, 80, 45, 0.28);
 }
 
 html.dark {
@@ -79,11 +83,16 @@ html.dark {
   --on-tone: #ffffff;
   --shadow: 0 1px 0 rgba(255, 255, 255, 0.03), 0 14px 34px rgba(0, 0, 0, 0.5);
   --shadow-lift: 0 20px 46px rgba(0, 0, 0, 0.6);
+  --tile-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.06), 0 8px 20px -8px rgba(0, 0, 0, 0.55);
+  --nav-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.06), 0 -2px 18px rgba(0, 0, 0, 0.35);
 }
 
 html,
 body {
   background: var(--surface);
+  background-image: radial-gradient(120% 60% at 12% -8%, var(--water-soft), transparent 60%),
+    radial-gradient(110% 55% at 96% 4%, var(--food-soft), transparent 58%);
+  background-attachment: fixed;
   color: var(--ink);
   font-family: "Outfit", ui-sans-serif, system-ui, sans-serif;
   -webkit-tap-highlight-color: transparent;
@@ -166,6 +175,10 @@ body {
 /* ── Rilievo: bordo luminoso in alto, ombra sotto ──
    È l'effetto che dà volume ai pulsanti pieni e alle card scure. */
 .raised-3d {
+  box-shadow: inset 0 1.5px 0 rgba(255, 255, 255, 0.75), inset 0 -1.5px 0 rgba(120, 85, 45, 0.1),
+    0 8px 20px -6px rgba(110, 80, 45, 0.28);
+}
+html.dark .raised-3d {
   box-shadow: inset 0 1.5px 0 rgba(255, 255, 255, 0.4), inset 0 -1.5px 0 rgba(0, 0, 0, 0.12),
     0 10px 24px -6px rgba(0, 0, 0, 0.3);
 }

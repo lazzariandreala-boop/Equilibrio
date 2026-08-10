@@ -1,7 +1,7 @@
 <template>
   <div class="rise rounded-5xl text-center relative overflow-hidden"
     style="background: var(--card); border: 1px solid var(--line); padding: 16px 18px 18px;
-           box-shadow: inset 0 1px 0 rgba(255,255,255,.05), 0 10px 26px rgba(0,0,0,.22)">
+           box-shadow: var(--tile-shadow)">
     <EmptyIllustration :variant="tone" :size="88" class="mx-auto" />
 
     <div class="display text-ink" style="font-size: 18.5px; font-weight: 700; margin-top: 10px">{{ title }}</div>

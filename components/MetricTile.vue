@@ -3,7 +3,7 @@
     :style="{
       background: `linear-gradient(160deg, var(--${tone}-soft), var(--card) 78%)`,
       border: `1px solid var(--${tone}-soft)`,
-      boxShadow: `inset 0 1px 0 rgba(255,255,255,.06), 0 8px 20px -8px rgba(0,0,0,.55)`,
+      boxShadow: 'var(--tile-shadow)',
     }">
     <div class="flex flex-col h-full" style="padding: 13px 13px 12px">
       <div class="flex items-start gap-2.5">

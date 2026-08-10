@@ -3,7 +3,7 @@
     <div class="pointer-events-auto w-full" style="max-width: 520px; padding: 0 12px 12px">
       <div class="flex rounded-4xl px-1.5 py-1.5"
         style="background: var(--card); border: 1px solid var(--line);
-               box-shadow: inset 0 1px 0 rgba(255,255,255,.06), 0 -2px 18px rgba(0,0,0,.35)">
+               box-shadow: var(--nav-shadow)">
         <NuxtLink v-for="item in items" :key="item.to" :to="item.to"
           class="tap flex-1 rounded-3xl flex flex-col items-center relative"
           style="padding: 8px 0 7px"

@@ -1,12 +1,11 @@
 <template>
   <header class="flex items-center justify-between px-4 pt-4 pb-2.5">
     <div class="flex items-center gap-3">
-      <div class="relative">
-        <div class="absolute rounded-3xl" :style="{ inset: '-3px', background: `var(--${tone}-soft)` }" />
-        <img :src="isDark ? logoDark : logoLight" alt="" width="42" height="42"
-          class="relative rounded-2xl"
-          :style="{ boxShadow: `0 0 0 1.5px var(--${tone}), 0 6px 18px var(--${tone}-glow)` }" />
-      </div>
+      <!-- Il logo è quadrato: si mantiene tale, con un raggio morbido
+           che segue quello delle card invece di ritagliarlo in cerchio. -->
+      <img :src="isDark ? logoDark : logoLight" alt="" width="44" height="44"
+        style="border-radius: 13px; object-fit: cover"
+        :style="{ boxShadow: `0 0 0 1px var(--line), 0 6px 16px -4px var(--${tone}-glow)` }" />
       <div>
         <div class="display text-ink" style="font-size: 22px; font-weight: 800; line-height: 1.1">Equilibrio</div>
         <div :style="{ color: `var(--${tone})`, fontSize: '12.5px', textTransform: 'capitalize', fontWeight: 500 }">
