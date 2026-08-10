@@ -6,7 +6,7 @@
     <div class="rise rounded-5xl overflow-hidden grad-water relative" style="box-shadow: 0 14px 34px var(--water-glow)">
       <div class="absolute rounded-full" style="width: 190px; height: 190px; right: -66px; top: -76px; background: rgba(255,255,255,.14)" />
       <div class="relative p-6 text-center">
-        <div style="color: rgba(255,255,255,.82); font-size: 13px; font-weight: 500">Acqua di oggi</div>
+        <div style="color: rgba(255,255,255,.82); font-size: 13px; font-weight: 500">{{ day.isToday ? "Acqua di oggi" : "Acqua del giorno" }}</div>
         <div class="display tabular" style="color: #fff; font-size: 52px; font-weight: 800; line-height: 1.05; margin: 4px 0 2px">
           {{ today.water }}<span style="font-size: 20px; font-weight: 600; opacity: .8"> ml</span>
         </div>

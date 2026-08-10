@@ -15,6 +15,9 @@
               {{ day.streak === 1 ? "giorno" : "giorni" }} di fila
             </span>
           </div>
+          <div style="color: rgba(255,255,255,.78); font-size: 11.5px; margin-top: 2px">
+            {{ drinksToday ? `${drinksToday} ${drinksToday === 1 ? "bevanda" : "bevande"} · ${alcToday} g` : "nessuna bevanda in questo giorno" }}
+          </div>
         </div>
 
         <!-- Ultimi 14 giorni: pieno = pulito, vuoto = c'era alcol -->
@@ -51,14 +54,16 @@
 import { GlassWater, Footprints, UtensilsCrossed } from "lucide-vue-next";
 import { useDayStore } from "~/stores/day";
 import { useSettingsStore } from "~/stores/settings";
-import { lastNDays } from "~/utils/date";
+import { lastNDays, keyToDate } from "~/utils/date";
 
 const day = useDayStore();
 const settings = useSettingsStore();
 const today = computed(() => day.today);
 
-// lastNDays restituisce dal più recente: qui serve l'ordine cronologico
-const week = computed(() => lastNDays(7).reverse());
+// Le finestre temporali terminano sul giorno selezionato: navigando indietro
+// i grafici mostrano la situazione di quel giorno, non quella di oggi.
+const anchor = computed(() => keyToDate(day.date));
+const week = computed(() => lastNDays(7, anchor.value).reverse());
 
 function weekOf(kind: "water" | "move" | "kcal") {
   const goal =
@@ -70,5 +75,13 @@ function weekOf(kind: "water" | "move" | "kcal") {
   });
 }
 
-const soberDots = computed(() => lastNDays(14).reverse().map((k) => day.summaryOf(k).alcGrams === 0));
+const soberDots = computed(() =>
+  lastNDays(14, anchor.value)
+    .reverse()
+    .map((k) => day.summaryOf(k).alcGrams === 0),
+);
+
+// Cosa è successo nel giorno selezionato (non in quello odierno).
+const drinksToday = computed(() => today.value.drinks.length);
+const alcToday = computed(() => Math.round(today.value.drinks.reduce((a, d) => a + d.alc, 0)));
 </script>

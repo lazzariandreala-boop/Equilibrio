@@ -41,7 +41,11 @@
       <div class="rounded-3xl mx-auto flex items-center justify-center mb-3" style="width: 56px; height: 56px; background: var(--food-soft)">
         <Utensils :size="24" class="text-food" />
       </div>
-      <p class="text-dim" style="font-size: 14px; line-height: 1.5">Nessun pasto registrato. Inizia con una foto: ci pensa l'app a stimare i valori.</p>
+      <p class="text-dim" style="font-size: 14px; line-height: 1.5">
+          {{ day.isToday
+            ? "Nessun pasto registrato. Inizia con una foto: ci pensa l'app a stimare i valori."
+            : "Nessun pasto registrato in questo giorno." }}
+        </p>
     </div>
 
     <div v-else class="space-y-2.5 rise" style="animation-delay: 140ms">

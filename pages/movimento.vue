@@ -37,7 +37,9 @@
 
     <!-- registrate oggi -->
     <div v-if="today.moves.length" class="rise" style="animation-delay: 140ms">
-      <div class="display px-1 mb-2.5" style="font-weight: 700; font-size: 17px">Registrate oggi</div>
+      <div class="display px-1 mb-2.5" style="font-weight: 700; font-size: 17px">
+        {{ day.isToday ? "Registrate oggi" : "Registrate in questo giorno" }}
+      </div>
       <div class="space-y-2">
         <AppCard v-for="(m, i) in today.moves" :key="i" pad="p-3.5">
           <div class="flex items-center gap-3">
@@ -61,7 +63,9 @@
 
     <div v-else class="rise text-center" style="padding: 12px 24px; animation-delay: 140ms">
       <p class="text-dim" style="font-size: 14px; line-height: 1.5">
-        Niente ancora oggi. Anche dieci minuti di camminata contano.
+        {{ day.isToday
+          ? "Niente ancora oggi. Anche dieci minuti di camminata contano."
+          : "Nessuna attività registrata in questo giorno." }}
       </p>
     </div>
 

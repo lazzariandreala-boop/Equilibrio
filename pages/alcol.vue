@@ -6,7 +6,9 @@
     <div class="rise rounded-5xl overflow-hidden grad-alcohol relative" style="box-shadow: 0 14px 34px var(--alcohol-glow)">
       <div class="absolute rounded-full" style="width: 190px; height: 190px; left: -70px; bottom: -86px; background: rgba(255,255,255,.13)" />
       <div class="relative p-6 text-center">
-        <div style="color: rgba(255,255,255,.82); font-size: 13px; font-weight: 500">Senza alcol</div>
+        <div style="color: rgba(255,255,255,.82); font-size: 13px; font-weight: 500">
+          {{ day.isToday ? "Senza alcol" : "Senza alcol, a quel giorno" }}
+        </div>
         <div class="display tabular" style="color: #fff; font-size: 60px; font-weight: 800; line-height: 1.02; margin: 2px 0">
           {{ day.streak }}
         </div>
@@ -41,7 +43,7 @@
     <!-- elenco di oggi -->
     <div v-if="today.drinks.length" class="rise" style="animation-delay: 200ms">
       <div class="display mb-2.5 px-1" style="font-weight: 700; font-size: 17px">
-        Oggi · <span class="tabular text-alcohol">{{ day.alcGrams }} g</span> di alcol
+        {{ day.isToday ? "Oggi" : "Quel giorno" }} · <span class="tabular text-alcohol">{{ day.alcGrams }} g</span> di alcol
       </div>
       <div class="space-y-2">
         <AppCard v-for="(d, i) in today.drinks" :key="i" pad="p-3.5">
@@ -57,7 +59,9 @@
     </div>
 
     <p v-else class="text-faint text-center rise" style="font-size: 13px; padding: 8px 20px; line-height: 1.5; animation-delay: 200ms">
-      Nessuna bevanda registrata oggi. La striscia cresce da sola, basta lasciarla correre.
+      {{ day.isToday
+        ? "Nessuna bevanda registrata oggi. La striscia cresce da sola, basta lasciarla correre."
+        : "Nessuna bevanda registrata in questo giorno." }}
     </p>
 
     <BottomSheet v-model="urgeOpen" title="Aspetta un attimo">

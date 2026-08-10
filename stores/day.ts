@@ -1,5 +1,5 @@
 import { defineStore } from "pinia";
-import { todayKey } from "~/utils/date";
+import { todayKey, keyToDate } from "~/utils/date";
 
 export interface Meal {
   name: string;
@@ -62,25 +62,31 @@ export const useDayStore = defineStore("day", {
       );
     },
     /**
-     * Giorni consecutivi senza alcol, contati a ritroso da oggi.
-     * Si ferma al primo giorno con una bevanda registrata, e comunque
-     * non va oltre il primo giorno in cui l'app è stata usata.
+     * Giorni consecutivi senza alcol fino al giorno indicato (default: quello
+     * selezionato). Navigando indietro nel tempo il valore è quello che
+     * l'app avrebbe mostrato in quel giorno, non quello di oggi.
      */
-    streak(state): number {
-      const keys = Object.keys(state.days).sort();
-      if (keys.length === 0) return 0;
-      const first = keys[0];
+    streakAt(state) {
+      return (dayKey: string): number => {
+        const keys = Object.keys(state.days).sort();
+        if (keys.length === 0) return 0;
+        const first = keys[0];
 
-      let count = 0;
-      const cursor = new Date();
-      for (let i = 0; i < 3650; i++) {
-        const key = todayKey(cursor);
-        if (key < first) break;
-        if ((state.days[key]?.drinks.length ?? 0) > 0) break;
-        count++;
-        cursor.setDate(cursor.getDate() - 1);
-      }
-      return count;
+        let count = 0;
+        const cursor = keyToDate(dayKey);
+        for (let i = 0; i < 3650; i++) {
+          const key = todayKey(cursor);
+          if (key < first) break;
+          if ((state.days[key]?.drinks.length ?? 0) > 0) break;
+          count++;
+          cursor.setDate(cursor.getDate() - 1);
+        }
+        return count;
+      };
+    },
+    /** Striscia riferita al giorno attualmente selezionato. */
+    streak(state): number {
+      return this.streakAt(state.date);
     },
     moveMin(): number {
       return this.today.moves.reduce((a, m) => a + m.min, 0);
