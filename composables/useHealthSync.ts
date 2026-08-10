@@ -37,6 +37,23 @@ export function useHealthSync() {
     }
   }
 
+  /**
+   * Il plugin inizializza il client di Health Connect dentro isHealthAvailable():
+   * se non la si chiama, ogni lettura successiva fallisce. Va quindi invocata
+   * prima di ogni operazione, non una volta sola all'avvio.
+   */
+  async function ensureClient(H: any): Promise<boolean> {
+    try {
+      const res = await H.isHealthAvailable();
+      available.value = !!res?.available;
+      return available.value;
+    } catch (e: any) {
+      available.value = false;
+      detail.value = `isHealthAvailable: ${e?.message || e}`;
+      return false;
+    }
+  }
+
   /** Se Health Connect non è installato, lo apre nel Play Store. */
   async function install() {
     const H = await plugin();
@@ -124,7 +141,10 @@ export function useHealthSync() {
         endDate: end.toISOString(),
         dataType: "steps",
         bucket: "day",
-      }).catch(() => null);
+      }).catch((e: any) => {
+        detail.value = `${detail.value ?? ""} · passi: ${e?.message || e}`;
+        return null;
+      });
       steps.value = Math.round(agg?.aggregatedData?.[0]?.value ?? 0);
 
       const wk = await H.queryWorkouts({
@@ -133,7 +153,10 @@ export function useHealthSync() {
         includeHeartRate: false,
         includeRoute: false,
         includeSteps: false,
-      }).catch(() => null);
+      }).catch((e: any) => {
+        detail.value = `${detail.value ?? ""} · allenamenti: ${e?.message || e}`;
+        return null;
+      });
 
       const existing = new Set(day.today.moves.map((m: any) => m.extId).filter(Boolean));
       for (const w of wk?.workouts ?? []) {
