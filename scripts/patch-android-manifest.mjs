@@ -10,8 +10,19 @@ const VARS = "android/variables.gradle";
 
 // capacitor-health richiede minSdk 26 (Health Connect non esiste sotto Android 8):
 // il template Capacitor parte da 22, quindi il merge del manifest fallirebbe.
+//
+// rgcfaIncludeGoogle: senza questo flag @capacitor-firebase/authentication
+// dichiara play-services-auth come compileOnly, quindi GoogleSignIn NON finisce
+// nell'APK e l'app va in NoClassDefFoundError appena il bridge carica i plugin.
 if (existsSync(VARS)) {
   let vars = readFileSync(VARS, "utf8");
+
+  if (!vars.includes("rgcfaIncludeGoogle")) {
+    vars = vars.replace(/\n\}\s*$/, "\n    rgcfaIncludeGoogle = true\n}");
+    writeFileSync(VARS, vars);
+    console.log("✓ rgcfaIncludeGoogle = true (include play-services-auth nell'APK)");
+  }
+
   if (/minSdkVersion\s*=\s*(\d+)/.test(vars)) {
     const current = Number(RegExp.$1);
     if (current < 26) {
