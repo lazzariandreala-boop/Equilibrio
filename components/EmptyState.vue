@@ -1,33 +1,29 @@
 <template>
-  <AppCard class="rise text-center" pad="p-6">
-    <div class="rounded-full mx-auto flex items-center justify-center relative"
-      :style="{ width: '96px', height: '96px', background: `var(--${tone}-soft)` }">
-      <div class="absolute rounded-full" :style="{ inset: '-8px', background: `var(--${tone}-soft)`, opacity: 0.5 }" />
-      <component :is="icon" :size="40" :color="`var(--${tone})`" style="position: relative" />
-    </div>
+  <div class="rise rounded-5xl text-center relative overflow-hidden"
+    style="background: var(--card); border: 1px solid var(--line); padding: 16px 18px 18px;
+           box-shadow: inset 0 1px 0 rgba(255,255,255,.05), 0 10px 26px rgba(0,0,0,.22)">
+    <EmptyIllustration :variant="tone" :size="88" class="mx-auto" />
 
-    <div class="display text-ink" style="font-size: 19px; font-weight: 700; margin-top: 16px">{{ title }}</div>
-    <p class="text-dim" style="font-size: 13.5px; line-height: 1.5; margin-top: 6px">{{ subtitle }}</p>
+    <div class="display text-ink" style="font-size: 18.5px; font-weight: 700; margin-top: 10px">{{ title }}</div>
+    <p class="text-dim" style="font-size: 13px; line-height: 1.45; margin-top: 4px">{{ subtitle }}</p>
 
-    <div v-if="actions?.length" class="flex flex-wrap justify-center gap-2" style="margin-top: 16px">
+    <div v-if="actions?.length" class="flex flex-wrap justify-center gap-2" style="margin-top: 13px">
       <button v-for="a in actions" :key="a.label" class="tap rounded-full flex items-center gap-1.5"
-        :style="{
-          padding: '9px 15px', border: `1px solid var(--line)`,
-          background: 'var(--raised)', fontSize: '13.5px', fontWeight: 600,
-        }"
+        style="padding: 8px 14px; font-size: 13px; font-weight: 600;
+               background: var(--raised); border: 1px solid var(--line);
+               box-shadow: inset 0 1px 0 rgba(255,255,255,.06)"
         @click="$emit('action', a.id)">
-        <component :is="a.icon" :size="15" :color="`var(--${tone})`" />
+        <component :is="a.icon" :size="14" :color="`var(--${tone})`" />
         <span class="text-ink">{{ a.label }}</span>
       </button>
     </div>
-  </AppCard>
+  </div>
 </template>
 
 <script setup lang="ts">
 withDefaults(
   defineProps<{
     tone: "water" | "alcohol" | "move" | "food";
-    icon: any;
     title: string;
     subtitle: string;
     actions?: { id: string; label: string; icon: any }[];

@@ -1,5 +1,5 @@
 <template>
-  <div class="space-y-3.5">
+  <div class="space-y-3">
     <DayNav />
 
     <HeroCard tone="alcohol" :icon="ShieldCheck" :title="day.isToday ? 'Senza alcol' : 'Senza alcol, a quel giorno'"
@@ -13,14 +13,14 @@
 
     <div class="grid grid-cols-2 gap-2.5 rise" style="animation-delay: 70ms">
       <button class="tap rounded-4xl p-4 flex flex-col items-start gap-2.5"
-        style="background: var(--move-soft); border: 1px solid var(--line)" @click="day.cleanDay()">
+        style="background: var(--move-soft); border: 1px solid var(--line); box-shadow: inset 0 1px 0 rgba(255,255,255,.06)" @click="day.cleanDay()">
         <div class="rounded-2xl grad-move flex items-center justify-center" style="width: 40px; height: 40px">
           <Check :size="20" color="#fff" />
         </div>
         <span class="text-ink text-left" style="font-weight: 600; font-size: 14.5px">Giornata pulita</span>
       </button>
       <button class="tap rounded-4xl p-4 flex flex-col items-start gap-2.5"
-        style="background: var(--water-soft); border: 1px solid var(--line)" @click="urgeOpen = true">
+        style="background: var(--water-soft); border: 1px solid var(--line); box-shadow: inset 0 1px 0 rgba(255,255,255,.06)" @click="urgeOpen = true">
         <div class="rounded-2xl grad-water flex items-center justify-center" style="width: 40px; height: 40px">
           <Wind :size="20" color="#fff" />
         </div>
@@ -28,13 +28,12 @@
       </button>
     </div>
 
-    <button class="tap w-full rounded-full py-4 font-semibold flex items-center justify-center gap-2.5 grad-alcohol rise"
-      style="color: #fff; font-size: 16px; box-shadow: 0 12px 30px var(--alcohol-glow); animation-delay: 120ms"
+    <button class="tap w-full rounded-full py-3.5 font-semibold flex items-center justify-center gap-2.5 grad-alcohol rise cta-glow-alcohol" style="color: #fff; font-size: 15.5px; animation-delay: 120ms"
       @click="drinkOpen = true">
       <Plus :size="19" /> Registra cosa ho bevuto
     </button>
 
-    <EmptyState v-if="!today.drinks.length" tone="alcohol" :icon="Sparkles" style="animation-delay: 170ms"
+    <EmptyState v-if="!today.drinks.length" tone="alcohol" style="animation-delay: 170ms"
       :title="day.isToday ? 'Nessuna bevanda oggi' : 'Nessuna bevanda in questo giorno'"
       subtitle="La striscia cresce da sola: basta lasciarla correre." />
 

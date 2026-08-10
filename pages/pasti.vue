@@ -1,5 +1,5 @@
 <template>
-  <div class="space-y-3.5">
+  <div class="space-y-3">
     <DayNav />
 
     <HeroCard tone="food" :icon="Flame" :title="day.isToday ? 'Pasti di oggi' : 'Pasti del giorno'"
@@ -11,13 +11,12 @@
       </div>
     </HeroCard>
 
-    <button class="tap w-full rounded-full py-4 font-semibold flex items-center justify-center gap-2.5 grad-food rise"
-      style="color: #fff; font-size: 16px; box-shadow: 0 12px 30px var(--food-glow); animation-delay: 70ms"
+    <button class="tap w-full rounded-full py-3.5 font-semibold flex items-center justify-center gap-2.5 grad-food rise cta-glow-food" style="color: #fff; font-size: 15.5px; animation-delay: 70ms"
       @click="open()">
       <Camera :size="19" /> Scatta o aggiungi un pasto
     </button>
 
-    <EmptyState v-if="today.meals.length === 0" tone="food" :icon="Salad"
+    <EmptyState v-if="today.meals.length === 0" tone="food"
       :title="day.isToday ? 'Nessun pasto registrato' : 'Nessun pasto in questo giorno'"
       subtitle="Inizia con una foto: ci pensa l'app a stimare i valori."
       :actions="quick" style="animation-delay: 130ms" @action="open" />

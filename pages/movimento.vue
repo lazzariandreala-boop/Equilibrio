@@ -11,8 +11,8 @@
       <div class="display px-1 mb-2.5" style="font-weight: 700; font-size: 17px">Aggiungi un'attività</div>
       <div class="grid grid-cols-4 gap-2">
         <button v-for="a in ACTIVITIES" :key="a.id" class="tap rounded-3xl flex flex-col items-center justify-center gap-1.5"
-          style="padding: 12px 4px"
-          :style="{ background: tint(a.color, 0.13), border: `1px solid ${tint(a.color, 0.22)}` }"
+          style="padding: 11px 4px"
+          :style="{ background: tint(a.color, 0.13), border: `1px solid ${tint(a.color, 0.24)}`, boxShadow: `inset 0 1px 0 rgba(255,255,255,.07), 0 4px 12px -4px ${tint(a.color, 0.3)}` }"
           @click="pick(a)">
           <component :is="icons[a.icon]" :size="21" :color="a.color" />
           <span class="text-ink text-center leading-tight" style="font-size: 10.5px; font-weight: 600">{{ a.name }}</span>
@@ -46,7 +46,7 @@
       </div>
     </div>
 
-    <EmptyState v-else tone="move" :icon="Footprints" style="animation-delay: 140ms"
+    <EmptyState v-else tone="move" style="animation-delay: 140ms"
       :title="day.isToday ? 'Niente ancora oggi' : 'Nessuna attività in questo giorno'"
       subtitle="Anche dieci minuti di camminata contano. Scegli un'attività qui sopra." />
 
