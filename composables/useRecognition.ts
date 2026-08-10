@@ -87,5 +87,5 @@ export function useRecognition() {
     return (res.alimenti || []).map(normalize);
   }
 
-  return { recognize, recognizeBase64, estimate };
+  return { recognize, recognizeBase64, estimate, fileToBase64 };
 }

@@ -107,7 +107,7 @@ import type { RecognizedItem } from "~/composables/useRecognition";
 import { estimateLocally } from "~/utils/foods";
 
 const emit = defineEmits<{ save: [any] }>();
-const { recognize, recognizeBase64, estimate } = useRecognition();
+const { recognizeBase64, estimate, fileToBase64 } = useRecognition();
 const { isNative, pickNative, pickWeb } = useImagePicker();
 
 const phase = ref<"start" | "describe" | "loading" | "edit">("start");
@@ -146,28 +146,31 @@ function messageOf(e: any, fallback: string) {
   return e?.data?.statusMessage || e?.statusMessage || fallback;
 }
 
-async function capture(source: "camera" | "gallery") {
+async function fromPhoto(source: "camera" | "gallery") {
   err.value = "";
+
+  // Nell'app installata "Scatta" apre direttamente la fotocamera; nel browser
+  // si ripiega sull'input file, che con `capture` propone comunque lo scatto.
+  let photo: { data: string; media: string } | null = null;
   try {
-    // Nell'app installata la fotocamera si apre subito; nel browser resta
-    // l'input file, che con `capture` propone comunque lo scatto diretto.
     if (isNative()) {
-      const shot = await pickNative(source);
-      if (!shot) return; // l'utente ha annullato
-      loadingLabel.value = "Sto leggendo la foto…";
-      phase.value = "loading";
-      const list = await recognizeBase64(shot.data, shot.media);
-      items.value = list.length ? list : [blank()];
+      photo = await pickNative(source);
     } else {
       const file = await pickWeb(source);
-      if (!file) return;
-      loadingLabel.value = "Sto leggendo la foto…";
-      phase.value = "loading";
-      const list = await recognize(file);
-      items.value = list.length ? list : [blank()];
+      if (file) photo = await fileToBase64(file);
     }
+  } catch {
+    photo = null;
+  }
+  if (!photo) return; // annullato o permesso negato: si resta dove si è
+
+  loadingLabel.value = "Sto leggendo la foto…";
+  phase.value = "loading";
+  try {
+    const list = await recognizeBase64(photo.data, photo.media);
+    items.value = list.length ? list : [blank()];
   } catch (e: any) {
-    err.value = messageOf(e, "Non sono riuscito a leggere la foto. Puoi inserire i dati a mano.");
+    err.value = messageOf(e, "Non sono riuscito a leggere la foto. Cerca l'alimento o inserisci i dati a mano.");
     items.value = [blank()];
   }
   phase.value = "edit";
