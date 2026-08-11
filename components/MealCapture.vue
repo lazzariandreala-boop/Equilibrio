@@ -63,7 +63,8 @@
           </div>
           <div style="flex: 1">
             <div class="text-faint" style="font-size: 11px">Quantità</div>
-            <input v-model="it.qty" :class="inputCls" />
+            <input v-model="it.qty" :class="inputCls"
+              @focus="prevQty[i] = it.qty" @blur="rescale(i)" @keyup.enter="rescale(i)" />
           </div>
           <button class="text-faint self-end pb-2" aria-label="Rimuovi" @click="items.splice(i, 1)">
             <X :size="18" />
@@ -81,6 +82,10 @@
       <div class="rounded-4xl p-3.5" style="background: var(--raised)">
         <FoodSearch @pick="onSearchPick" />
       </div>
+
+      <p class="text-faint px-1" style="font-size: 12px; line-height: 1.4">
+        Cambiando la quantità, calorie e valori si ricalcolano in proporzione.
+      </p>
 
       <button class="text-dim flex items-center gap-1" style="font-size: 14px" @click="addBlank">
         <Plus :size="16" /> Aggiungi voce vuota
@@ -125,6 +130,41 @@ const fields = [
   { key: "fat", label: "Gras" },
   { key: "fib", label: "Fibre" },
 ];
+
+const prevQty = ref<string[]>([]);
+
+/**
+ * Estrae la quantità numerica da testi come "75 g", "1 lattina (500 ml)",
+ * "2 piatti". Si preferisce il numero accostato a un'unità di peso o volume,
+ * perché è quello che descrive davvero la porzione.
+ */
+function parseQty(text: string): number | null {
+  if (!text) return null;
+  const withUnit = text.match(/(\d+(?:[.,]\d+)?)\s*(kg|g|gr|grammi|ml|l|cl)\b/i);
+  const plain = text.match(/(\d+(?:[.,]\d+)?)/);
+  const raw = withUnit?.[1] ?? plain?.[1];
+  if (!raw) return null;
+  const n = Number(raw.replace(",", "."));
+  return Number.isFinite(n) && n > 0 ? n : null;
+}
+
+/** Riporta i valori nutrizionali alla nuova quantità indicata. */
+function rescale(i: number) {
+  const it = items.value[i];
+  if (!it) return;
+  const before = parseQty(prevQty.value[i] ?? "");
+  const after = parseQty(it.qty);
+  if (!before || !after || before === after) return;
+
+  const k = after / before;
+  it.kcal = Math.round((+it.kcal || 0) * k);
+  it.cho = Math.round((+it.cho || 0) * k);
+  it.pro = Math.round((+it.pro || 0) * k);
+  it.fat = Math.round((+it.fat || 0) * k);
+  it.fib = Math.round((+it.fib || 0) * k);
+  it.alc = Math.round((+it.alc || 0) * k);
+  prevQty.value[i] = it.qty;
+}
 
 const blank = (): RecognizedItem => ({ name: "", qty: "", kcal: 0, cho: 0, pro: 0, fat: 0, fib: 0, alc: 0 });
 
