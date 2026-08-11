@@ -1,280 +1,207 @@
 import { Health } from "capacitor-health";
 import { useDayStore } from "~/stores/day";
-import { todayKey } from "~/utils/date";
 
 /**
- * Legge passi e allenamenti dalla piattaforma salute del telefono:
- * Health Connect su Android, HealthKit su iPhone.
+ * Lettura di passi e allenamenti da Health Connect (Android) e HealthKit (iOS).
  *
- * Attenzione: NON tutte le app scrivono su Health Connect. Samsung Health,
- * Garmin Connect, Fitbit e Google Health sì; Huawei Health no, perché HMS e
- * GMS restano ecosistemi separati e non esiste un ponte nativo. Per i dati
- * Huawei serve un'app tramite (per esempio Health Sync) che li ricopi in
- * Health Connect.
+ * Nota sul plugin: il client di Health Connect viene creato dentro
+ * isHealthAvailable(), quindi va invocata prima di qualunque lettura.
  *
- * Il plugin nativo esiste solo nella build Capacitor: nel browser il
- * composable resta inerte e l'interfaccia lo dichiara.
+ * Huawei Health non scrive su Health Connect (ecosistema separato): per quei
+ * dati serve un'app tramite come Health Sync.
  */
+
+const PERMISSIONS = [
+  "READ_STEPS",
+  "READ_WORKOUTS",
+  "READ_ACTIVE_CALORIES",
+  "READ_DISTANCE",
+] as const;
+
+const ENABLED_KEY = "equilibrio:health:enabled";
 
 export function useHealthSync() {
   const day = useDayStore();
-  const available = useState("health:available", () => false);
+
+  const native = useState("health:native", () => false);
   const connected = useState("health:connected", () => false);
   const busy = useState("health:busy", () => false);
-  const lastSync = useState<string | null>("health:lastSync", () => null);
   const steps = useState("health:steps", () => 0);
-  const native = useState("health:native", () => false);
+  const workouts = useState("health:workouts", () => 0);
+  const lastSync = useState<string | null>("health:lastSync", () => null);
   const error = useState<string | null>("health:error", () => null);
-  // Esito grezzo delle chiamate al plugin, mostrato nel riquadro del Profilo.
-  const detail = useState<string | null>("health:detail", () => null);
 
-  async function plugin(): Promise<any | null> {
-    if (!import.meta.client) return null;
-    const cap = (window as any).Capacitor;
-    if (!cap?.isNativePlatform?.()) {
-      detail.value = "Non sei nell'app installata: il plugin nativo non è raggiungibile.";
-      return null;
-    }
-    if (!Health) {
-      detail.value = "Plugin salute non caricato.";
-      return null;
-    }
-    return Health;
-  }
+  const isNative = () => !!(window as any).Capacitor?.isNativePlatform?.();
 
-  /**
-   * Il plugin inizializza il client di Health Connect dentro isHealthAvailable():
-   * se non la si chiama, ogni lettura successiva fallisce. Va quindi invocata
-   * prima di ogni operazione, non una volta sola all'avvio.
-   */
-  async function ensureClient(H: any): Promise<boolean> {
-    try {
-      const res = await H.isHealthAvailable();
-      available.value = !!res?.available;
-      return available.value;
-    } catch (e: any) {
-      available.value = false;
-      detail.value = `isHealthAvailable: ${e?.message || e}`;
-      return false;
-    }
-  }
-
-  /** Se Health Connect non è installato, lo apre nel Play Store. */
-  async function install() {
-    const H = await plugin();
-    await H?.showHealthConnectInPlayStore?.().catch(() => {});
-  }
-
-  /**
-   * Esegue ogni chiamata del plugin una per una e riporta la risposta grezza.
-   * Serve perché finora ogni guasto usciva in silenzio: qui nulla può fallire
-   * senza lasciare traccia, nemmeno un'eccezione sincrona.
-   */
-  async function diagnose() {
-    const lines: string[] = [];
-    const step = async (name: string, fn: () => Promise<any>) => {
-      try {
-        const r = await fn();
-        lines.push(`${name}: ${JSON.stringify(r)}`);
-      } catch (e: any) {
-        lines.push(`${name}: ERRORE ${e?.message || e?.errorMessage || String(e)}`);
-      }
-      detail.value = lines.join("\n");
-    };
-
-    lines.push(`Capacitor: ${(window as any).Capacitor ? "presente" : "ASSENTE"}`);
-    lines.push(`nativo: ${(window as any).Capacitor?.isNativePlatform?.() ? "sì" : "no"}`);
-    lines.push(`piattaforma: ${(window as any).Capacitor?.getPlatform?.() ?? "?"}`);
-    lines.push(`oggetto Health: ${Health ? "presente" : "ASSENTE"}`);
-    detail.value = lines.join("\n");
-
-    if (!Health) return;
-
-    await step("isHealthAvailable", () => Health.isHealthAvailable());
-    await step("checkHealthPermissions", () =>
-      Health.checkHealthPermissions({ permissions: ["READ_STEPS", "READ_WORKOUTS"] as any }),
-    );
-    await step("requestHealthPermissions", () =>
-      Health.requestHealthPermissions({ permissions: ["READ_STEPS", "READ_WORKOUTS"] as any }),
-    );
-
-    const start = new Date();
-    start.setHours(0, 0, 0, 0);
-    await step("passi di oggi", () =>
-      Health.queryAggregated({
-        startDate: start.toISOString(),
-        endDate: new Date().toISOString(),
-        dataType: "steps" as any,
-        bucket: "day",
-      }),
-    );
-    await step("allenamenti di oggi", () =>
-      Health.queryWorkouts({
-        startDate: start.toISOString(),
-        endDate: new Date().toISOString(),
-        includeHeartRate: false,
-        includeRoute: false,
-        includeSteps: false,
-      }),
-    );
-  }
-
-  /** Apre le impostazioni Health Connect (serve se i permessi sono stati negati). */
-  async function openSettings() {
-    const H = await plugin();
-    await H?.openHealthConnectSettings?.().catch(() => {});
-  }
+  /** L'utente ha scelto di tenere attivo il collegamento? */
+  const wasEnabled = () => import.meta.client && localStorage.getItem(ENABLED_KEY) === "1";
+  const setEnabled = (v: boolean) => {
+    if (import.meta.client) localStorage.setItem(ENABLED_KEY, v ? "1" : "0");
+  };
 
   const label = computed(() => {
     if (!native.value) return "Disponibile solo nell'app installata";
     if (busy.value) return "Sincronizzo…";
-    if (!connected.value) return "Tocca Collega per autorizzare la lettura";
-    const s = steps.value ? `${steps.value.toLocaleString("it-IT")} passi oggi` : "Collegato";
-    return lastSync.value ? `${s} · aggiornato alle ${lastSync.value}` : s;
+    if (!connected.value) return "Non collegato";
+    const parts = [`${steps.value.toLocaleString("it-IT")} passi oggi`];
+    if (workouts.value) parts.push(`${workouts.value} allenamenti`);
+    if (lastSync.value) parts.push(`aggiornato alle ${lastSync.value}`);
+    return parts.join(" · ");
   });
 
-  async function check() {
-    if (import.meta.client) {
-      const cap = (window as any).Capacitor;
-      native.value = !!cap?.isNativePlatform?.();
-      detail.value = native.value
-        ? `app nativa · plugin ${Health ? "presente" : "ASSENTE"}`
-        : "in esecuzione nel browser: i dati salute non sono accessibili";
-    }
-    const H = await plugin();
-    if (!H) return;
-    try {
-      // Nota: su Android 14+ Health Connect è un modulo di sistema e questo
-      // controllo può rispondere "non disponibile" pur essendo installato.
-      // Perciò il valore è solo informativo: non blocca i pulsanti.
-      const res = await H.isHealthAvailable().catch(() => null);
-      available.value = !!res?.available;
-      // Se i permessi sono già stati concessi in passato, si riparte collegati.
-      const perms = await H.checkHealthPermissions({
-        permissions: ["READ_STEPS", "READ_WORKOUTS"],
-      }).catch(() => null);
-      // La risposta è un array di oggetti { NOME_PERMESSO: true|false }
-      const granted = (perms?.permissions ?? []).some((entry: any) =>
-        Object.values(entry ?? {}).some(Boolean),
-      );
-      if (granted) {
-        connected.value = true;
-        await sync();
-      }
-    } catch {
-      available.value = false;
-    }
+  /** Elenco dei permessi effettivamente concessi. */
+  async function grantedPermissions(): Promise<string[]> {
+    const res = await Health.checkHealthPermissions({ permissions: PERMISSIONS as any }).catch(() => null);
+    return (res?.permissions ?? []).flatMap((entry: any) =>
+      Object.entries(entry ?? {}).filter(([, v]) => v).map(([k]) => k),
+    );
   }
 
+  /**
+   * Collega: se Health Connect non è disponibile apre lo store, altrimenti
+   * chiede i permessi e, se concessi, sincronizza subito.
+   */
   async function connect() {
     error.value = null;
-    const H = await plugin();
-    if (!H) {
-      error.value = "Non riesco a raggiungere il servizio salute del telefono.";
+    if (!isNative()) {
+      error.value = "Funziona solo nell'app installata.";
       return;
     }
+
     busy.value = true;
-    error.value = null;
     try {
-      await H.requestHealthPermissions({
-        permissions: ["READ_STEPS", "READ_WORKOUTS", "READ_ACTIVE_CALORIES", "READ_DISTANCE"],
-      });
-      connected.value = true;
-      await sync();
-    } catch (e: any) {
-      connected.value = false;
-      const msg = String(e?.message || e || "");
-      error.value = /available|provider|sdk/i.test(msg)
-        ? "Health Connect non risponde. Aprilo, controlla che Equilibrio sia fra le app autorizzate, poi riprova."
-        : "Permessi non concessi. Aprili in Health Connect e riprova.";
-    } finally {
-      busy.value = false;
-    }
-  }
-
-  /** Porta in Equilibrio passi e allenamenti di oggi, senza creare doppioni. */
-  async function sync() {
-    error.value = null;
-    const H = await plugin();
-    if (!H) {
-      error.value = "Non riesco a raggiungere il servizio salute del telefono.";
-      return;
-    }
-    busy.value = true;
-    error.value = null;
-    try {
-      const start = new Date();
-      start.setHours(0, 0, 0, 0);
-      const end = new Date();
-
-      const agg = await H.queryAggregated({
-        startDate: start.toISOString(),
-        endDate: end.toISOString(),
-        dataType: "steps",
-        bucket: "day",
-      }).catch((e: any) => {
-        detail.value = `${detail.value ?? ""} · passi: ${e?.message || e}`;
-        return null;
-      });
-      steps.value = Math.round(agg?.aggregatedData?.[0]?.value ?? 0);
-
-      const wk = await H.queryWorkouts({
-        startDate: start.toISOString(),
-        endDate: end.toISOString(),
-        includeHeartRate: false,
-        includeRoute: false,
-        includeSteps: false,
-      }).catch((e: any) => {
-        detail.value = `${detail.value ?? ""} · allenamenti: ${e?.message || e}`;
-        return null;
-      });
-
-      const existing = new Set(day.today.moves.map((m: any) => m.extId).filter(Boolean));
-      for (const w of wk?.workouts ?? []) {
-        const id = w.id || `${w.startDate}-${w.workoutType}`;
-        if (existing.has(id)) continue; // già importato in una sincronizzazione precedente
-        const minutes = Math.round((w.duration ?? 0) / 60);
-        if (minutes < 1) continue;
-        day.addMove({
-          type: translate(w.workoutType),
-          min: minutes,
-          kcal: Math.round(w.calories ?? 0) || undefined,
-          activityId: mapId(w.workoutType),
-          extId: id,
-        } as any);
+      const avail = await Health.isHealthAvailable().catch(() => ({ available: false }));
+      if (!avail?.available) {
+        // Non installato: si porta l'utente direttamente allo store.
+        await Health.showHealthConnectInPlayStore().catch(() => {
+          error.value = "Health Connect non è disponibile su questo telefono.";
+        });
+        return;
       }
 
-      // I passi diventano minuti di movimento: circa 100 passi al minuto a
-      // passo normale. Senza questo restavano un numero senza effetto.
-      if (steps.value > 300) {
-        day.upsertStepsMove(Math.round(steps.value / 100), steps.value);
-      }
+      await Health.requestHealthPermissions({ permissions: PERMISSIONS as any });
 
-      lastSync.value = new Date().toLocaleTimeString("it-IT", { hour: "2-digit", minute: "2-digit" });
-      if (!steps.value && !(wk?.workouts?.length ?? 0)) {
+      const granted = await grantedPermissions();
+      if (!granted.includes("READ_STEPS") && !granted.includes("READ_WORKOUTS")) {
         error.value =
-          "Nessun dato trovato per oggi. Controlla in Health Connect che Equilibrio abbia i permessi di lettura per passi e allenamenti.";
+          "Permessi non concessi. Puoi darli manualmente in Health Connect, alla voce Equilibrio.";
+        return;
       }
+
+      setEnabled(true);
+      connected.value = true;
+      await readData();
     } catch (e: any) {
-      error.value = "Lettura non riuscita. Apri Health Connect e verifica i permessi di Equilibrio.";
+      error.value = `Collegamento non riuscito: ${e?.message || e}`;
     } finally {
       busy.value = false;
     }
   }
 
-  /** Passi convertiti in minuti di movimento, per chi non registra allenamenti. */
-  const stepsAsMinutes = computed(() => Math.round(steps.value / 100));
+  /** Scollega: i permessi restano in Health Connect, qui si smette di leggerli. */
+  function disconnect() {
+    setEnabled(false);
+    connected.value = false;
+    steps.value = 0;
+    workouts.value = 0;
+    lastSync.value = null;
+    error.value = null;
+  }
 
-  onMounted(check);
+  /** Legge i dati di oggi e li porta nel diario. */
+  async function readData() {
+    const start = new Date();
+    start.setHours(0, 0, 0, 0);
+    const end = new Date();
 
-  return {
-    available, connected, busy, steps, stepsAsMinutes, lastSync, label,
-    native, error, detail, connect, sync, install, openSettings, diagnose,
-  };
+    // Il client vive dentro isHealthAvailable(): senza questa chiamata le
+    // query successive falliscono.
+    await Health.isHealthAvailable().catch(() => null);
+
+    const agg = await Health.queryAggregated({
+      startDate: start.toISOString(),
+      endDate: end.toISOString(),
+      dataType: "steps" as any,
+      bucket: "day",
+    }).catch(() => null);
+    steps.value = Math.round(agg?.aggregatedData?.[0]?.value ?? 0);
+
+    const wk = await Health.queryWorkouts({
+      startDate: start.toISOString(),
+      endDate: end.toISOString(),
+      includeHeartRate: false,
+      includeRoute: false,
+      includeSteps: false,
+    }).catch(() => null);
+
+    const list = wk?.workouts ?? [];
+    workouts.value = list.length;
+
+    const existing = new Set(day.today.moves.map((m: any) => m.extId).filter(Boolean));
+    for (const w of list) {
+      const id = w.id || `${w.startDate}-${w.workoutType}`;
+      if (existing.has(id)) continue; // già importato
+      const minutes = Math.round((w.duration ?? 0) / 60);
+      if (minutes < 1) continue;
+      day.addMove({
+        type: translate(w.workoutType),
+        min: minutes,
+        kcal: Math.round(w.calories ?? 0) || undefined,
+        activityId: mapId(w.workoutType),
+        extId: id,
+      } as any);
+    }
+
+    // I passi diventano minuti di movimento: circa 100 passi al minuto.
+    if (steps.value > 300) day.upsertStepsMove(Math.round(steps.value / 100), steps.value);
+
+    lastSync.value = new Date().toLocaleTimeString("it-IT", { hour: "2-digit", minute: "2-digit" });
+  }
+
+  async function sync() {
+    if (!isNative() || !connected.value) return;
+    busy.value = true;
+    error.value = null;
+    try {
+      await readData();
+    } catch (e: any) {
+      error.value = `Lettura non riuscita: ${e?.message || e}`;
+    } finally {
+      busy.value = false;
+    }
+  }
+
+  /** All'avvio ripristina il collegamento se i permessi ci sono ancora. */
+  async function restore() {
+    if (!import.meta.client) return;
+    native.value = isNative();
+    if (!native.value || !wasEnabled()) return;
+
+    busy.value = true;
+    try {
+      const avail = await Health.isHealthAvailable().catch(() => ({ available: false }));
+      if (!avail?.available) return;
+      const granted = await grantedPermissions();
+      if (!granted.length) {
+        connected.value = false;
+        return;
+      }
+      connected.value = true;
+      await readData();
+    } catch {
+      // silenzioso: è un ripristino automatico, l'utente non ha chiesto nulla
+    } finally {
+      busy.value = false;
+    }
+  }
+
+  onMounted(restore);
+
+  return { native, connected, busy, steps, workouts, lastSync, label, error, connect, disconnect, sync };
 }
 
 function mapId(type = "") {
-  const t = type.toLowerCase();
+  const t = String(type).toLowerCase();
   if (t.includes("bik") || t.includes("cycl")) return "bici";
   if (t.includes("run")) return "corsa";
   if (t.includes("walk") || t.includes("hik")) return "camminata";
@@ -291,5 +218,5 @@ function translate(type = "") {
     tennis: "Tennis", yoga: "Yoga", palestra: "Palestra",
   };
   const id = mapId(type);
-  return map[id] ?? (type ? type.replace(/_/g, " ") : "Attività");
+  return map[id] ?? (type ? String(type).replace(/_/g, " ") : "Attività");
 }

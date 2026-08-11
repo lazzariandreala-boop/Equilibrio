@@ -106,8 +106,8 @@
             :class="health.connected.value ? 'bg-raised text-dim' : 'grad-move'"
             :style="health.connected.value ? {} : { color: '#fff' }"
             :disabled="health.busy.value"
-            @click="runHealth">
-            {{ health.busy.value ? "…" : health.connected.value ? "Sincronizza" : "Collega" }}
+            @click="health.connected.value ? health.disconnect() : health.connect()">
+            {{ health.busy.value ? "…" : health.connected.value ? "Scollega" : "Collega" }}
           </button>
         </div>
 
@@ -115,25 +115,11 @@
           {{ health.error.value }}
         </p>
 
-        <!-- Riquadro di diagnostica: mostra l'esito di ogni chiamata al plugin.
-             Senza questo, i pulsanti eseguivano tutto ma non si vedeva nulla. -->
-        <pre v-if="health.detail.value" class="text-dim rounded-2xl"
-          style="font-size: 10.5px; line-height: 1.45; margin-top: 10px; padding: 10px;
-                 background: var(--raised); white-space: pre-wrap; word-break: break-word;
-                 font-family: ui-monospace, monospace; max-height: 300px; overflow-y: auto">{{ health.detail.value }}</pre>
+        <button v-if="health.connected.value" class="tap w-full rounded-2xl py-2.5 font-semibold bg-raised text-dim"
+          style="font-size: 12.5px; margin-top: 10px" :disabled="health.busy.value" @click="health.sync()">
+          Aggiorna adesso
+        </button>
 
-        <div v-if="health.native.value" class="flex gap-2" style="margin-top: 10px">
-          <button class="tap flex-1 rounded-2xl py-2.5 font-semibold bg-raised text-dim" style="font-size: 12.5px"
-            @click="health.openSettings()">
-            Apri Health Connect
-          </button>
-          <button class="tap flex-1 rounded-2xl py-2.5 font-semibold bg-raised text-dim"
-            style="font-size: 12.5px" @click="runDiagnose">
-            Diagnostica
-          </button>
-        </div>
-
-        <!-- Va detto: senza questa nota si aspettano dati che non arriveranno mai. -->
         <p class="text-faint" style="font-size: 12px; margin-top: 10px; line-height: 1.5">
           Da qui arrivano passi e allenamenti scritti su <strong class="text-dim">Health Connect</strong>:
           Samsung Health, Garmin, Fitbit e Google Health lo fanno.
@@ -185,23 +171,6 @@ const settings = useSettingsStore();
 const { user, isDemo, signOut } = useAuth();
 const health = useHealthSync();
 
-// Qualunque cosa accada deve finire nel riquadro di diagnostica: finora un
-// errore lanciato prima dei try interni lasciava il pulsante apparentemente inerte.
-async function runHealth() {
-  try {
-    if (health.connected.value) await health.sync();
-    else await health.connect();
-  } catch (e: any) {
-    health.detail.value = `click: ERRORE ${e?.message || e}`;
-  }
-}
-async function runDiagnose() {
-  try {
-    await health.diagnose();
-  } catch (e: any) {
-    health.detail.value = `diagnostica: ERRORE ${e?.message || e}`;
-  }
-}
 const { requestPermission, schedule, testNow } = useNotifications();
 
 const goalOpen = ref<"water" | "move" | "food" | "weight" | null>(null);
