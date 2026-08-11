@@ -49,12 +49,27 @@ export function useHealthSync() {
     return parts.join(" · ");
   });
 
-  /** Elenco dei permessi effettivamente concessi. */
+  /**
+   * Elenco dei permessi concessi.
+   *
+   * Attenzione alla forma della risposta: la dichiarazione TypeScript del
+   * plugin promette un array di oggetti, ma su Android arriva un singolo
+   * oggetto { READ_STEPS: true, ... }. Qui si gestiscono entrambe.
+   */
+  function parseGranted(res: any): string[] {
+    const p = res?.permissions;
+    if (!p) return [];
+    const entries = Array.isArray(p) ? p : [p];
+    return entries.flatMap((entry: any) =>
+      Object.entries(entry ?? {})
+        .filter(([, v]) => v === true)
+        .map(([k]) => k),
+    );
+  }
+
   async function grantedPermissions(): Promise<string[]> {
     const res = await Health.checkHealthPermissions({ permissions: PERMISSIONS as any }).catch(() => null);
-    return (res?.permissions ?? []).flatMap((entry: any) =>
-      Object.entries(entry ?? {}).filter(([, v]) => v).map(([k]) => k),
-    );
+    return parseGranted(res);
   }
 
   /**
@@ -79,9 +94,11 @@ export function useHealthSync() {
         return;
       }
 
-      await Health.requestHealthPermissions({ permissions: PERMISSIONS as any });
+      const asked = await Health.requestHealthPermissions({ permissions: PERMISSIONS as any });
 
-      const granted = await grantedPermissions();
+      // Si considera anche l'esito immediato: su alcuni dispositivi la
+      // verifica successiva risponde prima che lo stato sia aggiornato.
+      const granted = [...new Set([...parseGranted(asked), ...(await grantedPermissions())])];
       if (!granted.includes("READ_STEPS") && !granted.includes("READ_WORKOUTS")) {
         error.value =
           "Permessi non concessi. Puoi darli manualmente in Health Connect, alla voce Equilibrio.";
@@ -124,7 +141,8 @@ export function useHealthSync() {
       dataType: "steps" as any,
       bucket: "day",
     }).catch(() => null);
-    steps.value = Math.round(agg?.aggregatedData?.[0]?.value ?? 0);
+    const buckets = Array.isArray(agg?.aggregatedData) ? agg.aggregatedData : [];
+    steps.value = Math.round(buckets[0]?.value ?? 0);
 
     const wk = await Health.queryWorkouts({
       startDate: start.toISOString(),
@@ -134,7 +152,8 @@ export function useHealthSync() {
       includeSteps: false,
     }).catch(() => null);
 
-    const list = wk?.workouts ?? [];
+    // Protezione sulla forma: meglio non fidarsi delle dichiarazioni del plugin.
+    const list = Array.isArray(wk?.workouts) ? wk.workouts : [];
     workouts.value = list.length;
 
     const existing = new Set(day.today.moves.map((m: any) => m.extId).filter(Boolean));
