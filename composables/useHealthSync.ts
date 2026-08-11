@@ -1,5 +1,6 @@
 import { Health } from "capacitor-health";
 import { useDayStore } from "~/stores/day";
+import { todayKey } from "~/utils/date";
 
 /**
  * Lettura di passi e allenamenti da Health Connect (Android) e HealthKit (iOS).
@@ -30,6 +31,7 @@ export function useHealthSync() {
   const workouts = useState("health:workouts", () => 0);
   const lastSync = useState<string | null>("health:lastSync", () => null);
   const error = useState<string | null>("health:error", () => null);
+  const imported = useState("health:imported", () => 0);
 
   const isNative = () => !!(window as any).Capacitor?.isNativePlatform?.();
 
@@ -108,6 +110,8 @@ export function useHealthSync() {
       setEnabled(true);
       connected.value = true;
       await readData();
+      // Primo collegamento: si recupera anche lo storico disponibile.
+      await importHistory(30);
     } catch (e: any) {
       error.value = `Collegamento non riuscito: ${e?.message || e}`;
     } finally {
@@ -177,6 +181,73 @@ export function useHealthSync() {
     lastSync.value = new Date().toLocaleTimeString("it-IT", { hour: "2-digit", minute: "2-digit" });
   }
 
+  /**
+   * Recupera i dati dei giorni passati. Health Connect conserva lo storico,
+   * quindi al primo collegamento ha senso riportarlo dentro il diario.
+   */
+  async function importHistory(days = 30) {
+    if (!isNative() || !connected.value) return;
+    busy.value = true;
+    error.value = null;
+    imported.value = 0;
+
+    try {
+      const end = new Date();
+      const start = new Date();
+      start.setDate(start.getDate() - days);
+      start.setHours(0, 0, 0, 0);
+
+      await Health.isHealthAvailable().catch(() => null);
+
+      // Passi giorno per giorno: un solo interrogazione con bucket giornaliero.
+      const agg = await Health.queryAggregated({
+        startDate: start.toISOString(),
+        endDate: end.toISOString(),
+        dataType: "steps" as any,
+        bucket: "day",
+      }).catch(() => null);
+
+      const buckets = Array.isArray(agg?.aggregatedData) ? agg.aggregatedData : [];
+      for (const b of buckets) {
+        const value = Math.round(b?.value ?? 0);
+        if (value < 300) continue; // giorni senza dati utili
+        const key = todayKey(new Date(b.startDate));
+        day.upsertStepsMoveOn(key, Math.round(value / 100), value);
+        imported.value++;
+      }
+
+      // Allenamenti dello stesso periodo, assegnati al giorno di inizio.
+      const wk = await Health.queryWorkouts({
+        startDate: start.toISOString(),
+        endDate: end.toISOString(),
+        includeHeartRate: false,
+        includeRoute: false,
+        includeSteps: false,
+      }).catch(() => null);
+
+      const list = Array.isArray(wk?.workouts) ? wk.workouts : [];
+      for (const w of list) {
+        const minutes = Math.round((w.duration ?? 0) / 60);
+        if (minutes < 1) continue;
+        const key = todayKey(new Date(w.startDate));
+        const added = day.addMoveOn(key, {
+          type: translate(w.workoutType),
+          min: minutes,
+          kcal: Math.round(w.calories ?? 0) || undefined,
+          activityId: mapId(w.workoutType),
+          extId: w.id || `${w.startDate}-${w.workoutType}`,
+        } as any);
+        if (added) imported.value++;
+      }
+
+      lastSync.value = new Date().toLocaleTimeString("it-IT", { hour: "2-digit", minute: "2-digit" });
+    } catch (e: any) {
+      error.value = `Recupero dello storico non riuscito: ${e?.message || e}`;
+    } finally {
+      busy.value = false;
+    }
+  }
+
   async function sync() {
     if (!isNative() || !connected.value) return;
     busy.value = true;
@@ -216,7 +287,10 @@ export function useHealthSync() {
 
   onMounted(restore);
 
-  return { native, connected, busy, steps, workouts, lastSync, label, error, connect, disconnect, sync };
+  return {
+    native, connected, busy, steps, workouts, lastSync, label, error, imported,
+    connect, disconnect, sync, importHistory,
+  };
 }
 
 function mapId(type = "") {

@@ -123,6 +123,32 @@ export const useDayStore = defineStore("day", {
     ensureDay() {
       if (!this.days[this.date]) this.days[this.date] = emptyDay();
     },
+    /** Come ensureDay ma per una data qualsiasi: serve all'import dello storico. */
+    ensureDayKey(key: string) {
+      if (!this.days[key]) this.days[key] = emptyDay();
+      return this.days[key];
+    },
+    /** Aggiunge un'attività a un giorno preciso, saltando i doppioni. */
+    addMoveOn(key: string, m: Omit<Move, "at">) {
+      const d = this.ensureDayKey(key);
+      const ext = (m as any).extId;
+      if (ext && d.moves.some((x: any) => x.extId === ext)) return false;
+      d.moves.push({ ...m, at: keyToDate(key).getTime() });
+      return true;
+    },
+    /** Voce "Passi" di un giorno preciso: si aggiorna invece di duplicarsi. */
+    upsertStepsMoveOn(key: string, minutes: number, steps: number) {
+      const d = this.ensureDayKey(key);
+      const i = d.moves.findIndex((m) => m.activityId === "passi");
+      const entry = {
+        type: `Passi (${steps.toLocaleString("it-IT")})`,
+        min: minutes,
+        activityId: "passi",
+        at: keyToDate(key).getTime(),
+      };
+      if (i >= 0) d.moves[i] = { ...d.moves[i], ...entry };
+      else d.moves.push(entry);
+    },
     // Cambia il giorno visualizzato/modificato. "following" resta attivo solo se è oggi.
     setDate(key: string) {
       this.date = key;

@@ -115,10 +115,20 @@
           {{ health.error.value }}
         </p>
 
-        <button v-if="health.connected.value" class="tap w-full rounded-2xl py-2.5 font-semibold bg-raised text-dim"
-          style="font-size: 12.5px; margin-top: 10px" :disabled="health.busy.value" @click="health.sync()">
-          Aggiorna adesso
-        </button>
+        <div v-if="health.connected.value" class="flex gap-2" style="margin-top: 10px">
+          <button class="tap flex-1 rounded-2xl py-2.5 font-semibold bg-raised text-dim" style="font-size: 12.5px"
+            :disabled="health.busy.value" @click="health.sync()">
+            Aggiorna oggi
+          </button>
+          <button class="tap flex-1 rounded-2xl py-2.5 font-semibold bg-raised text-dim" style="font-size: 12.5px"
+            :disabled="health.busy.value" @click="health.importHistory(30)">
+            Recupera 30 giorni
+          </button>
+        </div>
+
+        <p v-if="health.imported.value > 0" class="text-move" style="font-size: 12.5px; margin-top: 8px">
+          Recuperate {{ health.imported.value }} voci dallo storico.
+        </p>
 
         <p class="text-faint" style="font-size: 12px; margin-top: 10px; line-height: 1.5">
           Da qui arrivano passi e allenamenti scritti su <strong class="text-dim">Health Connect</strong>:
