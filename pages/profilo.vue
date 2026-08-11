@@ -115,6 +115,13 @@
           {{ health.error.value }}
         </p>
 
+        <!-- Riquadro di diagnostica: mostra l'esito di ogni chiamata al plugin.
+             Senza questo, i pulsanti eseguivano tutto ma non si vedeva nulla. -->
+        <pre v-if="health.detail.value" class="text-dim rounded-2xl"
+          style="font-size: 10.5px; line-height: 1.45; margin-top: 10px; padding: 10px;
+                 background: var(--raised); white-space: pre-wrap; word-break: break-word;
+                 font-family: ui-monospace, monospace; max-height: 300px; overflow-y: auto">{{ health.detail.value }}</pre>
+
         <div v-if="health.native.value" class="flex gap-2" style="margin-top: 10px">
           <button class="tap flex-1 rounded-2xl py-2.5 font-semibold bg-raised text-dim" style="font-size: 12.5px"
             @click="health.openSettings()">
