@@ -63,8 +63,7 @@
           </div>
           <div style="flex: 1">
             <div class="text-faint" style="font-size: 11px">Quantità</div>
-            <input v-model="it.qty" :class="inputCls"
-              @focus="prevQty[i] = it.qty" @blur="rescale(i)" @keyup.enter="rescale(i)" />
+            <input v-model="it.qty" :class="inputCls" @input="applyQty(i)" />
           </div>
           <button class="text-faint self-end pb-2" aria-label="Rimuovi" @click="items.splice(i, 1)">
             <X :size="18" />
@@ -74,7 +73,7 @@
           <div v-for="f in fields" :key="f.key">
             <div class="text-faint" style="font-size: 10.5px">{{ f.label }}</div>
             <input v-model.number="(it as any)[f.key]" type="number" inputmode="numeric" class="tabular"
-              :class="inputCls" style="padding-left: 8px; padding-right: 4px" />
+              :class="inputCls" style="padding-left: 8px; padding-right: 4px" @change="rebase(i)" />
           </div>
         </div>
       </div>
@@ -139,12 +138,17 @@ const fields = [
   { key: "fib", label: "Fibre" },
 ];
 
-const prevQty = ref<string[]>([]);
+/**
+ * Valori di riferimento di ogni voce: quantità di partenza e valori
+ * corrispondenti. Il ricalcolo parte sempre da qui, così digitare "5" e poi
+ * "50" non accumula errori: ogni battitura riscala dal valore originale.
+ */
+const bases = ref<Record<number, any>>({});
 
 /**
- * Estrae la quantità numerica da testi come "75 g", "1 lattina (500 ml)",
- * "2 piatti". Si preferisce il numero accostato a un'unità di peso o volume,
- * perché è quello che descrive davvero la porzione.
+ * Estrae la quantità numerica da testi come "75 g", "confezione (500g)",
+ * "1 lattina (500 ml)". Si preferisce il numero accostato a un'unità di peso
+ * o volume, perché è quello che descrive davvero la porzione.
  */
 function parseQty(text: string): number | null {
   if (!text) return null;
@@ -156,22 +160,57 @@ function parseQty(text: string): number | null {
   return Number.isFinite(n) && n > 0 ? n : null;
 }
 
-/** Riporta i valori nutrizionali alla nuova quantità indicata. */
-function rescale(i: number) {
+/** Fotografa i valori attuali come riferimento per i ricalcoli successivi. */
+function rebase(i: number) {
   const it = items.value[i];
   if (!it) return;
-  const before = parseQty(prevQty.value[i] ?? "");
-  const after = parseQty(it.qty);
-  if (!before || !after || before === after) return;
+  bases.value[i] = {
+    q: parseQty(it.qty),
+    kcal: +it.kcal || 0, cho: +it.cho || 0, pro: +it.pro || 0,
+    fat: +it.fat || 0, fib: +it.fib || 0, alc: +it.alc || 0,
+  };
+}
 
-  const k = after / before;
-  it.kcal = Math.round((+it.kcal || 0) * k);
-  it.cho = Math.round((+it.cho || 0) * k);
-  it.pro = Math.round((+it.pro || 0) * k);
-  it.fat = Math.round((+it.fat || 0) * k);
-  it.fib = Math.round((+it.fib || 0) * k);
-  it.alc = Math.round((+it.alc || 0) * k);
-  prevQty.value[i] = it.qty;
+function rebaseAll() {
+  bases.value = {};
+  items.value.forEach((_, i) => rebase(i));
+}
+
+// Ogni volta che la lista cambia composizione (nuove voci da foto, stima,
+// ricerca o inserimento manuale) i riferimenti vengono rifotografati: così
+// non serve ricordarsi di farlo in ognuno dei punti che la popolano.
+watch(
+  // Firma della lista: cambia se le voci sono altre, non solo se sono di più.
+  () => items.value.map((i) => `${i.name}|${i.qty}`).join("§"),
+  (now, before) => {
+    // Se cambia solo la quantità di una voce già presente non si rifotografa
+    // nulla: sarebbe proprio il valore che stiamo riscalando.
+    const sameCount = (before ?? "").split("§").length === now.split("§").length;
+    const sameNames =
+      sameCount &&
+      (before ?? "").split("§").map((x) => x.split("|")[0]).join() ===
+        now.split("§").map((x) => x.split("|")[0]).join();
+    if (sameNames) return;
+    nextTick(rebaseAll);
+  },
+  { immediate: true },
+);
+
+/** Riscala i valori sulla nuova quantità, partendo dal riferimento. */
+function applyQty(i: number) {
+  const it = items.value[i];
+  const b = bases.value[i];
+  if (!it || !b?.q) return;
+  const q = parseQty(it.qty);
+  if (!q) return; // testo senza numeri: si lasciano i valori com'erano
+
+  const k = q / b.q;
+  it.kcal = Math.round(b.kcal * k);
+  it.cho = Math.round(b.cho * k);
+  it.pro = Math.round(b.pro * k);
+  it.fat = Math.round(b.fat * k);
+  it.fib = Math.round(b.fib * k);
+  it.alc = Math.round(b.alc * k);
 }
 
 const blank = (): RecognizedItem => ({ name: "", qty: "", kcal: 0, cho: 0, pro: 0, fat: 0, fib: 0, alc: 0 });
