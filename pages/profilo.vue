@@ -106,7 +106,7 @@
             :class="health.connected.value ? 'bg-raised text-dim' : 'grad-move'"
             :style="health.connected.value ? {} : { color: '#fff' }"
             :disabled="health.busy.value"
-            @click="health.connected.value ? health.sync() : health.connect()">
+            @click="runHealth">
             {{ health.busy.value ? "…" : health.connected.value ? "Sincronizza" : "Collega" }}
           </button>
         </div>
@@ -120,9 +120,9 @@
             @click="health.openSettings()">
             Apri Health Connect
           </button>
-          <button v-if="health.connected.value" class="tap flex-1 rounded-2xl py-2.5 font-semibold bg-raised text-dim"
-            style="font-size: 12.5px" @click="health.connect()">
-            Richiedi di nuovo i permessi
+          <button class="tap flex-1 rounded-2xl py-2.5 font-semibold bg-raised text-dim"
+            style="font-size: 12.5px" @click="runDiagnose">
+            Diagnostica
           </button>
         </div>
 
@@ -177,6 +177,24 @@ import { useSettingsStore } from "~/stores/settings";
 const settings = useSettingsStore();
 const { user, isDemo, signOut } = useAuth();
 const health = useHealthSync();
+
+// Qualunque cosa accada deve finire nel riquadro di diagnostica: finora un
+// errore lanciato prima dei try interni lasciava il pulsante apparentemente inerte.
+async function runHealth() {
+  try {
+    if (health.connected.value) await health.sync();
+    else await health.connect();
+  } catch (e: any) {
+    health.detail.value = `click: ERRORE ${e?.message || e}`;
+  }
+}
+async function runDiagnose() {
+  try {
+    await health.diagnose();
+  } catch (e: any) {
+    health.detail.value = `diagnostica: ERRORE ${e?.message || e}`;
+  }
+}
 const { requestPermission, schedule, testNow } = useNotifications();
 
 const goalOpen = ref<"water" | "move" | "food" | "weight" | null>(null);

@@ -63,6 +63,60 @@ export function useHealthSync() {
     await H?.showHealthConnectInPlayStore?.().catch(() => {});
   }
 
+  /**
+   * Esegue ogni chiamata del plugin una per una e riporta la risposta grezza.
+   * Serve perché finora ogni guasto usciva in silenzio: qui nulla può fallire
+   * senza lasciare traccia, nemmeno un'eccezione sincrona.
+   */
+  async function diagnose() {
+    const lines: string[] = [];
+    const step = async (name: string, fn: () => Promise<any>) => {
+      try {
+        const r = await fn();
+        lines.push(`${name}: ${JSON.stringify(r)}`);
+      } catch (e: any) {
+        lines.push(`${name}: ERRORE ${e?.message || e?.errorMessage || String(e)}`);
+      }
+      detail.value = lines.join("\n");
+    };
+
+    lines.push(`Capacitor: ${(window as any).Capacitor ? "presente" : "ASSENTE"}`);
+    lines.push(`nativo: ${(window as any).Capacitor?.isNativePlatform?.() ? "sì" : "no"}`);
+    lines.push(`piattaforma: ${(window as any).Capacitor?.getPlatform?.() ?? "?"}`);
+    lines.push(`oggetto Health: ${Health ? "presente" : "ASSENTE"}`);
+    detail.value = lines.join("\n");
+
+    if (!Health) return;
+
+    await step("isHealthAvailable", () => Health.isHealthAvailable());
+    await step("checkHealthPermissions", () =>
+      Health.checkHealthPermissions({ permissions: ["READ_STEPS", "READ_WORKOUTS"] as any }),
+    );
+    await step("requestHealthPermissions", () =>
+      Health.requestHealthPermissions({ permissions: ["READ_STEPS", "READ_WORKOUTS"] as any }),
+    );
+
+    const start = new Date();
+    start.setHours(0, 0, 0, 0);
+    await step("passi di oggi", () =>
+      Health.queryAggregated({
+        startDate: start.toISOString(),
+        endDate: new Date().toISOString(),
+        dataType: "steps" as any,
+        bucket: "day",
+      }),
+    );
+    await step("allenamenti di oggi", () =>
+      Health.queryWorkouts({
+        startDate: start.toISOString(),
+        endDate: new Date().toISOString(),
+        includeHeartRate: false,
+        includeRoute: false,
+        includeSteps: false,
+      }),
+    );
+  }
+
   /** Apre le impostazioni Health Connect (serve se i permessi sono stati negati). */
   async function openSettings() {
     const H = await plugin();
