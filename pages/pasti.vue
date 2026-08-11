@@ -22,31 +22,54 @@
       :actions="quick" style="animation-delay: 130ms" @action="open" />
 
     <div v-else class="space-y-2.5 rise" style="animation-delay: 130ms">
-      <AppCard v-for="(m, i) in today.meals" :key="i" pad="p-3.5">
-        <div class="flex items-center justify-between gap-3">
-          <div class="min-w-0">
+      <div v-for="(m, i) in today.meals" :key="i" class="rounded-4xl overflow-hidden"
+        :style="{ background: 'var(--card)', border: '1px solid var(--line)', boxShadow: 'var(--tile-shadow)' }">
+        <button class="tap w-full text-left flex items-center gap-3" style="padding: 13px 14px" @click="edit(i)">
+          <div class="rounded-2xl flex items-center justify-center shrink-0"
+            style="width: 40px; height: 40px; background: var(--food-soft)">
+            <UtensilsCrossed :size="19" color="var(--food)" />
+          </div>
+          <div class="min-w-0 flex-1">
             <div class="truncate" style="font-weight: 600; font-size: 15px">{{ m.name }}</div>
             <div class="text-dim tabular" style="font-size: 12.5px">
               {{ m.kcal }} kcal · C {{ m.cho }} · P {{ m.pro }} · G {{ m.fat }} · F {{ m.fib ?? 0 }}
               <span v-if="m.alc > 0" class="text-alcohol"> · alc {{ m.alc }} g</span>
             </div>
           </div>
-          <button class="tap text-faint p-2 rounded-xl shrink-0 bg-raised" aria-label="Elimina pasto"
-            @click="day.removeMeal(i)">
-            <Trash2 :size="16" />
+          <Pencil :size="16" class="text-faint shrink-0" />
+        </button>
+
+        <!-- Voci del pasto: si vede subito cosa lo compone. -->
+        <div v-if="m.items?.length" style="padding: 0 14px 12px">
+          <div v-for="(it, j) in m.items" :key="j" class="flex items-center justify-between gap-3"
+            style="padding: 6px 0; border-top: 1px solid var(--line)">
+            <span class="text-dim truncate" style="font-size: 12.5px">
+              {{ it.name }}<span v-if="it.qty" class="text-faint"> · {{ it.qty }}</span>
+            </span>
+            <span class="text-faint tabular shrink-0" style="font-size: 12px">{{ it.kcal }} kcal</span>
+          </div>
+        </div>
+
+        <div class="flex" style="padding: 0 8px 8px">
+          <button class="tap flex-1 rounded-2xl py-2 text-dim" style="font-size: 12.5px" @click="edit(i)">
+            Modifica
+          </button>
+          <button class="tap flex-1 rounded-2xl py-2 text-faint" style="font-size: 12.5px" @click="day.removeMeal(i)">
+            Elimina
           </button>
         </div>
-      </AppCard>
+      </div>
     </div>
 
     <BottomSheet v-model="mealOpen" :title="sheetTitle">
-      <MealCapture @save="onMeal" />
+      <!-- La chiave forza il rimontaggio: senza, riaprendo resterebbero le voci precedenti -->
+      <MealCapture :key="editing ?? 'nuovo'" :initial-items="editingItems" @save="onMeal" />
     </BottomSheet>
   </div>
 </template>
 
 <script setup lang="ts">
-import { Camera, Trash2, Flame, Salad, Wheat, Dna, Droplet, Leaf, Coffee, Sun, Moon } from "lucide-vue-next";
+import { Camera, Flame, Salad, Wheat, Dna, Droplet, Leaf, Coffee, Sun, Moon, UtensilsCrossed, Pencil } from "lucide-vue-next";
 import { useDayStore } from "~/stores/day";
 import { useSettingsStore } from "~/stores/settings";
 
@@ -70,13 +93,34 @@ const quick = [
   { id: "Cena", label: "Cena", icon: Moon },
 ];
 
+const editing = ref<number | null>(null);
+const editingItems = ref<any[] | null>(null);
+
 function open(kind?: string) {
+  editing.value = null;
+  editingItems.value = null;
   sheetTitle.value = kind ? `Aggiungi: ${kind.toLowerCase()}` : "Aggiungi un pasto";
   mealOpen.value = true;
 }
 
+/** Riapre un pasto salvato con le sue voci, pronte da correggere. */
+function edit(i: number) {
+  const m = today.value.meals[i];
+  editing.value = i;
+  // I pasti salvati prima di questa versione non hanno le voci: si ricostruisce
+  // una voce unica coi totali, così restano comunque modificabili.
+  editingItems.value = m.items?.length
+    ? m.items.map((it: any) => ({ ...it }))
+    : [{ name: m.name, qty: "", kcal: m.kcal, cho: m.cho, pro: m.pro, fat: m.fat, fib: m.fib ?? 0, alc: m.alc }];
+  sheetTitle.value = "Modifica il pasto";
+  mealOpen.value = true;
+}
+
 function onMeal(m: any) {
-  day.addMeal(m);
+  if (editing.value !== null) day.updateMeal(editing.value, m);
+  else day.addMeal(m);
   mealOpen.value = false;
+  editing.value = null;
+  editingItems.value = null;
 }
 </script>

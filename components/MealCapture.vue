@@ -111,12 +111,20 @@ import { Camera, Images, PenLine, Sparkles, X, Plus, Search } from "lucide-vue-n
 import type { RecognizedItem } from "~/composables/useRecognition";
 import { estimateLocally } from "~/utils/foods";
 
+const props = withDefaults(defineProps<{ initialItems?: RecognizedItem[] | null }>(), {
+  initialItems: null,
+});
 const emit = defineEmits<{ save: [any] }>();
 const { recognizeBase64, estimate, fileToBase64 } = useRecognition();
 const { isNative, pickNative, pickWeb } = useImagePicker();
 
-const phase = ref<"start" | "describe" | "loading" | "edit">("start");
-const items = ref<RecognizedItem[]>([]);
+// Con voci già presenti si salta la scelta e si va diritti alla revisione.
+const phase = ref<"start" | "describe" | "loading" | "edit">(
+  props.initialItems?.length ? "edit" : "start",
+);
+const items = ref<RecognizedItem[]>(
+  props.initialItems?.length ? props.initialItems.map((i) => ({ ...i })) : [],
+);
 const description = ref("");
 const err = ref("");
 const loadingLabel = ref("Sto leggendo la foto…");
@@ -259,6 +267,8 @@ function addBlank() {
 }
 function save() {
   const name = items.value.map((i) => i.name).filter(Boolean).join(", ") || "Pasto";
-  emit("save", { name, ...sum.value });
+  // Le voci vengono salvate insieme ai totali: senza, riaprire il pasto
+  // mostrerebbe solo un nome e dei numeri aggregati.
+  emit("save", { name, ...sum.value, items: items.value.map((i) => ({ ...i })) });
 }
 </script>

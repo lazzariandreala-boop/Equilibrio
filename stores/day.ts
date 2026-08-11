@@ -10,6 +10,17 @@ export interface Meal {
   fib: number; // fibre (g)
   alc: number; // alcol (g)
   at: number;
+  /** Voci che compongono il pasto: servono a riaprirlo e correggerlo. */
+  items?: {
+    name: string;
+    qty: string;
+    kcal: number;
+    cho: number;
+    pro: number;
+    fat: number;
+    fib: number;
+    alc: number;
+  }[];
 }
 export interface Move {
   type: string;
@@ -194,6 +205,24 @@ export const useDayStore = defineStore("day", {
           at,
           mealAt: at,
         });
+      }
+    },
+    /** Sostituisce un pasto già salvato, mantenendone l'orario. */
+    updateMeal(i: number, m: Omit<Meal, "at">) {
+      const day = this.days[this.date];
+      if (!day?.meals[i]) return;
+      const at = day.meals[i].at;
+      const hadAlc = day.meals[i].alc > 0;
+      day.meals[i] = { ...m, at };
+
+      // La bevanda collegata va riallineata: si rimuove quella vecchia e,
+      // se serve, se ne registra una aggiornata.
+      if (hadAlc) {
+        const j = day.drinks.findIndex((d) => d.name.endsWith("(alcol nel pasto)"));
+        if (j >= 0) day.drinks.splice(j, 1);
+      }
+      if (m.alc > 0) {
+        day.drinks.push({ name: `${m.name} (alcol nel pasto)`, alc: m.alc, kcal: 0, at });
       }
     },
     removeMeal(i: number) {
