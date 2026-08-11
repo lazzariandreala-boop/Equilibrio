@@ -25,6 +25,8 @@ export function useHealthSync() {
   const steps = useState("health:steps", () => 0);
   const native = useState("health:native", () => false);
   const error = useState<string | null>("health:error", () => null);
+  // Esito grezzo delle chiamate al plugin, mostrato nel riquadro del Profilo.
+  const detail = useState<string | null>("health:detail", () => null);
 
   async function plugin(): Promise<any | null> {
     if (!import.meta.client) return null;
@@ -267,7 +269,7 @@ export function useHealthSync() {
 
   return {
     available, connected, busy, steps, stepsAsMinutes, lastSync, label,
-    native, error, connect, sync, install, openSettings,
+    native, error, detail, connect, sync, install, openSettings, diagnose,
   };
 }
 
