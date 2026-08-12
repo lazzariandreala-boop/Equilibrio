@@ -1,6 +1,7 @@
 <template>
-  <div class="rounded-4xl flex items-center gap-2.5" style="padding: 12px"
-    :style="{ background: 'var(--card)', border: '1px solid var(--line)', boxShadow: 'var(--tile-shadow)' }">
+  <div class="tap rounded-4xl flex items-center gap-2.5" style="padding: 12px"
+    :style="{ background: 'var(--card)', border: '1px solid var(--line)', boxShadow: 'var(--tile-shadow)' }"
+    @click="$emit('open')">
     <div class="rounded-full flex items-center justify-center shrink-0"
       :style="{
         width: '38px', height: '38px', background: `var(--${tone}-soft)`,
@@ -14,7 +15,8 @@
       <div class="truncate" :style="{ color: `var(--${tone})`, fontSize: '12px', fontWeight: 500 }">{{ detail }}</div>
     </div>
 
-    <Toggle :on="on" :tone="tone" @click="$emit('toggle')" />
+    <!-- .stop: toccando l'interruttore non si apre anche il dettaglio -->
+    <Toggle :on="on" :tone="tone" @click.stop="$emit('toggle')" />
   </div>
 </template>
 
@@ -26,5 +28,5 @@ defineProps<{
   detail: string;
   on: boolean;
 }>();
-defineEmits<{ toggle: [] }>();
+defineEmits<{ toggle: []; open: [] }>();
 </script>

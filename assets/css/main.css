@@ -50,48 +50,52 @@
 }
 
 html.dark {
-  --surface: #100e0d;
-  --surface-2: #1a1614;
-  --card: #1c1918;
-  --raised: #262120;
-  --line: #352e2a;
+  /* Fondo con una punta di blu notte invece del grigio neutro: le tinte
+     colorate sopra risaltano molto di più. */
+  --surface: #0d0f14;
+  --surface-2: #151922;
+  --card: #191d27;
+  --raised: #222735;
+  --line: #333a4b;
 
-  --ink: #f5efe9;
-  --dim: #ab9e94;
-  --faint: #74675e;
+  --ink: #f2f5fa;
+  --dim: #a6b0c2;
+  --faint: #808c9f;
 
-  --water: #3aa8e0;
-  --water-2: #4fd6f0;
-  --water-soft: rgba(58, 168, 224, 0.13);
-  --water-glow: rgba(79, 214, 240, 0.28);
+  --water: #3fb8f5;
+  --water-2: #5ee0ff;
+  --water-soft: rgba(63, 184, 245, 0.2);
+  --water-glow: rgba(94, 224, 255, 0.45);
 
-  --alcohol: #a76ce8;
-  --alcohol-2: #d488f5;
-  --alcohol-soft: rgba(167, 108, 232, 0.13);
-  --alcohol-glow: rgba(212, 136, 245, 0.26);
+  --alcohol: #b47cff;
+  --alcohol-2: #dd9bff;
+  --alcohol-soft: rgba(180, 124, 255, 0.2);
+  --alcohol-glow: rgba(221, 155, 255, 0.42);
 
-  --move: #2cc47a;
-  --move-2: #5ce89e;
-  --move-soft: rgba(44, 196, 122, 0.13);
-  --move-glow: rgba(92, 232, 158, 0.26);
+  --move: #35d98c;
+  --move-2: #6bffb4;
+  --move-soft: rgba(53, 217, 140, 0.2);
+  --move-glow: rgba(107, 255, 180, 0.42);
 
-  --food: #ff8f45;
-  --food-2: #ffc26a;
-  --food-soft: rgba(255, 143, 69, 0.13);
-  --food-glow: rgba(255, 194, 106, 0.26);
+  --food: #ff9c4d;
+  --food-2: #ffcb73;
+  --food-soft: rgba(255, 156, 77, 0.2);
+  --food-glow: rgba(255, 203, 115, 0.42);
 
   --on-tone: #ffffff;
   --shadow: 0 1px 0 rgba(255, 255, 255, 0.03), 0 14px 34px rgba(0, 0, 0, 0.5);
   --shadow-lift: 0 20px 46px rgba(0, 0, 0, 0.6);
-  --tile-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.06), 0 8px 20px -8px rgba(0, 0, 0, 0.55);
-  --nav-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.06), 0 -2px 18px rgba(0, 0, 0, 0.35);
+  --tile-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.08), 0 8px 22px -8px rgba(0, 0, 0, 0.6);
+  --nav-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.08), 0 -2px 20px rgba(0, 0, 0, 0.45);
 }
 
 html,
 body {
   background: var(--surface);
-  background-image: radial-gradient(120% 60% at 12% -8%, var(--water-soft), transparent 60%),
-    radial-gradient(110% 55% at 96% 4%, var(--food-soft), transparent 58%);
+  /* Aloni colorati agli angoli: evitano il fondo piatto in entrambi i temi. */
+  background-image: radial-gradient(125% 62% at 10% -10%, var(--water-soft), transparent 62%),
+    radial-gradient(115% 58% at 98% 2%, var(--food-soft), transparent 60%),
+    radial-gradient(120% 55% at 50% 104%, var(--alcohol-soft), transparent 62%);
   background-attachment: fixed;
   color: var(--ink);
   font-family: "Outfit", ui-sans-serif, system-ui, sans-serif;

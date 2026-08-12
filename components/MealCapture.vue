@@ -61,9 +61,20 @@
             <div class="text-faint" style="font-size: 11px">Nome</div>
             <input v-model="it.name" :class="inputCls" />
           </div>
-          <div style="flex: 1">
+          <div style="flex: 1.1">
             <div class="text-faint" style="font-size: 11px">Quantità</div>
-            <input v-model="it.qty" :class="inputCls" @input="applyQty(i)" />
+            <div class="flex gap-1.5">
+              <!-- Il valore si legge dall'evento: con v-model il gestore
+                   riceverebbe ancora la quantità precedente. -->
+              <input :value="qtyNum[i]" type="number" inputmode="decimal" class="tabular"
+                :class="inputCls" style="flex: 1; min-width: 0; padding-left: 8px; padding-right: 4px"
+                @input="onQtyInput(i, ($event.target as HTMLInputElement).value)" />
+              <select :value="qtyUnit[i]" :class="inputCls"
+                style="width: 68px; padding-left: 8px; padding-right: 4px"
+                @change="onUnitChange(i, ($event.target as HTMLSelectElement).value)">
+                <option v-for="u in UNITS" :key="u" :value="u">{{ u }}</option>
+              </select>
+            </div>
           </div>
           <button class="text-faint self-end pb-2" aria-label="Rimuovi" @click="items.splice(i, 1)">
             <X :size="18" />
@@ -145,27 +156,13 @@ const fields = [
  */
 const bases = ref<Record<number, any>>({});
 
-/**
- * Estrae la quantità numerica da testi come "75 g", "confezione (500g)",
- * "1 lattina (500 ml)". Si preferisce il numero accostato a un'unità di peso
- * o volume, perché è quello che descrive davvero la porzione.
- */
-function parseQty(text: string): number | null {
-  if (!text) return null;
-  const withUnit = text.match(/(\d+(?:[.,]\d+)?)\s*(kg|g|gr|grammi|ml|l|cl)\b/i);
-  const plain = text.match(/(\d+(?:[.,]\d+)?)/);
-  const raw = withUnit?.[1] ?? plain?.[1];
-  if (!raw) return null;
-  const n = Number(raw.replace(",", "."));
-  return Number.isFinite(n) && n > 0 ? n : null;
-}
-
 /** Fotografa i valori attuali come riferimento per i ricalcoli successivi. */
 function rebase(i: number) {
   const it = items.value[i];
   if (!it) return;
+  const { num, unit } = splitQty(it.qty);
   bases.value[i] = {
-    q: parseQty(it.qty),
+    q: normalized(num, unit),
     kcal: +it.kcal || 0, cho: +it.cho || 0, pro: +it.pro || 0,
     fat: +it.fat || 0, fib: +it.fib || 0, alc: +it.alc || 0,
   };
@@ -173,6 +170,7 @@ function rebase(i: number) {
 
 function rebaseAll() {
   bases.value = {};
+  syncQtyFields();
   items.value.forEach((_, i) => rebase(i));
 }
 
@@ -196,21 +194,75 @@ watch(
   { immediate: true },
 );
 
-/** Riscala i valori sulla nuova quantità, partendo dal riferimento. */
-function applyQty(i: number) {
+/** Unità selezionabili e fattore di conversione verso l'unità base. */
+const UNITS = ["g", "mg", "kg", "ml", "cl", "l", "pz"] as const;
+const FACTOR: Record<string, number> = { g: 1, mg: 0.001, kg: 1000, ml: 1, cl: 10, l: 1000, pz: 1 };
+
+const qtyNum = ref<Record<number, string>>({});
+const qtyUnit = ref<Record<number, string>>({});
+
+/**
+ * Divide "500 g" nelle sue due parti per i campi separati.
+ * Si cerca prima un numero seguito da un'unità vera (con confine di parola,
+ * altrimenti la "l" di "lattina" verrebbe letta come litri); solo se non
+ * esiste si ripiega sul primo numero presente.
+ */
+function splitQty(text: string) {
+  const t = String(text || "");
+  const withUnit = t.match(/(\d+(?:[.,]\d+)?)\s*(kg|mg|grammi|gr|g|ml|cl|l|pz)\b/i);
+  const plain = t.match(/(\d+(?:[.,]\d+)?)/);
+
+  const raw = withUnit?.[1] ?? plain?.[1] ?? "";
+  const num = raw ? raw.replace(",", ".") : "";
+
+  let unit = (withUnit?.[2] || "g").toLowerCase();
+  if (unit === "gr" || unit === "grammi") unit = "g";
+  return { num, unit };
+}
+
+function syncQtyFields() {
+  items.value.forEach((it, i) => {
+    const { num, unit } = splitQty(it.qty);
+    qtyNum.value[i] = num;
+    qtyUnit.value[i] = unit;
+  });
+}
+
+/** Quantità espressa nell'unità base, per confrontare valori con unità diverse. */
+function normalized(num: string, unit: string) {
+  const n = Number(num);
+  if (!Number.isFinite(n) || n <= 0) return null;
+  return n * (FACTOR[unit] ?? 1);
+}
+
+/** Riscala i valori della voce sulla nuova quantità, partendo dal riferimento. */
+function rescaleFrom(i: number) {
   const it = items.value[i];
   const b = bases.value[i];
-  if (!it || !b?.q) return;
-  const q = parseQty(it.qty);
-  if (!q) return; // testo senza numeri: si lasciano i valori com'erano
+  if (!it) return;
 
-  const k = q / b.q;
+  it.qty = `${qtyNum.value[i] ?? ""} ${qtyUnit.value[i] ?? "g"}`.trim();
+  if (!b?.q) return;
+
+  const now = normalized(qtyNum.value[i] ?? "", qtyUnit.value[i] ?? "g");
+  if (!now) return; // campo vuoto: i valori restano quelli
+
+  const k = now / b.q;
   it.kcal = Math.round(b.kcal * k);
   it.cho = Math.round(b.cho * k);
   it.pro = Math.round(b.pro * k);
   it.fat = Math.round(b.fat * k);
   it.fib = Math.round(b.fib * k);
   it.alc = Math.round(b.alc * k);
+}
+
+function onQtyInput(i: number, value: string) {
+  qtyNum.value[i] = value;
+  rescaleFrom(i);
+}
+function onUnitChange(i: number, unit: string) {
+  qtyUnit.value[i] = unit;
+  rescaleFrom(i);
 }
 
 const blank = (): RecognizedItem => ({ name: "", qty: "", kcal: 0, cho: 0, pro: 0, fat: 0, fib: 0, alc: 0 });

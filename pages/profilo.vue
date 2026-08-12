@@ -22,8 +22,9 @@
 
     <!-- Obiettivi -->
     <div class="rise" style="animation-delay: 60ms">
-      <div class="display mb-2.5 px-1" style="font-weight: 700; font-size: 19px">Obiettivi giornalieri</div>
-      <div class="space-y-2.5">
+      <Expandable title="Obiettivi giornalieri" :icon="Target" tone="water"
+        :subtitle="`${settings.goals.water} ml · ${settings.goals.moveMin} min · ${settings.goals.kcal} kcal`">
+        <div class="space-y-2.5">
         <GoalCard :icon="GlassWater" tone="water" label="Acqua" :value="settings.goals.water" unit="ml"
           @click="goalOpen = 'water'" />
         <GoalCard :icon="Footprints" tone="move" label="Movimento" :value="settings.goals.moveMin" unit="min"
@@ -31,9 +32,10 @@
         <GoalCard :icon="UtensilsCrossed" tone="food" label="Calorie" :value="settings.goals.kcal" unit="kcal"
           note="Per i valori calorici, conviene impostarli con il medico o un nutrizionista."
           @click="goalOpen = 'food'" />
-        <GoalCard :icon="Scale" tone="alcohol" label="Peso" hint="per stimare le calorie bruciate"
-          :value="settings.profile.weightKg" unit="kg" @click="goalOpen = 'weight'" />
-      </div>
+          <GoalCard :icon="Scale" tone="alcohol" label="Peso" hint="per stimare le calorie bruciate"
+            :value="settings.profile.weightKg" unit="kg" @click="goalOpen = 'weight'" />
+        </div>
+      </Expandable>
     </div>
 
     <!-- Promemoria -->
@@ -42,11 +44,13 @@
       <div class="grid grid-cols-2 gap-2.5">
         <ReminderCard :icon="Droplet" tone="water" label="Acqua"
           :detail="`${settings.reminders.waterTimes.length} volte al giorno`" :on="settings.reminders.water"
-          @toggle="settings.reminders.water = !settings.reminders.water" />
+          @toggle="settings.reminders.water = !settings.reminders.water" @open="reminderOpen = 'water'" />
         <ReminderCard :icon="UtensilsCrossed" tone="food" label="Pasti" detail="ai pasti principali"
-          :on="settings.reminders.meal" @toggle="settings.reminders.meal = !settings.reminders.meal" />
+          :on="settings.reminders.meal" @toggle="settings.reminders.meal = !settings.reminders.meal"
+          @open="reminderOpen = 'meal'" />
         <ReminderCard :icon="Moon" tone="alcohol" label="Check serale" :detail="settings.reminders.eveningTime"
-          :on="settings.reminders.evening" @toggle="settings.reminders.evening = !settings.reminders.evening" />
+          :on="settings.reminders.evening" @toggle="settings.reminders.evening = !settings.reminders.evening"
+          @open="reminderOpen = 'evening'" />
         <button class="tap rounded-4xl flex flex-col items-center justify-center gap-1.5"
           style="padding: 12px; background: var(--raised); border: 1px solid var(--line)" @click="enable">
           <BellRing :size="19" color="var(--move)" />
@@ -61,7 +65,7 @@
 
     <!-- Connessioni -->
     <div class="rise" style="animation-delay: 180ms">
-      <div class="display mb-3 px-1" style="font-weight: 700; font-size: 18px">Connessioni</div>
+      <Expandable title="Connessioni" :icon="Link2" tone="move" :subtitle="connectionsSummary">
 
       <div class="rounded-4xl p-4 mb-2.5" :style="{ background: wConnected ? 'var(--move-soft)' : 'var(--raised)' }">
         <div class="flex items-center gap-3">
@@ -152,7 +156,8 @@
           :style="isDemo ? { background: 'var(--raised)', color: 'var(--faint)' } : { background: 'var(--move-soft)', color: 'var(--move)' }">
           {{ isDemo ? "non configurato" : "attivo" }}
         </span>
-      </div>
+        </div>
+      </Expandable>
     </div>
 
     <p class="text-faint text-center" style="font-size: 12.5px">Equilibrio · un passo per volta</p>
@@ -166,6 +171,57 @@
     <BottomSheet :model-value="goalOpen === 'food'" title="Obiettivo calorie" @update:model-value="goalOpen = null">
       <GoalPicker tone="food" unit="kcal" :model-value="settings.goals.kcal" :presets="[1600, 1800, 2000]" :min="1000" :max="3500" :step="50" @save="saveGoal('food', $event)" />
     </BottomSheet>
+    <BottomSheet :model-value="reminderOpen === 'water'" title="Promemoria acqua" @update:model-value="reminderOpen = null">
+      <div class="space-y-3">
+        <p class="text-dim" style="font-size: 13.5px; line-height: 1.5">
+          Un avviso a questi orari, per distribuire l'acqua durante la giornata invece di recuperarla la sera.
+        </p>
+        <div class="flex flex-wrap gap-2">
+          <div v-for="(t, i) in settings.reminders.waterTimes" :key="i"
+            class="rounded-full flex items-center gap-2" style="padding: 8px 12px; background: var(--water-soft)">
+            <input :value="t" type="time" class="tabular bg-transparent text-ink" style="font-size: 14px; border: none"
+              @change="settings.reminders.waterTimes[i] = ($event.target as HTMLInputElement).value" />
+            <button class="text-faint" aria-label="Rimuovi" @click="settings.reminders.waterTimes.splice(i, 1)">
+              <X :size="14" />
+            </button>
+          </div>
+          <button class="tap rounded-full flex items-center gap-1.5"
+            style="padding: 8px 14px; background: var(--raised); border: 1px solid var(--line); font-size: 13.5px"
+            @click="settings.reminders.waterTimes.push('12:00')">
+            <Plus :size="14" color="var(--water)" /> <span class="text-ink">Aggiungi orario</span>
+          </button>
+        </div>
+        <SettingToggleRow label="Promemoria attivo" tone="water" :on="settings.reminders.water"
+          @toggle="settings.reminders.water = !settings.reminders.water" />
+      </div>
+    </BottomSheet>
+
+    <BottomSheet :model-value="reminderOpen === 'meal'" title="Promemoria pasti" @update:model-value="reminderOpen = null">
+      <div class="space-y-3">
+        <p class="text-dim" style="font-size: 13.5px; line-height: 1.5">
+          Un avviso a colazione, pranzo e cena per registrare quello che hai mangiato finché te lo ricordi.
+        </p>
+        <SettingToggleRow label="Promemoria attivo" tone="food" :on="settings.reminders.meal"
+          @toggle="settings.reminders.meal = !settings.reminders.meal" />
+      </div>
+    </BottomSheet>
+
+    <BottomSheet :model-value="reminderOpen === 'evening'" title="Check serale" @update:model-value="reminderOpen = null">
+      <div class="space-y-3">
+        <p class="text-dim" style="font-size: 13.5px; line-height: 1.5">
+          Una domanda a fine giornata su come è andata con l'alcol. Serve a chiudere il conto, senza giudizio.
+        </p>
+        <div class="rounded-3xl flex items-center justify-between" style="padding: 12px 14px; background: var(--raised)">
+          <span class="text-ink" style="font-size: 14.5px">Orario</span>
+          <input :value="settings.reminders.eveningTime" type="time" class="tabular bg-card text-ink rounded-2xl"
+            style="padding: 8px 12px; border: 1px solid var(--line)"
+            @change="settings.reminders.eveningTime = ($event.target as HTMLInputElement).value" />
+        </div>
+        <SettingToggleRow label="Promemoria attivo" tone="alcohol" :on="settings.reminders.evening"
+          @toggle="settings.reminders.evening = !settings.reminders.evening" />
+      </div>
+    </BottomSheet>
+
     <BottomSheet :model-value="goalOpen === 'weight'" title="Il tuo peso" @update:model-value="goalOpen = null">
       <GoalPicker tone="alcohol" unit="kg" :model-value="settings.profile.weightKg" :presets="[70, 85, 100]" :min="35" :max="200" :step="1" @save="saveGoal('weight', $event)" />
     </BottomSheet>
@@ -173,7 +229,7 @@
 </template>
 
 <script setup lang="ts">
-import { User, GlassWater, Footprints, UtensilsCrossed, Scale, HeartPulse, Droplet, Moon, BellRing, Cloud } from "lucide-vue-next";
+import { User, GlassWater, Footprints, UtensilsCrossed, Scale, HeartPulse, Droplet, Moon, BellRing, Cloud, Target, Link2, X, Plus } from "lucide-vue-next";
 import { doc, getDoc, setDoc } from "firebase/firestore";
 import { useSettingsStore } from "~/stores/settings";
 
@@ -184,6 +240,12 @@ const health = useHealthSync();
 const { requestPermission, schedule, testNow } = useNotifications();
 
 const goalOpen = ref<"water" | "move" | "food" | "weight" | null>(null);
+const reminderOpen = ref<"water" | "meal" | "evening" | null>(null);
+
+const connectionsSummary = computed(() => {
+  const parts = [wConnected.value ? "Withings" : null, health.connected.value ? "Salute" : null].filter(Boolean);
+  return parts.length ? `${parts.join(", ")} · collegati` : "nessun servizio collegato";
+});
 function saveGoal(kind: "water" | "move" | "food" | "weight", value: number) {
   if (kind === "water") settings.goals.water = value;
   if (kind === "move") settings.goals.moveMin = value;

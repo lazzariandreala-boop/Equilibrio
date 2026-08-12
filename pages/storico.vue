@@ -66,8 +66,9 @@
 
     <!-- elenco dei giorni -->
     <div class="rise" style="animation-delay: 120ms">
-      <div class="display px-1 mb-2.5" style="font-weight: 700; font-size: 18px">Giorno per giorno</div>
-      <div class="space-y-2">
+      <Expandable title="Giorno per giorno" :icon="CalendarDays" tone="alcohol"
+        :subtitle="`${keys.length} giorni · ${agg.activeDays} con dati`">
+        <div class="space-y-2">
         <button v-for="k in keys" :key="k" class="tap w-full text-left rounded-4xl flex items-center gap-3"
           style="padding: 12px 14px"
           :style="k === todayK
@@ -94,17 +95,19 @@
             <div v-else class="text-faint" style="font-size: 12.5px; margin-top: 3px">nessun dato</div>
           </div>
 
-          <ChevronRight :size="18" class="text-faint shrink-0" />
-        </button>
-      </div>
+            <ChevronRight :size="18" class="text-faint shrink-0" />
+          </button>
+        </div>
+        <p class="text-faint text-center" style="font-size: 12px; margin-top: 10px">
+          Tocca un giorno per aprirlo o aggiungere dati.
+        </p>
+      </Expandable>
     </div>
-
-    <p class="text-faint text-center" style="font-size: 12.5px">Tocca un giorno per aprirlo o aggiungere dati.</p>
   </div>
 </template>
 
 <script setup lang="ts">
-import { ChevronRight, GlassWater, UtensilsCrossed, Footprints, Wine } from "lucide-vue-next";
+import { ChevronRight, GlassWater, UtensilsCrossed, Footprints, Wine, CalendarDays } from "lucide-vue-next";
 import { useDayStore } from "~/stores/day";
 import { lastNDays, monthDays, fmtShort, todayKey } from "~/utils/date";
 
