@@ -59,7 +59,9 @@
         <div class="flex gap-2">
           <div style="flex: 2">
             <div class="text-faint" style="font-size: 11px">Nome</div>
-            <input v-model="it.name" :class="inputCls" />
+            <textarea v-model="it.name" rows="1" :class="inputCls"
+              style="resize: none; overflow: hidden; line-height: 1.35"
+              @input="autoGrow($event)" />
           </div>
           <div style="flex: 1.1">
             <div class="text-faint" style="font-size: 11px">Quantità</div>
@@ -254,6 +256,13 @@ function rescaleFrom(i: number) {
   it.fat = Math.round(b.fat * k);
   it.fib = Math.round(b.fib * k);
   it.alc = Math.round(b.alc * k);
+}
+
+/** La casella del nome cresce col testo invece di troncarlo. */
+function autoGrow(e: Event) {
+  const el = e.target as HTMLTextAreaElement;
+  el.style.height = "auto";
+  el.style.height = `${el.scrollHeight}px`;
 }
 
 function onQtyInput(i: number, value: string) {
