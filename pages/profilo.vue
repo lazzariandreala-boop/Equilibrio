@@ -160,7 +160,10 @@
       </Expandable>
     </div>
 
-    <p class="text-faint text-center" style="font-size: 12.5px">Equilibrio · un passo per volta</p>
+    <p class="text-faint text-center" style="font-size: 12.5px">
+      Equilibrio · un passo per volta<br />
+      <span style="font-size: 11px">build {{ buildStamp }}</span>
+    </p>
 
     <BottomSheet :model-value="goalOpen === 'water'" title="Obiettivo acqua" @update:model-value="goalOpen = null">
       <GoalPicker tone="water" unit="ml" :model-value="settings.goals.water" :presets="[1500, 2000, 2500]" :min="500" :max="4000" :step="100" @save="saveGoal('water', $event)" />
@@ -241,6 +244,7 @@ const { requestPermission, schedule, testNow } = useNotifications();
 
 const goalOpen = ref<"water" | "move" | "food" | "weight" | null>(null);
 const reminderOpen = ref<"water" | "meal" | "evening" | null>(null);
+const buildStamp = String(useRuntimeConfig().public.build || "dev").slice(0, 7);
 
 const connectionsSummary = computed(() => {
   const parts = [wConnected.value ? "Withings" : null, health.connected.value ? "Salute" : null].filter(Boolean);

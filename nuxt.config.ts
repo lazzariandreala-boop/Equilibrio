@@ -42,6 +42,9 @@ export default defineNuxtConfig({
     withingsClientSecret: "", // NUXT_WITHINGS_CLIENT_SECRET
     public: {
       // config Firebase (chiavi pubbliche lato client)
+      // Marca della build: permette di capire a colpo d'occhio quale versione
+      // è installata, invece di dedurlo dalle schermate.
+      build: process.env.BUILD_STAMP || "dev",
       firebase: {
         apiKey: "", // NUXT_PUBLIC_FIREBASE_API_KEY
         authDomain: "",

@@ -47,6 +47,7 @@ jobs:
       - name: Genera il bundle web
         env:
           NATIVE_BUILD: "1" # esclude il Service Worker dall'app installata
+          BUILD_STAMP: ${{ github.sha }}
         run: npx nuxi generate
 
       # android/ è ignorata da git: si rigenera e si riapplicano permessi e minSdk.
