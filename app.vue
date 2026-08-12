@@ -3,10 +3,10 @@
     <!-- Finché non si sa se c'è un utente non si mostra nulla: prima
          comparivano header e schede, poi il salto al login. -->
     <div v-if="!ready" class="fixed inset-0 flex flex-col items-center justify-center bg-surface" style="z-index: 100">
-      <div class="relative">
-        <div class="absolute rounded-full" style="inset: -26px; background: radial-gradient(closest-side, var(--water-glow), transparent 70%)" />
-        <img :src="logo" alt="" width="96" height="96" class="relative" style="border-radius: 24px" />
-      </div>
+      <!-- L'alone segue la forma del logo, che è quadrato: un bagliore
+           circolare lo faceva sembrare inscritto in un cerchio. -->
+      <img :src="logo" alt="" width="104" height="104"
+        style="border-radius: 26px; box-shadow: 0 0 0 1px var(--line), 0 14px 40px -8px var(--water-glow)" />
       <div class="display text-ink" style="font-size: 24px; font-weight: 800; margin-top: 18px">Equilibrio</div>
       <div class="flex gap-1.5" style="margin-top: 16px">
         <span v-for="(t, i) in ['water', 'alcohol', 'move', 'food']" :key="t" class="rounded-full pulse-dot"

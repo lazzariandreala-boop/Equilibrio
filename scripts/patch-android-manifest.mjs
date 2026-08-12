@@ -153,7 +153,7 @@ if (changed) {
 }
 
 // ── Branding: icona dell'app ────────────────────────────────
-import { cpSync, mkdirSync, readdirSync } from "node:fs";
+import { cpSync, mkdirSync, readdirSync, rmSync } from "node:fs";
 
 const BRAND = "android-config/branding/generated";
 if (existsSync(BRAND)) {
@@ -167,6 +167,57 @@ if (existsSync(BRAND)) {
     `<?xml version="1.0" encoding="utf-8"?>\n<resources>\n    <color name="ic_launcher_background">#100E0D</color>\n</resources>\n`,
   );
   console.log("✓ Icona dell'app aggiornata");
+}
+
+// ── Schermata di avvio ──────────────────────────────────────
+// Da Android 12 il sistema disegna lo splash mascherando l'icona in un
+// cerchio: un logo quadrato verrebbe tagliato agli angoli. Si usa quindi
+// un'icona dedicata in cui il logo sta dentro l'area circolare.
+const RES = "android/app/src/main/res";
+if (existsSync(`${BRAND}/splash_icon.png`)) {
+  mkdirSync(`${RES}/drawable`, { recursive: true });
+  cpSync(`${BRAND}/splash_icon.png`, `${RES}/drawable/splash_icon.png`);
+  cpSync(`${BRAND}/splash_logo.png`, `${RES}/drawable/splash_logo.png`);
+
+  // Android 11 e precedenti: sfondo pieno con il logo centrato, senza
+  // deformarlo come farebbe un'immagine di sfondo stirata.
+  if (existsSync(`${RES}/drawable/splash.png`)) rmSync(`${RES}/drawable/splash.png`);
+  writeFileSync(
+    `${RES}/drawable/splash.xml`,
+    `<?xml version="1.0" encoding="utf-8"?>
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:drawable="@color/splashBackground" />
+    <item>
+        <bitmap android:gravity="center" android:src="@drawable/splash_logo" />
+    </item>
+</layer-list>
+`,
+  );
+
+  writeFileSync(
+    `${RES}/values/splash_colors.xml`,
+    `<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="splashBackground">#0D0F14</color>
+</resources>
+`,
+  );
+
+  // Android 12+: icona non mascherata a fondo pieno, coerente col tema.
+  mkdirSync(`${RES}/values-v31`, { recursive: true });
+  writeFileSync(
+    `${RES}/values-v31/styles.xml`,
+    `<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <style name="AppTheme.NoActionBarLaunch" parent="Theme.SplashScreen">
+        <item name="windowSplashScreenBackground">@color/splashBackground</item>
+        <item name="windowSplashScreenAnimatedIcon">@drawable/splash_icon</item>
+        <item name="postSplashScreenTheme">@style/AppTheme.NoActionBar</item>
+    </style>
+</resources>
+`,
+  );
+  console.log("✓ Schermata di avvio: logo non più ritagliato in cerchio");
 }
 
 // ── Diagnostica: schermata che mostra l'ultimo crash ────────
