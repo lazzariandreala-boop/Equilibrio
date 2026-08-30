@@ -30,7 +30,7 @@ const route = useRoute();
 const items = [
   { to: "/", icon: Home, label: "Oggi", tone: "water" },
   { to: "/pasti", icon: Utensils, label: "Pasti", tone: "food" },
-  { to: "/movimento", icon: Activity, label: "Moto", tone: "move" },
+  { to: "/movimento", icon: Activity, label: "Sport", tone: "move" },
   { to: "/corpo", icon: Scale, label: "Corpo", tone: "water" },
   { to: "/storico", icon: CalendarDays, label: "Storico", tone: "alcohol" },
   { to: "/profilo", icon: User, label: "Profilo", tone: "water" },
