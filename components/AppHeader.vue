@@ -38,6 +38,7 @@ const tone = computed(() => {
   if (p.startsWith("/pasti")) return "food";
   if (p.startsWith("/movimento")) return "move";
   if (p.startsWith("/alcol") || p.startsWith("/storico")) return "alcohol";
+  if (p.startsWith("/corpo")) return "water";
   return "water";
 });
 </script>

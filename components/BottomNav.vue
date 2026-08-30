@@ -6,12 +6,12 @@
                box-shadow: var(--nav-shadow)">
         <NuxtLink v-for="item in items" :key="item.to" :to="item.to"
           class="tap flex-1 rounded-3xl flex flex-col items-center relative"
-          style="padding: 8px 0 7px"
+          style="padding: 8px 2px 7px; min-width: 0"
           :style="active(item.to) ? { background: `var(--${item.tone}-soft)` } : {}">
-          <component :is="item.icon" :size="21"
+          <component :is="item.icon" :size="19"
             :color="active(item.to) ? `var(--${item.tone})` : 'var(--faint)'" />
-          <span :style="{
-            fontSize: '10.5px', fontWeight: 600, marginTop: '3px',
+          <span class="truncate" :style="{
+            fontSize: '9.5px', fontWeight: 600, marginTop: '3px', maxWidth: '100%',
             color: active(item.to) ? `var(--${item.tone})` : 'var(--faint)',
           }">{{ item.label }}</span>
           <!-- pallino: rende evidente la scheda attiva anche in visione periferica -->
@@ -24,13 +24,14 @@
 </template>
 
 <script setup lang="ts">
-import { Home, Utensils, Activity, CalendarDays, User } from "lucide-vue-next";
+import { Home, Utensils, Activity, CalendarDays, User, Scale } from "lucide-vue-next";
 const route = useRoute();
 
 const items = [
   { to: "/", icon: Home, label: "Oggi", tone: "water" },
   { to: "/pasti", icon: Utensils, label: "Pasti", tone: "food" },
-  { to: "/movimento", icon: Activity, label: "Movimento", tone: "move" },
+  { to: "/movimento", icon: Activity, label: "Moto", tone: "move" },
+  { to: "/corpo", icon: Scale, label: "Corpo", tone: "water" },
   { to: "/storico", icon: CalendarDays, label: "Storico", tone: "alcohol" },
   { to: "/profilo", icon: User, label: "Profilo", tone: "water" },
 ];
