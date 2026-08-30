@@ -1,14 +1,34 @@
 // GET /api/withings/callback?code=...&state=...
 // Scambia il code con l'access token. Doc: https://developer.withings.com
+import { signState } from "./login.get";
+
 export default defineEventHandler(async (event) => {
   const cfg = useRuntimeConfig();
   const query = getQuery(event);
   const code = query.code as string;
-  const state = query.state as string;
-  const saved = getCookie(event, "withings_state");
+  const state = String(query.state || "");
 
-  if (!code || !state || state !== saved) {
-    throw createError({ statusCode: 400, statusMessage: "Stato OAuth non valido." });
+  // Verifica della firma: non serve alcun cookie, quindi il consenso può
+  // avvenire anche in un browser diverso da quello che ha avviato il flusso.
+  const parts = state.split(".");
+  const signature = parts.pop();
+  const payload = parts.join(".");
+  const [ts, , fromApp] = parts;
+
+  const valid =
+    !!code &&
+    !!signature &&
+    parts.length === 3 &&
+    signature === signState(payload, cfg.withingsClientSecret) &&
+    Date.now() - Number(ts) < 15 * 60 * 1000; // il consenso vale 15 minuti
+
+  if (!valid) {
+    throw createError({
+      statusCode: 400,
+      statusMessage: !code
+        ? "Autorizzazione annullata o negata su Withings."
+        : "La richiesta è scaduta. Riprova a collegare Withings dal Profilo.",
+    });
   }
 
   const form = new URLSearchParams({
@@ -34,5 +54,9 @@ export default defineEventHandler(async (event) => {
   // Salva access + refresh + scadenza (cookie httpOnly). Il refresh permette di
   // rinnovare l'access_token scaduto senza rifare il login.
   setWithingsTokens(event, token);
-  return sendRedirect(event, "/profilo?withings=ok");
+
+  // Dall'app installata l'interfaccia vive su un'origine locale: tornare a
+  // "/profilo" mostrerebbe la copia sul sito invece dell'app.
+  const back = fromApp === "1" ? "https://localhost/profilo?withings=ok" : "/profilo?withings=ok";
+  return sendRedirect(event, back);
 });

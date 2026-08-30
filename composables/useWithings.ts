@@ -15,7 +15,8 @@ export function useWithings() {
   const base = useRuntimeConfig().public.apiBase || "";
 
   function connect() {
-    window.location.href = `${base}/api/withings/login`;
+    const native = !!(window as any).Capacitor?.isNativePlatform?.();
+    window.location.href = `${base}/api/withings/login${native ? "?app=1" : ""}`;
   }
 
   async function status(): Promise<{ connected: boolean }> {

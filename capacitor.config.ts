@@ -19,9 +19,17 @@ const config: CapacitorConfig = {
   // Se APP_SERVER_URL è impostata, l'app installata carica direttamente il
   // deploy invece dei file impacchettati: così si aggiorna da sola a ogni
   // push, senza reinstallare l'APK. Richiede connessione a internet.
-  ...(process.env.APP_SERVER_URL
-    ? { server: { url: process.env.APP_SERVER_URL, cleartext: false } }
-    : {}),
+  server: {
+    // Senza queste voci la WebView spedirebbe il consenso Withings al browser
+    // di sistema: i cookie con i token finirebbero lì e l'app non li vedrebbe.
+    allowNavigation: [
+      "equilibrio-ebpu.vercel.app",
+      "*.vercel.app",
+      "account.withings.com",
+      "*.withings.com",
+    ],
+    ...(process.env.APP_SERVER_URL ? { url: process.env.APP_SERVER_URL, cleartext: false } : {}),
+  },
 };
 
 export default config;
