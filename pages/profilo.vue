@@ -81,7 +81,7 @@
                 {{ wWeight.toFixed(1) }} kg<template v-if="wFat != null"> · {{ wFat.toFixed(1) }}% grasso</template>
               </template>
               <template v-else-if="wConnected">Collegato</template>
-              <template v-else>Non collegato</template>
+              <template v-else>{{ wReason || "Non collegato" }}</template>
             </div>
           </div>
           <button v-if="!wLoading" class="tap rounded-2xl px-4 py-2.5 font-semibold shrink-0" style="font-size: 13px"
@@ -265,6 +265,7 @@ const apiBase = useRuntimeConfig().public.apiBase || "";
 const wLoading = ref(true);
 const wConnected = ref(false);
 const wWeight = ref<number | null>(null);
+const wReason = ref("");
 const wFat = ref<number | null>(null);
 
 function withingsDocRef() {
@@ -289,6 +290,7 @@ async function loadWithings() {
   }
 
   wConnected.value = !!s.connected;
+  wReason.value = s.connected ? "" : String((s as any).reason || "");
   if (wConnected.value) {
     if (ref) {
       const tok = await $fetch(`${apiBase}/api/withings/token`, { credentials: "include" }).catch(() => null);

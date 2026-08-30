@@ -14,8 +14,11 @@
     </div>
 
     <!-- non collegato -->
-    <EmptyState v-if="!connected && !busy" tone="water" title="Withings non collegato"
-      subtitle="Collega la bilancia dal Profilo per vedere qui peso, composizione corporea e andamento nel tempo." />
+    <EmptyState v-if="!connected && !busy" tone="water"
+      :title="expired ? 'Sessione Withings scaduta' : 'Withings non collegato'"
+      :subtitle="expired
+        ? 'Apri il Profilo, scollega Withings e ricollegalo: i dati torneranno tutti, non si perde nulla.'
+        : 'Collega la bilancia dal Profilo per vedere qui peso, composizione corporea e andamento nel tempo.'" />
 
     <div v-else-if="busy && !data" class="rise text-center" style="padding: 40px 20px">
       <Loader2 :size="26" class="text-water animate-spin mx-auto" />
@@ -130,6 +133,7 @@ const days = ref(90);
 const data = ref<History | null>(null);
 const busy = ref(true);
 const connected = ref(false);
+const expired = ref(false);
 const error = ref("");
 
 const periods = [
@@ -180,8 +184,9 @@ async function load(d: number) {
   busy.value = true;
   error.value = "";
   try {
-    const st = await status();
+    const st: any = await status();
     connected.value = !!st.connected;
+    expired.value = !st.connected && /scaduta/i.test(st.reason || "");
     if (!connected.value) return;
 
     const res = await $fetch<History>(`${base}/api/withings/history`, {
@@ -190,7 +195,12 @@ async function load(d: number) {
     });
     data.value = res;
   } catch (e: any) {
-    error.value = "Non sono riuscito a leggere le misure. Controlla il collegamento nel Profilo.";
+    // Il messaggio del server dice esattamente cosa non ha funzionato:
+    // sostituirlo con una frase generica rende impossibile capirlo.
+    error.value =
+      e?.data?.statusMessage ||
+      e?.statusMessage ||
+      "Non sono riuscito a leggere le misure. Controlla il collegamento nel Profilo.";
   } finally {
     busy.value = false;
   }

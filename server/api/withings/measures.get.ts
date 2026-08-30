@@ -6,7 +6,10 @@
 export default defineEventHandler(async (event) => {
   const token = await getWithingsToken(event);
   if (!token) {
-    throw createError({ statusCode: 401, statusMessage: "Withings non collegato." });
+    throw createError({
+      statusCode: 401,
+      statusMessage: "Sessione Withings scaduta. Riapri il Profilo e ricollega Withings.",
+    });
   }
 
   const form = new URLSearchParams({
@@ -22,7 +25,16 @@ export default defineEventHandler(async (event) => {
   }).catch(() => null);
 
   if (res?.status !== 0) {
-    throw createError({ statusCode: 502, statusMessage: `Withings error ${res?.status ?? "?"}` });
+    // 401 dall'API Withings = token rifiutato; gli altri codici restano utili
+    // per capire cosa ha risposto il servizio.
+    const code = res?.status ?? "nessuna risposta";
+    throw createError({
+      statusCode: 502,
+      statusMessage:
+        code === 401
+          ? "Withings ha rifiutato l'autorizzazione. Ricollega Withings dal Profilo."
+          : `Withings ha risposto con l'errore ${code}.`,
+    });
   }
 
   const grps: any[] = (res.body?.measuregrps || []).slice().sort((a, b) => b.date - a.date);
