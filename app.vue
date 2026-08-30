@@ -29,6 +29,7 @@ const { init: initAuth, ready } = useAuth();
 const { start: startSync } = useCloudSync();
 const day = useDayStore();
 const route = useRoute();
+const apiBase = useRuntimeConfig().public.apiBase || "";
 const { user } = useAuth();
 
 // Quando l'autenticazione si risolve, la rotta corrente va rivalutata:
@@ -53,6 +54,27 @@ onMounted(async () => {
   if (Capacitor.isNativePlatform()) {
     const { App } = await import("@capacitor/app");
     App.addListener("resume", () => day.refreshDay());
+
+    // Rientro dal consenso Withings: il browser di sistema ci rimanda qui con
+    // i token, che vanno registrati nella sessione dell'app.
+    App.addListener("appUrlOpen", async ({ url }) => {
+      if (!url?.startsWith("equilibrio://withings")) return;
+      try {
+        const q = new URL(url).searchParams;
+        await $fetch(`${apiBase}/api/withings/restore`, {
+          method: "POST",
+          credentials: "include",
+          body: {
+            access_token: q.get("a") || undefined,
+            refresh_token: q.get("r") || undefined,
+            exp: Number(q.get("e")) || undefined,
+          },
+        });
+        await navigateTo("/profilo?withings=ok");
+      } catch {
+        await navigateTo("/profilo?withings=errore");
+      }
+    });
   }
 });
 </script>

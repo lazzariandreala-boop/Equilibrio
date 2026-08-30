@@ -75,6 +75,17 @@ if (existsSync(APP_GRADLE) && existsSync("android-config/debug.keystore")) {
 
 let xml = readFileSync(PATH, "utf8");
 
+// Collegamento diretto usato per rientrare nell'app al termine del consenso
+// Withings, che si conclude nel browser di sistema.
+const DEEP_LINK = `
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data android:scheme="equilibrio" />
+            </intent-filter>
+`;
+
 const RATIONALE = `
             <!-- Health Connect: schermata che spiega perché servono i permessi (Android 13 e precedenti) -->
             <intent-filter>
@@ -116,7 +127,7 @@ const PERMISSIONS = `
 let changed = false;
 
 if (!xml.includes("ACTION_SHOW_PERMISSIONS_RATIONALE")) {
-  xml = xml.replace("        </activity>", `${RATIONALE}\n        </activity>\n${ALIAS}`);
+  xml = xml.replace("        </activity>", `${RATIONALE}${DEEP_LINK}\n        </activity>\n${ALIAS}`);
   changed = true;
 }
 

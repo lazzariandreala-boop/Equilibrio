@@ -55,8 +55,16 @@ export default defineEventHandler(async (event) => {
   // rinnovare l'access_token scaduto senza rifare il login.
   setWithingsTokens(event, token);
 
-  // Dall'app installata l'interfaccia vive su un'origine locale: tornare a
-  // "/profilo" mostrerebbe la copia sul sito invece dell'app.
-  const back = fromApp === "1" ? "https://localhost/profilo?withings=ok" : "/profilo?withings=ok";
-  return sendRedirect(event, back);
+  // Se il consenso è partito dall'app, quasi sempre si conclude nel browser di
+  // sistema: i cookie appena creati restano lì e l'app non li vedrebbe mai.
+  // Si torna quindi all'app con un collegamento diretto che porta i token,
+  // così può registrarli nella propria sessione.
+  if (fromApp === "1") {
+    const deep = new URL("equilibrio://withings");
+    deep.searchParams.set("a", token.access_token || "");
+    deep.searchParams.set("r", token.refresh_token || "");
+    deep.searchParams.set("e", String(Date.now() + Number(token.expires_in || 0) * 1000));
+    return sendRedirect(event, deep.toString());
+  }
+  return sendRedirect(event, "/profilo?withings=ok");
 });
