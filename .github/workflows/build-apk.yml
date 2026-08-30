@@ -90,8 +90,13 @@ jobs:
           path: gradle-build.log
           retention-days: 7
 
-      - name: Rinomina l'APK
-        run: cp android/app/build/outputs/apk/debug/app-debug.apk Equilibrio.apk
+      - name: Prepara i file da pubblicare
+        run: |
+          cp android/app/build/outputs/apk/debug/app-debug.apk Equilibrio.apk
+          # Android trattiene i download di APK da origini sconosciute durante
+          # la verifica: lo stesso file dentro uno zip scarica senza intoppi.
+          zip -q Equilibrio-apk.zip Equilibrio.apk
+          ls -la Equilibrio.apk Equilibrio-apk.zip
 
       # Scaricabile dalla pagina del workflow, sotto "Artifacts".
       - name: Pubblica come artifact
@@ -111,9 +116,15 @@ jobs:
           body: |
             APK di debug generato automaticamente dall'ultimo commit su main.
 
-            Per installarlo: scarica il file dal telefono e consenti
-            l'installazione da origini sconosciute quando Android lo chiede.
-          files: Equilibrio.apk
+            **Equilibrio.apk** — download diretto. Consenti l'installazione
+            da origini sconosciute quando Android lo chiede.
+
+            **Equilibrio-apk.zip** — stesso file dentro uno zip. Da usare se il
+            download dell'APK resta bloccato al 100%: Android non intercetta gli
+            zip, basta poi estrarlo con l'app File e toccare l'APK.
+          files: |
+            Equilibrio.apk
+            Equilibrio-apk.zip
           prerelease: true
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
