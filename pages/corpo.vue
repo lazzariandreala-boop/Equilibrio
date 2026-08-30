@@ -64,26 +64,24 @@
         </div>
       </div>
 
-      <!-- GRASSO VISCERALE -->
-      <MeasureCard v-if="has('visceralFat')" tone="food" :icon="Flame" label="Grasso viscerale"
-        :value="fmt(s.visceralFat.last, 0)" unit="indice" :delta="s.visceralFat.delta" better="lower"
-        :points="data.series.visceralFat" :decimals="0"
-        note="Sotto 13 è considerato nella norma. È il grasso attorno agli organi, quello che conta di più per la salute." />
-
-      <!-- MUSCOLI -->
-      <MeasureCard v-if="has('muscleMass')" tone="move" :icon="Dumbbell" label="Massa muscolare"
-        :value="fmt(s.muscleMass.last)" unit="kg" :delta="s.muscleMass.delta" better="higher"
-        :points="data.series.muscleMass" />
-
-      <!-- ACQUA -->
-      <MeasureCard v-if="has('hydration')" tone="water" :icon="Droplets" label="Acqua corporea"
-        :value="fmt(s.hydration.last)" unit="kg" :delta="s.hydration.delta" better="higher"
-        :points="data.series.hydration"
-        :note="hydrationPct ? `Circa il ${hydrationPct}% del peso corporeo.` : ''" />
-
-      <!-- altri valori, raccolti -->
+      <!-- Tutto il resto della composizione corporea sta qui: in pagina
+           resta il peso, che è il dato che si guarda ogni giorno. -->
       <Expandable title="Altri valori" :icon="Activity" tone="alcohol" :subtitle="othersSummary">
         <div class="space-y-2.5">
+          <MeasureCard v-if="has('visceralFat')" tone="food" :icon="Flame" label="Grasso viscerale"
+            :value="fmt(s.visceralFat.last, 0)" unit="indice" :delta="s.visceralFat.delta" better="lower"
+            :points="data.series.visceralFat" :decimals="0"
+            note="Sotto 13 è considerato nella norma. È il grasso attorno agli organi, quello che conta di più per la salute." />
+
+          <MeasureCard v-if="has('muscleMass')" tone="move" :icon="Dumbbell" label="Massa muscolare"
+            :value="fmt(s.muscleMass.last)" unit="kg" :delta="s.muscleMass.delta" better="higher"
+            :points="data.series.muscleMass" />
+
+          <MeasureCard v-if="has('hydration')" tone="water" :icon="Droplets" label="Acqua corporea"
+            :value="fmt(s.hydration.last)" unit="kg" :delta="s.hydration.delta" better="higher"
+            :points="data.series.hydration"
+            :note="hydrationPct ? `Circa il ${hydrationPct}% del peso corporeo.` : ''" />
+
           <MeasureCard v-if="has('fatRatio')" tone="food" :icon="Percent" label="Massa grassa"
             :value="fmt(s.fatRatio.last)" unit="%" :delta="s.fatRatio.delta" better="lower"
             :points="data.series.fatRatio" compact />
@@ -96,6 +94,7 @@
           <MeasureCard v-if="has('boneMass')" tone="alcohol" :icon="Bone" label="Massa ossea"
             :value="fmt(s.boneMass.last)" unit="kg" :delta="s.boneMass.delta" better="neutral"
             :points="data.series.boneMass" compact />
+
           <p v-if="!othersCount" class="text-faint text-center" style="font-size: 12.5px; padding: 10px">
             Nessun altro valore in questo periodo.
           </p>
@@ -172,8 +171,13 @@ const hydrationPct = computed(() => {
   return w && h ? Math.round((h / w) * 100) : null;
 });
 
+// Tutte le voci della sezione, non solo quelle secondarie: il sottotitolo
+// deve dire quanti valori si trovano davvero aprendola.
 const othersCount = computed(
-  () => ["fatRatio", "leanMass", "pulse", "boneMass"].filter((k) => has(k)).length,
+  () =>
+    ["visceralFat", "muscleMass", "hydration", "fatRatio", "leanMass", "pulse", "boneMass"].filter((k) =>
+      has(k),
+    ).length,
 );
 const othersSummary = computed(() =>
   othersCount.value ? `${othersCount.value} valori disponibili` : "nessun valore in questo periodo",
