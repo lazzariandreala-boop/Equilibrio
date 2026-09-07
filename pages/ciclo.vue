@@ -48,10 +48,16 @@
     <EmptyState v-else tone="alcohol" title="Nessun ciclo registrato"
       subtitle="Segna il primo giorno: dopo due registrazioni l'app inizia a stimare quando aspettarti il prossimo." />
 
-    <button class="tap w-full rounded-full py-3.5 font-semibold flex items-center justify-center gap-2.5 grad-alcohol rise cta-glow-alcohol"
-      style="color: #fff; font-size: 15.5px; animation-delay: 70ms" @click="openNew()">
-      <Plus :size="19" /> Registra un ciclo
-    </button>
+    <div class="flex gap-2.5 rise" style="animation-delay: 70ms">
+      <button class="tap flex-1 rounded-full py-3.5 font-semibold flex items-center justify-center gap-2 grad-alcohol cta-glow-alcohol"
+        style="color: #fff; font-size: 15px" @click="openNew()">
+        <Plus :size="18" /> Registra
+      </button>
+      <button class="tap rounded-full px-5 font-semibold flex items-center justify-center gap-2 bg-raised text-ink"
+        style="font-size: 15px; border: 1px solid var(--line)" @click="calendarOpen = true">
+        <CalendarDays :size="18" color="var(--alcohol)" /> Calendario
+      </button>
+    </div>
 
     <!-- Previsione del prossimo, tolta se in gravidanza o se già arrivato -->
     <div v-if="showPrediction" class="rise rounded-4xl flex items-center gap-3" style="padding: 13px 14px"
@@ -108,6 +114,10 @@
         </div>
       </Expandable>
     </div>
+
+    <BottomSheet v-model="calendarOpen" title="Calendario del ciclo">
+      <CycleCalendar />
+    </BottomSheet>
 
     <!-- Scheda di inserimento -->
     <BottomSheet v-model="sheetOpen" :title="editing ? 'Modifica il ciclo' : 'Registra un ciclo'">
@@ -248,6 +258,7 @@ const banner = computed(() => {
 
 // ── inserimento ──
 const sheetOpen = ref(false);
+const calendarOpen = ref(false);
 const editing = ref<string | null>(null);
 const form = reactive({
   start: todayKey(),
