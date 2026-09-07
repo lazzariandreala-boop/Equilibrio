@@ -53,7 +53,7 @@
         style="color: #fff; font-size: 15px" @click="openNew()">
         <Plus :size="18" /> Registra
       </button>
-      <button class="tap rounded-full px-5 font-semibold flex items-center justify-center gap-2 bg-raised text-ink"
+      <button class="tap flex-1 rounded-full py-3.5 font-semibold flex items-center justify-center gap-2 bg-raised text-ink"
         style="font-size: 15px; border: 1px solid var(--line)" @click="calendarOpen = true">
         <CalendarDays :size="18" color="var(--alcohol)" /> Calendario
       </button>
