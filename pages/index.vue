@@ -105,6 +105,23 @@ const macros = computed(() => [
   { l: "G", v: day.totals.fat, tone: "move" },
 ]);
 
+// Le quattro voci considerate avviate: alimentano le tacche della card ridotta.
+const marks = computed(() => [
+  p.value.water >= 70,
+  p.value.move >= 70,
+  p.value.food >= 70,
+  p.value.alcohol >= 70,
+]);
+
+const message = computed(() => {
+  const n = marks.value.filter(Boolean).length;
+  if (n >= 4) return "Giornata piena!";
+  if (n === 3) return "Stai andando bene!";
+  if (n === 2) return "Buon ritmo, continua.";
+  if (n === 1) return "Un passo è già partito.";
+  return "Si comincia quando vuoi.";
+});
+
 const soberDots = computed(() =>
   lastNDays(6, keyToDate(day.date)).reverse().map((k) => day.summaryOf(k).alcGrams === 0),
 );

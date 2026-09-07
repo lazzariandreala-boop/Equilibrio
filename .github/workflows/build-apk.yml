@@ -36,6 +36,11 @@ jobs:
       - name: Installa le dipendenze
         run: npm ci
 
+      # Intercetta i binding rimasti orfani dopo una modifica: senza questo
+      # controllo il componente sparisce senza che nulla segnali l'errore.
+      - name: Verifica i riferimenti nei template
+        run: node scripts/check-templates.mjs
+
       # Senza queste variabili la build statica parte in modalità demo.
       - name: Configura l'ambiente della build nativa
         env:
