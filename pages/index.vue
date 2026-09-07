@@ -49,6 +49,22 @@
       </div>
     </div>
 
+    <NuxtLink v-if="settings.profile.cycleTracking" to="/ciclo" class="tap block rounded-4xl rise"
+      style="background: var(--card); border: 1px solid var(--line); padding: 12px 14px;
+             box-shadow: inset 0 1px 0 rgba(255,255,255,.05); animation-delay: 240ms">
+      <div class="flex items-center gap-3">
+        <div class="rounded-full flex items-center justify-center shrink-0"
+          style="width: 40px; height: 40px; background: var(--alcohol-soft); border: 1.5px solid var(--alcohol)">
+          <CalendarHeart :size="19" color="var(--alcohol)" />
+        </div>
+        <div class="min-w-0 flex-1">
+          <div class="text-ink" style="font-size: 14.5px; font-weight: 600">{{ cycleLine }}</div>
+          <div class="text-faint" style="font-size: 12.5px">Diario del ciclo</div>
+        </div>
+        <ChevronRight :size="18" color="var(--alcohol)" />
+      </div>
+    </NuxtLink>
+
     <NuxtLink to="/storico" class="tap block rounded-4xl rise"
       style="background: var(--card); border: 1px solid var(--line); padding: 12px 14px;
              box-shadow: inset 0 1px 0 rgba(255,255,255,.05); animation-delay: 260ms">
@@ -68,7 +84,8 @@
 </template>
 
 <script setup lang="ts">
-import { GlassWater, Footprints, UtensilsCrossed, Wine, Sprout, ChevronRight } from "lucide-vue-next";
+import { GlassWater, Footprints, UtensilsCrossed, Wine, Sprout, ChevronRight, CalendarHeart } from "lucide-vue-next";
+import { useCycleStore } from "~/stores/cycle";
 import { useDayStore } from "~/stores/day";
 import { useSettingsStore } from "~/stores/settings";
 import { lastNDays, keyToDate } from "~/utils/date";
@@ -98,6 +115,19 @@ const macros = computed(() => [
   { l: "P", v: day.totals.pro, tone: "water" },
   { l: "G", v: day.totals.fat, tone: "move" },
 ]);
+
+const cycle = useCycleStore();
+
+// Riga di sintesi: dice subito se è in corso, in arrivo o in ritardo.
+const cycleLine = computed(() => {
+  if (settings.profile.pregnant) return "Gravidanza in corso";
+  const s = cycle.status;
+  if (s.kind === "nessun-dato") return "Nessun ciclo registrato";
+  if (s.kind === "in-corso") return `Ciclo in corso · giorno ${s.days}`;
+  if (s.kind === "in-ritardo") return `In ritardo di ${s.days} ${s.days === 1 ? "giorno" : "giorni"}`;
+  if (s.kind === "in-arrivo") return s.days === 0 ? "Ciclo previsto oggi" : `Ciclo tra circa ${s.days} giorni`;
+  return `Prossimo ciclo tra ${s.days} giorni`;
+});
 
 const soberDots = computed(() =>
   lastNDays(6, keyToDate(day.date)).reverse().map((k) => day.summaryOf(k).alcGrams === 0),

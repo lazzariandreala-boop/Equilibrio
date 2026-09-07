@@ -91,6 +91,22 @@
         </div>
       </div>
 
+      <!-- Avvisi gravidanza: compaiono solo se il flag è attivo nel profilo -->
+      <div v-if="risks.length" class="space-y-2">
+        <div v-for="(r, k) in risks" :key="k" class="rounded-3xl" style="padding: 11px 13px"
+          :style="{ background: `var(--${SEVERITY_TONE[r.severity]}-soft)` }">
+          <div class="flex items-start gap-2.5">
+            <AlertTriangle :size="16" :color="`var(--${SEVERITY_TONE[r.severity]})`" style="margin-top: 2px; flex-shrink: 0" />
+            <div class="min-w-0">
+              <div class="text-ink" style="font-size: 13.5px; font-weight: 600">
+                {{ r.food }}: {{ r.severity === "evitare" ? "da evitare" : r.severity === "limitare" ? "da limitare" : "attenzione" }}
+              </div>
+              <div class="text-dim" style="font-size: 12.5px; line-height: 1.4; margin-top: 2px">{{ r.advice }}</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
       <div class="rounded-4xl p-3.5" style="background: var(--raised)">
         <FoodSearch @pick="onSearchPick" />
       </div>
@@ -119,15 +135,23 @@
 </template>
 
 <script setup lang="ts">
-import { Camera, Images, PenLine, Sparkles, X, Plus, Search } from "lucide-vue-next";
+import { Camera, Images, PenLine, Sparkles, X, Plus, Search, AlertTriangle } from "lucide-vue-next";
 import type { RecognizedItem } from "~/composables/useRecognition";
 import { estimateLocally } from "~/utils/foods";
+import { checkFoods, SEVERITY_TONE } from "~/utils/pregnancy";
+import { useSettingsStore } from "~/stores/settings";
 
 const props = withDefaults(defineProps<{ initialItems?: RecognizedItem[] | null }>(), {
   initialItems: null,
 });
 const emit = defineEmits<{ save: [any] }>();
 const { recognizeBase64, estimate, fileToBase64 } = useRecognition();
+const settings = useSettingsStore();
+
+// Gli avvisi si aggiornano man mano che le voci cambiano.
+const risks = computed(() =>
+  settings.profile.pregnant ? checkFoods(items.value.map((i) => i.name).filter(Boolean)) : [],
+);
 const { isNative, pickNative, pickWeb } = useImagePicker();
 
 // Con voci già presenti si salta la scelta e si va diritti alla revisione.

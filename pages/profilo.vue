@@ -38,6 +38,39 @@
       </Expandable>
     </div>
 
+    <!-- Salute femminile -->
+    <div class="rise" style="animation-delay: 90ms">
+      <Expandable title="Ciclo e gravidanza" :icon="Baby" tone="alcohol" :subtitle="womenSummary">
+        <div class="space-y-2.5">
+          <SettingToggleRow label="Monitoraggio del ciclo" tone="alcohol" :on="settings.profile.cycleTracking"
+            @toggle="settings.profile.cycleTracking = !settings.profile.cycleTracking" />
+          <SettingToggleRow label="Sono incinta" tone="alcohol" :on="settings.profile.pregnant"
+            @toggle="settings.profile.pregnant = !settings.profile.pregnant" />
+
+          <p class="text-faint px-1" style="font-size: 12px; line-height: 1.5">
+            Con "sono incinta" attivo, aggiungendo un pasto l'app segnala gli alimenti sconsigliati
+            in gravidanza e sospende le previsioni del ciclo.
+          </p>
+
+          <NuxtLink v-if="settings.profile.cycleTracking" to="/ciclo"
+            class="tap rounded-3xl flex items-center gap-3" style="padding: 12px 14px; background: var(--raised)">
+            <CalendarHeart :size="19" color="var(--alcohol)" />
+            <span class="text-ink flex-1" style="font-size: 14.5px; font-weight: 600">Apri il diario del ciclo</span>
+            <ChevronRight :size="17" class="text-faint" />
+          </NuxtLink>
+
+          <button v-if="settings.profile.pregnant" class="tap w-full rounded-3xl flex items-center gap-3"
+            style="padding: 12px 14px; background: var(--raised)" @click="guideOpen = true">
+            <BookOpen :size="19" color="var(--alcohol)" />
+            <span class="text-ink flex-1 text-left" style="font-size: 14.5px; font-weight: 600">
+              Cosa evitare in gravidanza
+            </span>
+            <ChevronRight :size="17" class="text-faint" />
+          </button>
+        </div>
+      </Expandable>
+    </div>
+
     <!-- Promemoria -->
     <div class="rise" style="animation-delay: 120ms">
       <div class="display mb-2.5 px-1" style="font-weight: 700; font-size: 19px">Promemoria</div>
@@ -174,6 +207,10 @@
     <BottomSheet :model-value="goalOpen === 'food'" title="Obiettivo calorie" @update:model-value="goalOpen = null">
       <GoalPicker tone="food" unit="kcal" :model-value="settings.goals.kcal" :presets="[1600, 1800, 2000]" :min="1000" :max="3500" :step="50" @save="saveGoal('food', $event)" />
     </BottomSheet>
+    <BottomSheet v-model="guideOpen" title="Cosa evitare in gravidanza">
+      <PregnancyGuide />
+    </BottomSheet>
+
     <BottomSheet :model-value="reminderOpen === 'water'" title="Promemoria acqua" @update:model-value="reminderOpen = null">
       <div class="space-y-3">
         <p class="text-dim" style="font-size: 13.5px; line-height: 1.5">
@@ -232,7 +269,8 @@
 </template>
 
 <script setup lang="ts">
-import { User, GlassWater, Footprints, UtensilsCrossed, Scale, HeartPulse, Droplet, Moon, BellRing, Cloud, Target, Link2, X, Plus } from "lucide-vue-next";
+import { User, GlassWater, Footprints, UtensilsCrossed, Scale, HeartPulse, Droplet, Moon, BellRing, Cloud, Target, Link2, X, Plus,
+  Baby, CalendarHeart, BookOpen, ChevronRight } from "lucide-vue-next";
 import { doc, getDoc, setDoc } from "firebase/firestore";
 import { useSettingsStore } from "~/stores/settings";
 
@@ -244,6 +282,14 @@ const { requestPermission, schedule, testNow } = useNotifications();
 
 const goalOpen = ref<"water" | "move" | "food" | "weight" | null>(null);
 const reminderOpen = ref<"water" | "meal" | "evening" | null>(null);
+const guideOpen = ref(false);
+
+const womenSummary = computed(() => {
+  const parts: string[] = [];
+  if (settings.profile.pregnant) parts.push("gravidanza attiva");
+  if (settings.profile.cycleTracking) parts.push("ciclo monitorato");
+  return parts.length ? parts.join(" · ") : "non attivi";
+});
 const buildStamp = String(useRuntimeConfig().public.build || "dev").slice(0, 7);
 
 const connectionsSummary = computed(() => {

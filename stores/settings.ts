@@ -7,6 +7,10 @@ export interface Goals {
 }
 export interface Profile {
   weightKg: number; // serve a stimare le calorie bruciate
+  /** Attiva gli avvisi sugli alimenti sconsigliati in gravidanza. */
+  pregnant: boolean;
+  /** Mostra la sezione dedicata al ciclo mestruale. */
+  cycleTracking: boolean;
 }
 export interface Reminders {
   water: boolean;
@@ -19,7 +23,7 @@ export interface Reminders {
 export const useSettingsStore = defineStore("settings", {
   state: () => ({
     goals: <Goals>{ water: 2000, moveMin: 30, kcal: 2000 },
-    profile: <Profile>{ weightKg: 75 },
+    profile: <Profile>{ weightKg: 75, pregnant: false, cycleTracking: false },
     reminders: <Reminders>{
       water: true,
       waterTimes: ["10:00", "13:00", "16:00", "19:00"],

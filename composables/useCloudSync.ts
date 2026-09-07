@@ -1,6 +1,7 @@
 import { doc, getDoc, setDoc, onSnapshot } from "firebase/firestore";
 import { useDayStore } from "~/stores/day";
 import { useSettingsStore } from "~/stores/settings";
+import { useCycleStore } from "~/stores/cycle";
 
 // Sincronizzazione cloud opzionale: attiva solo con Firebase configurato + utente loggato.
 // Realtime: le modifiche fatte su un dispositivo arrivano live sugli altri (onSnapshot),
@@ -10,6 +11,7 @@ export function useCloudSync() {
   const { user } = useAuth();
   const day = useDayStore();
   const settings = useSettingsStore();
+  const cycle = useCycleStore();
   let timer: any = null;
   let unsub: null | (() => void) = null;
   let started = false;
@@ -20,7 +22,9 @@ export function useCloudSync() {
   function snapshot(): string {
     return JSON.stringify({
       day: { streak: day.streak, days: day.days },
-      settings: { goals: settings.goals, reminders: settings.reminders },
+      // profile era escluso: peso e preferenze non seguivano l'account.
+      settings: { goals: settings.goals, reminders: settings.reminders, profile: settings.profile },
+      cycle: { entries: cycle.entries },
     });
   }
 
@@ -28,6 +32,7 @@ export function useCloudSync() {
     if (!data) return;
     day.hydrate(data.day);
     settings.hydrate(data.settings);
+    cycle.hydrate(data.cycle);
     lastSync = snapshot(); // allinea la firma: nessun push di ritorno
   }
 
@@ -48,7 +53,10 @@ export function useCloudSync() {
       ref,
       {
         day: { streak: day.streak, days: day.days },
-        settings: { goals: settings.goals, reminders: settings.reminders },
+        // Deve coincidere con snapshot(): se qui manca qualcosa, la firma
+        // cambia ma il dato non viene mai salvato davvero.
+        settings: { goals: settings.goals, reminders: settings.reminders, profile: settings.profile },
+        cycle: { entries: cycle.entries },
         updatedAt: Date.now(),
       },
       { merge: true },
@@ -85,6 +93,7 @@ export function useCloudSync() {
           // Modifiche locali -> cloud (debounce).
           day.$subscribe(schedulePush);
           settings.$subscribe(schedulePush);
+          cycle.$subscribe(schedulePush);
         }
 
         // Logout: chiudi la sottoscrizione realtime.
