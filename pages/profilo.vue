@@ -45,7 +45,7 @@
           <SettingToggleRow label="Monitoraggio del ciclo" tone="alcohol" :on="settings.profile.cycleTracking"
             @toggle="settings.profile.cycleTracking = !settings.profile.cycleTracking" />
           <SettingToggleRow label="Sono incinta" tone="alcohol" :on="settings.profile.pregnant"
-            @toggle="settings.profile.pregnant = !settings.profile.pregnant" />
+            @toggle="togglePregnant()" />
 
           <p class="text-faint px-1" style="font-size: 12px; line-height: 1.5">
             Con "sono incinta" attivo, aggiungendo un pasto l'app segnala gli alimenti sconsigliati
@@ -56,6 +56,15 @@
             class="tap rounded-3xl flex items-center gap-3" style="padding: 12px 14px; background: var(--raised)">
             <CalendarHeart :size="19" color="var(--alcohol)" />
             <span class="text-ink flex-1" style="font-size: 14.5px; font-weight: 600">Apri il diario del ciclo</span>
+            <ChevronRight :size="17" class="text-faint" />
+          </NuxtLink>
+
+          <NuxtLink v-if="settings.profile.pregnant" to="/gravidanza"
+            class="tap rounded-3xl flex items-center gap-3" style="padding: 12px 14px; background: var(--raised)">
+            <Baby :size="19" color="var(--alcohol)" />
+            <span class="text-ink flex-1" style="font-size: 14.5px; font-weight: 600">
+              {{ pregSummary }}
+            </span>
             <ChevronRight :size="17" class="text-faint" />
           </NuxtLink>
 
@@ -273,6 +282,8 @@ import { User, GlassWater, Footprints, UtensilsCrossed, Scale, HeartPulse, Dropl
   Baby, CalendarHeart, BookOpen, ChevronRight } from "lucide-vue-next";
 import { doc, getDoc, setDoc } from "firebase/firestore";
 import { useSettingsStore } from "~/stores/settings";
+import { usePregnancyStore } from "~/stores/pregnancy";
+import { pregnancyInfo } from "~/utils/pregnancyDates";
 
 const settings = useSettingsStore();
 const { user, isDemo, signOut } = useAuth();
@@ -283,6 +294,20 @@ const { requestPermission, schedule, testNow } = useNotifications();
 const goalOpen = ref<"water" | "move" | "food" | "weight" | null>(null);
 const reminderOpen = ref<"water" | "meal" | "evening" | null>(null);
 const guideOpen = ref(false);
+const preg = usePregnancyStore();
+
+/** Attivando la gravidanza si porta subito dove si imposta la data. */
+function togglePregnant() {
+  const now = !settings.profile.pregnant;
+  settings.profile.pregnant = now;
+  if (now && !preg.configured) navigateTo("/gravidanza");
+}
+
+const pregSummary = computed(() => {
+  if (!preg.configured) return "Imposta la data di inizio";
+  const i = pregnancyInfo(preg.reference);
+  return i.invalid ? "Controlla la data inserita" : `${i.weeks}ª settimana · apri la gravidanza`;
+});
 
 const womenSummary = computed(() => {
   const parts: string[] = [];

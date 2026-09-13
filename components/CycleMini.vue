@@ -1,5 +1,6 @@
 <template>
-  <NuxtLink to="/ciclo" class="tap block rounded-4xl relative overflow-hidden h-full"
+  <NuxtLink :to="settings.profile.pregnant ? '/gravidanza' : '/ciclo'"
+    class="tap block rounded-4xl relative overflow-hidden h-full"
     :class="`grad-${tone}`" :style="{ boxShadow: `0 10px 24px -8px var(--${tone}-glow)` }">
     <div class="absolute rounded-full pointer-events-none"
       style="width: 110px; height: 110px; right: -40px; top: -40px; background: rgba(255,255,255,.16)" />
@@ -32,16 +33,32 @@
 import { ArrowUpRight, Baby, Droplet, Clock, AlertTriangle, CheckCircle2, CalendarHeart } from "lucide-vue-next";
 import { useCycleStore } from "~/stores/cycle";
 import { useSettingsStore } from "~/stores/settings";
+import { usePregnancyStore } from "~/stores/pregnancy";
+import { pregnancyInfo } from "~/utils/pregnancyDates";
 import { keyToDate } from "~/utils/date";
 
 const cycle = useCycleStore();
 const settings = useSettingsStore();
+const preg = usePregnancyStore();
 
 const MONTHS = ["gen", "feb", "mar", "apr", "mag", "giu", "lug", "ago", "set", "ott", "nov", "dic"];
+const fmtShort = (key: string) => {
+  const d = keyToDate(key);
+  return `${d.getDate()} ${MONTHS[d.getMonth()]}`;
+};
 
 const view = computed(() => {
   if (settings.profile.pregnant) {
-    return { tone: "alcohol", icon: Baby, headline: "In dolce attesa", label: "previsioni sospese", predicted: "" };
+    if (!preg.configured) {
+      return { tone: "alcohol", icon: Baby, headline: "In attesa", label: "imposta la data", predicted: "" };
+    }
+    const i = pregnancyInfo(preg.reference);
+    return {
+      tone: "alcohol", icon: Baby,
+      headline: `${i.weeks}ª sett.`,
+      label: `+${i.dayOfWeek} ${i.dayOfWeek === 1 ? "giorno" : "giorni"}`,
+      predicted: `parto ${fmtShort(i.dueDate)}`,
+    };
   }
   const s = cycle.status;
   const pred = s.predicted ? `${keyToDate(s.predicted).getDate()} ${MONTHS[keyToDate(s.predicted).getMonth()]}` : "";

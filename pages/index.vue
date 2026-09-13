@@ -4,7 +4,7 @@
 
     <!-- Con il ciclo monitorato la sintesi si stringe e cede metà spazio
          alla card del ciclo, raggiungibile senza passare dal Profilo. -->
-    <div v-if="settings.profile.cycleTracking" class="grid grid-cols-2 gap-3 rise" style="min-height: 150px">
+    <div v-if="settings.profile.cycleTracking || settings.profile.pregnant" class="grid grid-cols-2 gap-3 rise" style="min-height: 150px">
       <BalanceMini :marks="marks" :message="message" />
       <CycleMini />
     </div>

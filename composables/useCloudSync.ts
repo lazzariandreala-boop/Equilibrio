@@ -2,6 +2,7 @@ import { doc, getDoc, setDoc, onSnapshot } from "firebase/firestore";
 import { useDayStore } from "~/stores/day";
 import { useSettingsStore } from "~/stores/settings";
 import { useCycleStore } from "~/stores/cycle";
+import { usePregnancyStore } from "~/stores/pregnancy";
 
 // Sincronizzazione cloud opzionale: attiva solo con Firebase configurato + utente loggato.
 // Realtime: le modifiche fatte su un dispositivo arrivano live sugli altri (onSnapshot),
@@ -12,6 +13,7 @@ export function useCloudSync() {
   const day = useDayStore();
   const settings = useSettingsStore();
   const cycle = useCycleStore();
+  const pregnancy = usePregnancyStore();
   let timer: any = null;
   let unsub: null | (() => void) = null;
   let started = false;
@@ -25,6 +27,12 @@ export function useCloudSync() {
       // profile era escluso: peso e preferenze non seguivano l'account.
       settings: { goals: settings.goals, reminders: settings.reminders, profile: settings.profile },
       cycle: { entries: cycle.entries },
+      pregnancy: {
+        reference: pregnancy.reference,
+        entered: pregnancy.entered,
+        basis: pregnancy.basis,
+        appointments: pregnancy.appointments,
+      },
     });
   }
 
@@ -33,6 +41,7 @@ export function useCloudSync() {
     day.hydrate(data.day);
     settings.hydrate(data.settings);
     cycle.hydrate(data.cycle);
+    pregnancy.hydrate(data.pregnancy);
     lastSync = snapshot(); // allinea la firma: nessun push di ritorno
   }
 
@@ -57,6 +66,12 @@ export function useCloudSync() {
         // cambia ma il dato non viene mai salvato davvero.
         settings: { goals: settings.goals, reminders: settings.reminders, profile: settings.profile },
         cycle: { entries: cycle.entries },
+        pregnancy: {
+          reference: pregnancy.reference,
+          entered: pregnancy.entered,
+          basis: pregnancy.basis,
+          appointments: pregnancy.appointments,
+        },
         updatedAt: Date.now(),
       },
       { merge: true },
@@ -94,6 +109,7 @@ export function useCloudSync() {
           day.$subscribe(schedulePush);
           settings.$subscribe(schedulePush);
           cycle.$subscribe(schedulePush);
+          pregnancy.$subscribe(schedulePush);
         }
 
         // Logout: chiudi la sottoscrizione realtime.
