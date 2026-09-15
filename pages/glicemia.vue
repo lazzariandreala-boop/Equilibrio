@@ -66,19 +66,25 @@
     </div>
 
     <!-- Statistiche -->
-    <div v-if="stats.count" class="rise" style="animation-delay: 110ms">
+    <div v-if="glucose.readings.length" class="rise" style="animation-delay: 110ms">
       <div class="flex gap-1.5 p-1.5 rounded-3xl mb-2.5" style="background: var(--raised)">
-        <button v-for="d in periods" :key="d" class="tap flex-1 py-2 rounded-2xl font-semibold" style="font-size: 12.5px"
-          :style="period === d
+        <button v-for="pr in periods" :key="pr.days" class="tap flex-1 py-2 rounded-2xl font-semibold"
+          style="font-size: 12.5px"
+          :style="period === pr.days
             ? { background: 'var(--card)', color: 'var(--ink)', boxShadow: 'var(--shadow)' }
             : { color: 'var(--dim)' }"
-          @click="period = d">
-          {{ d }} giorni
+          @click="period = pr.days">
+          {{ pr.label }}
         </button>
       </div>
 
       <div class="rounded-4xl" style="padding: 14px"
         :style="{ background: 'var(--card)', border: '1px solid var(--line)', boxShadow: 'var(--tile-shadow)' }">
+        <p v-if="!stats.count" class="text-faint text-center" style="font-size: 13px; padding: 14px 8px">
+          Nessuna misurazione in questo periodo.
+        </p>
+
+        <template v-else>
         <!-- barra del tempo nell'obiettivo -->
         <div class="flex rounded-full overflow-hidden" style="height: 14px">
           <div :style="{ width: `${stats.below}%`, background: 'var(--food)' }" />
@@ -116,8 +122,17 @@
           </div>
         </div>
 
-        <TrendChart v-if="chartPoints.length > 1" :points="chartPoints" tone="water" :height="70"
-          style="margin-top: 14px" />
+        </template>
+
+        <div style="margin-top: 16px; padding-top: 14px; border-top: 1px solid var(--line)">
+          <div class="flex items-center justify-between mb-2">
+            <span class="text-ink" style="font-size: 13.5px; font-weight: 600">Andamento</span>
+            <span class="text-faint" style="font-size: 11.5px">
+              {{ period > 7 ? "media giornaliera e intervallo" : "ogni misurazione" }}
+            </span>
+          </div>
+          <GlucoseChart :readings="glucose.readings" :params="params" :days="period" :height="150" />
+        </div>
       </div>
     </div>
 
@@ -255,16 +270,24 @@ const todayUnits = computed(() =>
 const todayReadings = computed(() => glucose.readings.filter((r) => r.at >= todayStart.value).length);
 
 // ── statistiche ──
-const periods = [7, 14, 30];
+const periods = [
+  { days: 1, label: "Oggi" },
+  { days: 7, label: "7 giorni" },
+  { days: 30, label: "Mese" },
+  { days: 90, label: "3 mesi" },
+];
 const period = ref(7);
-const stats = computed(() => rangeStats(glucose.valuesSince(period.value), params.value));
-const chartPoints = computed(() =>
-  glucose.readings
-    .filter((r) => r.at >= Date.now() - period.value * 86400000)
-    .sort((a, b) => a.at - b.at)
-    .map((r) => r.value),
-);
+const stats = computed(() => rangeStats(valuesInPeriod.value, params.value));
 
+/** La vista "Oggi" parte da mezzanotte, le altre coprono N giorni indietro. */
+const valuesInPeriod = computed(() => {
+  if (period.value === 1) {
+    const midnight = new Date();
+    midnight.setHours(0, 0, 0, 0);
+    return glucose.readings.filter((r) => r.at >= midnight.getTime()).map((r) => r.value);
+  }
+  return glucose.valuesSince(period.value);
+});
 // ── registro unificato ──
 const timeline = computed(() => {
   const r = glucose.sortedReadings.slice(0, 40).map((x) => ({
