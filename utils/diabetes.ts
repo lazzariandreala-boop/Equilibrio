@@ -278,3 +278,24 @@ export const TREND_TONE: Record<TrendKind, "water" | "move" | "food" | "alcohol"
   sale: "food",
   impennata: "alcohol",
 };
+
+
+/** Stati d'animo registrabili con la misurazione. */
+export const MOODS = [
+  { key: "calmo", label: "Calmo", emoji: "😊" },
+  { key: "euforico", label: "Euforico", emoji: "🤩" },
+  { key: "stressato", label: "Stressato", emoji: "😰" },
+  { key: "triste", label: "Triste", emoji: "😔" },
+  { key: "arrabbiato", label: "Arrabbiato", emoji: "😠" },
+] as const;
+
+export type MoodKey = (typeof MOODS)[number]["key"];
+
+/** Le cinque direzioni selezionabili a mano, dalla discesa alla salita. */
+export const TREND_OPTIONS = [
+  { key: "crollo" as const, arrow: "↓", label: "in rapida discesa" },
+  { key: "scende" as const, arrow: "↘", label: "in lenta discesa" },
+  { key: "stabile" as const, arrow: "→", label: "stabile" },
+  { key: "sale" as const, arrow: "↗", label: "in lenta salita" },
+  { key: "impennata" as const, arrow: "↑", label: "in rapida salita" },
+];

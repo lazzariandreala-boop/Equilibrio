@@ -1,5 +1,5 @@
 import { defineStore } from "pinia";
-import type { ReadingTag } from "~/utils/diabetes";
+import type { ReadingTag, TrendKind, MoodKey } from "~/utils/diabetes";
 
 export interface Reading {
   id: string;
@@ -7,6 +7,12 @@ export interface Reading {
   value: number; // mg/dL
   tag: ReadingTag;
   notes?: string;
+  /** Andamento indicato da chi misura (o letto dal sensore). */
+  trend?: TrendKind;
+  /** Stato d'animo al momento della misurazione. */
+  mood?: MoodKey;
+  /** Giornata con attività fisica: incide sull'andamento. */
+  sport?: boolean;
 }
 
 export interface Bolus {
@@ -48,8 +54,8 @@ export const useGlucoseStore = defineStore("glucose", {
   },
 
   actions: {
-    addReading(value: number, tag: ReadingTag, notes?: string, at = Date.now()) {
-      this.readings.push({ id: id(), at, value, tag, notes });
+    addReading(r: Omit<Reading, "id">) {
+      this.readings.push({ ...r, id: id() });
     },
     updateReading(rid: string, patch: Partial<Reading>) {
       const i = this.readings.findIndex((r) => r.id === rid);

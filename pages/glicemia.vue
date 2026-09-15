@@ -21,7 +21,8 @@
             </span>
           </div>
           <div v-if="trend.kind !== 'sconosciuta'" style="color: rgba(255,255,255,.88); font-size: 13px; margin-top: 2px">
-            {{ trend.label }} · {{ trend.delta > 0 ? "+" : "" }}{{ trend.delta }} mg/dL in {{ trend.minutes }} min
+            {{ trend.label }}<template v-if="trend.minutes">
+              · {{ trend.delta > 0 ? "+" : "" }}{{ trend.delta }} mg/dL in {{ trend.minutes }} min</template>
           </div>
           <div style="color: rgba(255,255,255,.88); font-size: 13.5px; margin-top: 4px">
             {{ RANGE_LABEL[classify(last.value, params)] }} · {{ last.tag }}
@@ -168,23 +169,60 @@
     </div>
 
     <!-- Scheda glicemia -->
-    <BottomSheet v-model="readingOpen" title="Registra la glicemia">
+    <BottomSheet v-model="readingOpen" title="Misura glicemia">
       <div class="space-y-3.5">
-        <div>
-          <div class="text-faint mb-1.5" style="font-size: 12px">Valore (mg/dL)</div>
+        <!-- valore e andamento stanno insieme: si compilano di seguito -->
+        <div class="rounded-4xl" style="padding: 14px" :style="{ background: 'var(--raised)' }">
+          <div class="text-faint text-center" style="font-size: 11.5px; letter-spacing: .4px; text-transform: uppercase">
+            Valore glicemico (mg/dL)
+          </div>
           <input v-model.number="rf.value" type="number" inputmode="numeric"
-            class="bg-card border border-line text-ink rounded-2xl px-3 py-3 w-full tabular"
-            style="font-size: 22px; font-weight: 700" />
+            class="bg-transparent text-ink w-full text-center display tabular"
+            style="font-size: 52px; font-weight: 800; border: none; outline: none; padding: 6px 0" placeholder="—" />
+
+          <div style="border-top: 1px solid var(--line); padding-top: 12px">
+            <div class="text-faint" style="font-size: 11.5px; letter-spacing: .4px; text-transform: uppercase">
+              Sta salendo o scendendo?
+            </div>
+            <div class="grid grid-cols-5 gap-1.5" style="margin-top: 8px">
+              <button v-for="t in TREND_OPTIONS" :key="t.key" class="tap rounded-2xl flex items-center justify-center"
+                style="padding: 12px 0"
+                :style="rf.trend === t.key
+                  ? { background: `var(--${TREND_TONE[t.key]}-soft)`, border: `1.5px solid var(--${TREND_TONE[t.key]})` }
+                  : { background: 'var(--card)', border: '1px solid var(--line)' }"
+                :aria-label="t.label"
+                @click="rf.trend = rf.trend === t.key ? undefined : t.key">
+                <span class="display" :style="{
+                  fontSize: '20px', fontWeight: 800,
+                  color: rf.trend === t.key ? `var(--${TREND_TONE[t.key]})` : 'var(--dim)',
+                }">{{ t.arrow }}</span>
+              </button>
+            </div>
+            <div v-if="rf.trend" class="text-dim text-center" style="font-size: 12px; margin-top: 6px">
+              {{ TREND_OPTIONS.find((t) => t.key === rf.trend)?.label }}
+            </div>
+          </div>
         </div>
 
-        <div v-if="rf.value > 0" class="rounded-2xl" style="padding: 10px 13px"
-          :style="{ background: `var(--${RANGE_TONE[classify(rf.value, params)]}-soft)` }">
-          <span class="text-ink" style="font-size: 13px; font-weight: 600">
-            {{ RANGE_LABEL[classify(rf.value, params)] }}
-          </span>
-          <span class="text-dim" style="font-size: 12.5px">
-            · obiettivo {{ params.targetMin }}–{{ params.targetMax }}
-          </span>
+        <!-- fuori intervallo: la correzione si apre da qui, senza cercarla -->
+        <div v-if="rf.value > 0 && classify(rf.value, params) !== 'in-range'" class="rounded-3xl flex items-center gap-3"
+          style="padding: 12px 13px"
+          :style="{ background: `var(--${RANGE_TONE[classify(rf.value, params)]}-soft)`,
+                    border: `1px solid var(--${RANGE_TONE[classify(rf.value, params)]})` }">
+          <div class="min-w-0 flex-1">
+            <div class="text-ink" style="font-size: 14px; font-weight: 700">
+              {{ RANGE_LABEL[classify(rf.value, params)] }}
+            </div>
+            <div class="text-dim" style="font-size: 12.5px">
+              obiettivo {{ params.targetMin }}–{{ params.targetMax }} mg/dL
+            </div>
+          </div>
+          <button class="tap rounded-2xl px-3.5 py-2 font-semibold shrink-0"
+            :style="{ background: `var(--${RANGE_TONE[classify(rf.value, params)]})`, color: '#fff', fontSize: '13px' }"
+            @click="saveAndCorrect">
+            {{ classify(rf.value, params) === "bassa" || classify(rf.value, params) === "molto-bassa"
+              ? "Risali" : "Correggi" }} →
+          </button>
         </div>
 
         <div>
@@ -201,15 +239,53 @@
         </div>
 
         <div>
+          <div class="text-faint mb-1.5" style="font-size: 12px">Stato d'animo</div>
+          <div class="grid grid-cols-5 gap-1.5">
+            <button v-for="m in MOODS" :key="m.key" class="tap rounded-2xl flex flex-col items-center gap-1"
+              style="padding: 9px 2px"
+              :style="rf.mood === m.key
+                ? { background: 'var(--food-soft)', border: '1.5px solid var(--food)' }
+                : { background: 'var(--raised)', border: '1px solid transparent' }"
+              @click="rf.mood = rf.mood === m.key ? undefined : m.key">
+              <span style="font-size: 19px">{{ m.emoji }}</span>
+              <span class="text-dim" style="font-size: 9.5px">{{ m.label }}</span>
+            </button>
+          </div>
+        </div>
+
+        <button class="tap w-full rounded-3xl flex items-center gap-3" style="padding: 12px 14px; background: var(--raised)"
+          @click="rf.sport = !rf.sport">
+          <Activity :size="19" :color="rf.sport ? 'var(--move)' : 'var(--dim)'" />
+          <span class="text-ink flex-1 text-left" style="font-size: 14.5px; font-weight: 600">
+            Attività fisica oggi
+          </span>
+          <Toggle :on="!!rf.sport" tone="move" />
+        </button>
+
+        <div>
           <div class="text-faint mb-1.5" style="font-size: 12px">Note</div>
           <textarea v-model="rf.notes" rows="2" style="resize: none"
             class="bg-card border border-line text-ink rounded-2xl px-3 py-2.5 w-full"
-            placeholder="Sintomi, contesto, cosa hai mangiato…" />
+            placeholder="Es. dopo colazione, a digiuno…" />
+        </div>
+
+        <div>
+          <div class="text-faint mb-1.5" style="font-size: 12px">Data e ora</div>
+          <div class="flex gap-2">
+            <input v-model="rf.date" type="date" class="bg-card border border-line text-ink rounded-2xl px-3 py-2.5"
+              style="flex: 1.3; min-width: 0" />
+            <input v-model="rf.time" type="time" class="bg-card border border-line text-ink rounded-2xl px-3 py-2.5 tabular"
+              style="flex: 1; min-width: 0" />
+            <button class="tap rounded-2xl px-3 font-semibold bg-raised text-dim shrink-0" style="font-size: 12.5px"
+              @click="setNow">
+              Adesso
+            </button>
+          </div>
         </div>
 
         <button class="tap w-full py-3.5 rounded-3xl font-semibold grad-water" style="color: #fff; font-size: 15px"
-          :disabled="!(rf.value > 0)" :style="!(rf.value > 0) ? { opacity: 0.5 } : {}" @click="saveReading">
-          Registra
+          :disabled="!(rf.value > 0)" :style="!(rf.value > 0) ? { opacity: 0.5 } : {}" @click="saveReading()">
+          Salva
         </button>
       </div>
     </BottomSheet>
@@ -222,12 +298,13 @@
 </template>
 
 <script setup lang="ts">
-import { Droplet, Syringe, Plus, Trash2, AlertTriangle, ListOrdered } from "lucide-vue-next";
+import { Droplet, Syringe, Plus, Trash2, AlertTriangle, ListOrdered, Activity } from "lucide-vue-next";
 import { useGlucoseStore } from "~/stores/glucose";
 import { useSettingsStore } from "~/stores/settings";
 import {
   classify, RANGE_TONE, RANGE_LABEL, READING_TAGS, rangeStats, insulinOnBoard, targetMid,
-  glucoseTrend, type ReadingTag,
+  glucoseTrend, TREND_OPTIONS, TREND_TONE, MOODS,
+  type ReadingTag, type TrendKind, type MoodKey,
 } from "~/utils/diabetes";
 
 const glucose = useGlucoseStore();
@@ -265,7 +342,18 @@ const adviceText = computed(() => {
 });
 
 // La tendenza usa solo le ultime due misurazioni, se abbastanza ravvicinate.
-const trend = computed(() => glucoseTrend(glucose.readings));
+/**
+ * Andamento mostrato: vale quello indicato al momento della misurazione;
+ * in mancanza si prova a dedurlo dalle ultime due letture ravvicinate.
+ */
+const trend = computed(() => {
+  const manual = last.value?.trend;
+  if (manual) {
+    const o = TREND_OPTIONS.find((t) => t.key === manual)!;
+    return { kind: manual, arrow: o.arrow, label: o.label, delta: 0, minutes: 0 };
+  }
+  return glucoseTrend(glucose.readings);
+});
 
 const iob = computed(() => insulinOnBoard(glucose.recentBoluses(params.value.duration), params.value));
 
@@ -306,8 +394,16 @@ const timeline = computed(() => {
     kind: "glicemia" as const,
     at: x.at,
     tone: RANGE_TONE[classify(x.value, params.value)],
-    title: `${x.value} mg/dL`,
-    subtitle: `${x.tag} · ${ago(x.at)}${x.notes ? ` · ${x.notes}` : ""}`,
+    title: `${x.value} mg/dL${x.trend ? ` ${TREND_OPTIONS.find((t) => t.key === x.trend)?.arrow ?? ""}` : ""}`,
+    subtitle: [
+      x.tag,
+      x.mood ? MOODS.find((m) => m.key === x.mood)?.emoji : null,
+      x.sport ? "attività" : null,
+      ago(x.at),
+      x.notes || null,
+    ]
+      .filter(Boolean)
+      .join(" · "),
   }));
   const b = glucose.sortedBoluses.slice(0, 40).map((x) => ({
     key: `b${x.id}`,
@@ -330,16 +426,63 @@ function removeEntry(e: { kind: string; id: string }) {
 
 // ── inserimento ──
 const readingOpen = ref(false);
-const rf = reactive({ value: 0, tag: "prima del pasto" as ReadingTag, notes: "" });
+const rf = reactive({
+  value: 0,
+  tag: "prima del pasto" as ReadingTag,
+  notes: "",
+  trend: undefined as TrendKind | undefined,
+  mood: undefined as MoodKey | undefined,
+  sport: false,
+  date: "",
+  time: "",
+});
+
+/** Data e ora in formato separato, per i due campi della scheda. */
+function splitNow(at = new Date()) {
+  const pad = (n: number) => String(n).padStart(2, "0");
+  return {
+    date: `${at.getFullYear()}-${pad(at.getMonth() + 1)}-${pad(at.getDate())}`,
+    time: `${pad(at.getHours())}:${pad(at.getMinutes())}`,
+  };
+}
+function setNow() {
+  Object.assign(rf, splitNow());
+}
 
 function openReading() {
-  Object.assign(rf, { value: 0, tag: "prima del pasto", notes: "" });
+  Object.assign(rf, {
+    value: 0, tag: "prima del pasto", notes: "",
+    trend: undefined, mood: undefined, sport: false,
+    ...splitNow(),
+  });
   readingOpen.value = true;
 }
-function saveReading() {
-  if (!(rf.value > 0)) return;
-  glucose.addReading(rf.value, rf.tag, rf.notes.trim() || undefined);
+
+/** Istante scelto nella scheda, o adesso se i campi sono incompleti. */
+function chosenAt() {
+  if (!rf.date || !rf.time) return Date.now();
+  const t = new Date(`${rf.date}T${rf.time}`).getTime();
+  return Number.isFinite(t) ? t : Date.now();
+}
+
+function saveReading(): boolean {
+  if (!(rf.value > 0)) return false;
+  glucose.addReading({
+    at: chosenAt(),
+    value: rf.value,
+    tag: rf.tag,
+    notes: rf.notes.trim() || undefined,
+    trend: rf.trend,
+    mood: rf.mood,
+    sport: rf.sport || undefined,
+  });
   readingOpen.value = false;
+  return true;
+}
+
+/** Salva e apre subito il calcolo, senza doverlo cercare. */
+function saveAndCorrect() {
+  if (saveReading()) bolusOpen.value = true;
 }
 
 const bolusOpen = ref(false);
