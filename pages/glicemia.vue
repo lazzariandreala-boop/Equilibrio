@@ -2,65 +2,41 @@
   <div class="space-y-3">
     <!-- Ultima misurazione -->
     <div v-if="last" class="rise rounded-5xl relative overflow-hidden" :class="`grad-${lastTone}`"
-      :style="{ boxShadow: `0 14px 34px -10px var(--${lastTone}-glow)` }">
+      :style="{ boxShadow: `0 12px 30px -10px var(--${lastTone}-glow)` }">
       <div class="absolute rounded-full pointer-events-none"
-        style="width: 170px; height: 170px; right: -58px; top: -66px; background: rgba(255,255,255,.14)" />
-      <div class="relative" style="padding: 18px">
-        <div class="flex items-center gap-2">
-          <Droplet :size="18" color="#fff" />
-          <span style="color: #fff; font-size: 14px; font-weight: 700">Ultima misurazione</span>
-        </div>
+        style="width: 150px; height: 150px; right: -52px; top: -58px; background: rgba(255,255,255,.14)" />
 
-        <div class="text-center" style="margin-top: 10px">
-          <div class="display tabular flex items-baseline justify-center gap-1.5">
-            <span style="color: #fff; font-size: 54px; font-weight: 800; line-height: 1">{{ last.value }}</span>
-            <span style="color: #fff; font-size: 18px; font-weight: 700; opacity: .9">mg/dL</span>
+      <div class="relative flex items-center gap-4" style="padding: 14px 16px">
+        <div class="min-w-0">
+          <div class="display tabular flex items-baseline gap-1">
+            <span style="color: #fff; font-size: 44px; font-weight: 800; line-height: 1">{{ last.value }}</span>
             <span v-if="trend.kind !== 'sconosciuta'" class="display"
-              style="color: #fff; font-size: 36px; font-weight: 800; line-height: 1; margin-left: 4px">
-              {{ trend.arrow }}
-            </span>
+              style="color: #fff; font-size: 30px; font-weight: 800; line-height: 1">{{ trend.arrow }}</span>
           </div>
-          <div v-if="trend.kind !== 'sconosciuta'" style="color: rgba(255,255,255,.88); font-size: 13px; margin-top: 2px">
-            {{ trend.label }}<template v-if="trend.minutes">
-              · {{ trend.delta > 0 ? "+" : "" }}{{ trend.delta }} mg/dL in {{ trend.minutes }} min</template>
+          <div style="color: rgba(255,255,255,.88); font-size: 12.5px; margin-top: 2px">
+            mg/dL · {{ RANGE_LABEL[classify(last.value, params)] }}
           </div>
-          <div style="color: rgba(255,255,255,.88); font-size: 13.5px; margin-top: 4px">
-            {{ RANGE_LABEL[classify(last.value, params)] }} · {{ last.tag }}
-          </div>
-          <div style="color: rgba(255,255,255,.72); font-size: 12px; margin-top: 2px">{{ ago(last.at) }}</div>
+          <div style="color: rgba(255,255,255,.72); font-size: 11.5px">{{ last.tag }} · {{ ago(last.at) }}</div>
         </div>
 
-        <div class="flex" style="margin-top: 14px; padding-top: 12px; border-top: 1px solid rgba(255,255,255,.22)">
-          <div class="flex-1">
-            <div class="display tabular" style="color: #fff; font-size: 17px; font-weight: 700">{{ iob }}</div>
-            <div style="color: rgba(255,255,255,.78); font-size: 10.5px">unità attive</div>
+        <div class="ml-auto text-right shrink-0">
+          <div class="display tabular" style="color: #fff; font-size: 16px; font-weight: 700">{{ iob }} U</div>
+          <div style="color: rgba(255,255,255,.75); font-size: 10.5px">attive</div>
+          <div class="display tabular" style="color: #fff; font-size: 16px; font-weight: 700; margin-top: 6px">
+            {{ todayUnits }} U
           </div>
-          <div class="flex-1" style="border-left: 1px solid rgba(255,255,255,.2); padding-left: 10px">
-            <div class="display tabular" style="color: #fff; font-size: 17px; font-weight: 700">{{ todayUnits }}</div>
-            <div style="color: rgba(255,255,255,.78); font-size: 10.5px">unità oggi</div>
-          </div>
-          <div class="flex-1" style="border-left: 1px solid rgba(255,255,255,.2); padding-left: 10px">
-            <div class="display tabular" style="color: #fff; font-size: 17px; font-weight: 700">{{ todayReadings }}</div>
-            <div style="color: rgba(255,255,255,.78); font-size: 10.5px">misure oggi</div>
-          </div>
+          <div style="color: rgba(255,255,255,.75); font-size: 10.5px">oggi</div>
         </div>
+      </div>
+
+      <!-- Il consiglio sta dentro l'intestazione: prima occupava una card a sé -->
+      <div v-if="lowOrHigh" class="relative" style="padding: 10px 16px 12px; background: rgba(0,0,0,.18)">
+        <p style="color: rgba(255,255,255,.92); font-size: 12px; line-height: 1.4">{{ adviceText }}</p>
       </div>
     </div>
 
     <EmptyState v-else tone="water" title="Nessuna misurazione"
       subtitle="Registra la prima glicemia: da lì l'app calcola tempo nell'obiettivo, media e boli suggeriti." />
-
-    <!-- Ipoglicemia: la cosa più urgente sta in cima -->
-    <div v-if="last && classify(last.value, params) !== 'in-range' && lowOrHigh" class="rise rounded-4xl"
-      style="padding: 13px 14px" :style="{ background: `var(--${lastTone}-soft)`, border: `1px solid var(--${lastTone})` }">
-      <div class="flex items-start gap-2.5">
-        <AlertTriangle :size="17" :color="`var(--${lastTone})`" style="margin-top: 2px; flex-shrink: 0" />
-        <div class="min-w-0">
-          <div class="text-ink" style="font-size: 14px; font-weight: 600">{{ adviceTitle }}</div>
-          <p class="text-dim" style="font-size: 12.5px; line-height: 1.45; margin-top: 3px">{{ adviceText }}</p>
-        </div>
-      </div>
-    </div>
 
     <div class="flex gap-2.5 rise" style="animation-delay: 70ms">
       <button class="tap flex-1 rounded-full py-3.5 font-semibold flex items-center justify-center gap-2 grad-water cta-glow-water"
@@ -100,54 +76,33 @@
           <div :style="{ width: `${stats.above}%`, background: 'var(--alcohol)' }" />
         </div>
 
-        <div class="flex" style="margin-top: 12px">
-          <div class="flex-1">
-            <div class="display tabular text-move" style="font-size: 22px; font-weight: 800">{{ stats.inRange }}%</div>
-            <div class="text-dim" style="font-size: 11px">nell'obiettivo</div>
-          </div>
-          <div class="flex-1">
-            <div class="display tabular text-food" style="font-size: 22px; font-weight: 800">{{ stats.below }}%</div>
-            <div class="text-dim" style="font-size: 11px">sotto</div>
-          </div>
-          <div class="flex-1">
-            <div class="display tabular text-alcohol" style="font-size: 22px; font-weight: 800">{{ stats.above }}%</div>
-            <div class="text-dim" style="font-size: 11px">sopra</div>
-          </div>
-        </div>
-
-        <div class="flex" style="margin-top: 12px; padding-top: 12px; border-top: 1px solid var(--line)">
-          <div class="flex-1">
-            <div class="display tabular text-ink" style="font-size: 18px; font-weight: 700">{{ stats.average }}</div>
-            <div class="text-dim" style="font-size: 11px">media mg/dL</div>
-          </div>
-          <div class="flex-1">
-            <div class="display tabular text-ink" style="font-size: 18px; font-weight: 700">{{ stats.gmi }}%</div>
-            <div class="text-dim" style="font-size: 11px">glicata stimata</div>
-          </div>
-          <div class="flex-1">
-            <div class="display tabular text-ink" style="font-size: 18px; font-weight: 700">{{ stats.count }}</div>
-            <div class="text-dim" style="font-size: 11px">misurazioni</div>
+        <!-- Una riga sola: le sei voci stavano su due blocchi separati -->
+        <div class="flex flex-wrap" style="margin-top: 10px; gap: 4px 0">
+          <div v-for="st in statCells" :key="st.label" style="flex: 0 0 33.333%">
+            <div class="display tabular" :style="{ color: st.color, fontSize: '18px', fontWeight: 800 }">
+              {{ st.value }}
+            </div>
+            <div class="text-dim" style="font-size: 10.5px">{{ st.label }}</div>
           </div>
         </div>
 
         </template>
 
-        <div style="margin-top: 16px; padding-top: 14px; border-top: 1px solid var(--line)">
-          <div class="flex items-center justify-between mb-2">
-            <span class="text-ink" style="font-size: 13.5px; font-weight: 600">Andamento</span>
-            <span class="text-faint" style="font-size: 11.5px">
-              {{ period > 7 ? "media giornaliera e intervallo" : "ogni misurazione" }}
+        <div style="margin-top: 12px; padding-top: 12px; border-top: 1px solid var(--line)">
+          <div class="flex items-center justify-between mb-1.5">
+            <span class="text-ink" style="font-size: 13px; font-weight: 600">Andamento</span>
+            <span class="text-faint" style="font-size: 11px">
+              {{ period > 7 ? "media giornaliera" : "ogni misurazione" }}
             </span>
           </div>
-          <GlucoseChart :readings="glucose.readings" :params="params" :days="period" :height="150" />
+          <GlucoseChart :readings="glucose.readings" :params="params" :days="period" :height="110" />
         </div>
       </div>
     </div>
 
     <!-- Registro -->
     <div v-if="timeline.length" class="rise" style="animation-delay: 150ms">
-      <Expandable title="Registro" :icon="ListOrdered" tone="water" :subtitle="`${timeline.length} voci recenti`"
-        :default-open="true">
+      <Expandable title="Registro" :icon="ListOrdered" tone="water" :subtitle="`${timeline.length} voci recenti`">
         <div class="space-y-2">
           <div v-for="e in timeline" :key="e.key" class="rounded-3xl flex items-center gap-3"
             style="padding: 11px 13px; background: var(--raised)">
@@ -170,23 +125,23 @@
 
     <!-- Scheda glicemia -->
     <BottomSheet v-model="readingOpen" title="Misura glicemia">
-      <div class="space-y-3.5">
+      <div class="space-y-2.5">
         <!-- valore e andamento stanno insieme: si compilano di seguito -->
-        <div class="rounded-4xl" style="padding: 14px" :style="{ background: 'var(--raised)' }">
+        <div class="rounded-4xl" style="padding: 11px 13px" :style="{ background: 'var(--raised)' }">
           <div class="text-faint text-center" style="font-size: 11.5px; letter-spacing: .4px; text-transform: uppercase">
             Valore glicemico (mg/dL)
           </div>
           <input v-model.number="rf.value" type="number" inputmode="numeric"
             class="bg-transparent text-ink w-full text-center display tabular"
-            style="font-size: 52px; font-weight: 800; border: none; outline: none; padding: 6px 0" placeholder="—" />
+            style="font-size: 42px; font-weight: 800; border: none; outline: none; padding: 2px 0" placeholder="—" />
 
-          <div style="border-top: 1px solid var(--line); padding-top: 12px">
+          <div style="border-top: 1px solid var(--line); padding-top: 9px">
             <div class="text-faint" style="font-size: 11.5px; letter-spacing: .4px; text-transform: uppercase">
               Sta salendo o scendendo?
             </div>
             <div class="grid grid-cols-5 gap-1.5" style="margin-top: 8px">
               <button v-for="t in TREND_OPTIONS" :key="t.key" class="tap rounded-2xl flex items-center justify-center"
-                style="padding: 12px 0"
+                style="padding: 9px 0"
                 :style="rf.trend === t.key
                   ? { background: `var(--${TREND_TONE[t.key]}-soft)`, border: `1.5px solid var(--${TREND_TONE[t.key]})` }
                   : { background: 'var(--card)', border: '1px solid var(--line)' }"
@@ -227,8 +182,10 @@
 
         <div>
           <div class="text-faint mb-1.5" style="font-size: 12px">Quando</div>
-          <div class="flex flex-wrap gap-2">
-            <button v-for="t in READING_TAGS" :key="t" class="tap rounded-full" style="padding: 8px 12px; font-size: 13px"
+          <!-- Una riga scorrevole: a capo occupavano tre righe intere -->
+          <div class="flex gap-2 overflow-x-auto" style="scrollbar-width: none; padding-bottom: 2px">
+            <button v-for="t in READING_TAGS" :key="t" class="tap rounded-full shrink-0"
+              style="padding: 7px 12px; font-size: 13px; white-space: nowrap"
               :style="rf.tag === t
                 ? { background: 'var(--water)', color: '#fff', fontWeight: 600 }
                 : { background: 'var(--raised)', color: 'var(--dim)' }"
@@ -241,8 +198,8 @@
         <div>
           <div class="text-faint mb-1.5" style="font-size: 12px">Stato d'animo</div>
           <div class="grid grid-cols-5 gap-1.5">
-            <button v-for="m in MOODS" :key="m.key" class="tap rounded-2xl flex flex-col items-center gap-1"
-              style="padding: 9px 2px"
+            <button v-for="m in MOODS" :key="m.key" class="tap rounded-2xl flex flex-col items-center gap-0.5"
+              style="padding: 7px 2px"
               :style="rf.mood === m.key
                 ? { background: 'var(--food-soft)', border: '1.5px solid var(--food)' }
                 : { background: 'var(--raised)', border: '1px solid transparent' }"
@@ -253,24 +210,17 @@
           </div>
         </div>
 
-        <button class="tap w-full rounded-3xl flex items-center gap-3" style="padding: 12px 14px; background: var(--raised)"
+        <button class="tap w-full rounded-3xl flex items-center gap-3" style="padding: 9px 13px; background: var(--raised)"
           @click="rf.sport = !rf.sport">
-          <Activity :size="19" :color="rf.sport ? 'var(--move)' : 'var(--dim)'" />
-          <span class="text-ink flex-1 text-left" style="font-size: 14.5px; font-weight: 600">
-            Attività fisica oggi
-          </span>
+          <Activity :size="18" :color="rf.sport ? 'var(--move)' : 'var(--dim)'" />
+          <span class="text-ink flex-1 text-left" style="font-size: 14px; font-weight: 600">Attività fisica oggi</span>
           <Toggle :on="!!rf.sport" tone="move" />
         </button>
 
-        <div>
-          <div class="text-faint mb-1.5" style="font-size: 12px">Note</div>
-          <textarea v-model="rf.notes" rows="2" style="resize: none"
-            class="bg-card border border-line text-ink rounded-2xl px-3 py-2.5 w-full"
-            placeholder="Es. dopo colazione, a digiuno…" />
-        </div>
+        <input v-model="rf.notes" class="bg-card border border-line text-ink rounded-2xl px-3 py-2.5 w-full"
+          style="font-size: 14px" placeholder="Note (facoltative)" />
 
         <div>
-          <div class="text-faint mb-1.5" style="font-size: 12px">Data e ora</div>
           <div class="flex gap-2">
             <input v-model="rf.date" type="date" class="bg-card border border-line text-ink rounded-2xl px-3 py-2.5"
               style="flex: 1.3; min-width: 0" />
@@ -283,7 +233,7 @@
           </div>
         </div>
 
-        <button class="tap w-full py-3.5 rounded-3xl font-semibold grad-water" style="color: #fff; font-size: 15px"
+        <button class="tap w-full py-3 rounded-3xl font-semibold grad-water" style="color: #fff; font-size: 15px"
           :disabled="!(rf.value > 0)" :style="!(rf.value > 0) ? { opacity: 0.5 } : {}" @click="saveReading()">
           Salva
         </button>
@@ -387,6 +337,15 @@ const valuesInPeriod = computed(() => {
   return glucose.valuesSince(period.value);
 });
 // ── registro unificato ──
+const statCells = computed(() => [
+  { value: `${stats.value.inRange}%`, label: "nell'obiettivo", color: "var(--move)" },
+  { value: `${stats.value.below}%`, label: "sotto", color: "var(--food)" },
+  { value: `${stats.value.above}%`, label: "sopra", color: "var(--alcohol)" },
+  { value: String(stats.value.average), label: "media mg/dL", color: "var(--ink)" },
+  { value: `${stats.value.gmi}%`, label: "glicata stimata", color: "var(--ink)" },
+  { value: String(stats.value.count), label: "misurazioni", color: "var(--ink)" },
+]);
+
 const timeline = computed(() => {
   const r = glucose.sortedReadings.slice(0, 40).map((x) => ({
     key: `r${x.id}`,
