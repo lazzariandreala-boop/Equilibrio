@@ -64,7 +64,13 @@
           <Droplet :size="19" :color="`var(--${glucoseTone})`" />
         </div>
         <div class="min-w-0 flex-1">
-          <div class="text-ink" style="font-size: 14.5px; font-weight: 600">{{ glucoseLine }}</div>
+          <div class="text-ink flex items-center gap-1.5" style="font-size: 14.5px; font-weight: 600">
+            <span>{{ glucoseLine }}</span>
+            <span v-if="glucoseTrendInfo.kind !== 'sconosciuta'" class="display"
+              :style="{ color: `var(--${glucoseTone})`, fontSize: '17px', fontWeight: 800 }">
+              {{ glucoseTrendInfo.arrow }}
+            </span>
+          </div>
           <div class="text-faint" style="font-size: 12.5px">{{ glucoseDetail }}</div>
         </div>
         <ChevronRight :size="18" :color="`var(--${glucoseTone})`" />
@@ -92,7 +98,7 @@
 <script setup lang="ts">
 import { GlassWater, Footprints, UtensilsCrossed, Wine, Sprout, ChevronRight, CalendarHeart, Droplet } from "lucide-vue-next";
 import { useGlucoseStore } from "~/stores/glucose";
-import { classify, RANGE_TONE, RANGE_LABEL, insulinOnBoard } from "~/utils/diabetes";
+import { classify, RANGE_TONE, RANGE_LABEL, insulinOnBoard, glucoseTrend } from "~/utils/diabetes";
 import { useDayStore } from "~/stores/day";
 import { useSettingsStore } from "~/stores/settings";
 import { lastNDays, keyToDate } from "~/utils/date";
@@ -153,6 +159,8 @@ const glucoseLine = computed(() => {
   if (!r) return "Nessuna glicemia registrata";
   return `${r.value} mg/dL · ${RANGE_LABEL[classify(r.value, settings.diabetes)]}`;
 });
+
+const glucoseTrendInfo = computed(() => glucoseTrend(glucose.readings));
 
 const glucoseDetail = computed(() => {
   const r = glucose.lastReading;

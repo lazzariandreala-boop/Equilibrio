@@ -15,6 +15,13 @@
           <div class="display tabular flex items-baseline justify-center gap-1.5">
             <span style="color: #fff; font-size: 54px; font-weight: 800; line-height: 1">{{ last.value }}</span>
             <span style="color: #fff; font-size: 18px; font-weight: 700; opacity: .9">mg/dL</span>
+            <span v-if="trend.kind !== 'sconosciuta'" class="display"
+              style="color: #fff; font-size: 36px; font-weight: 800; line-height: 1; margin-left: 4px">
+              {{ trend.arrow }}
+            </span>
+          </div>
+          <div v-if="trend.kind !== 'sconosciuta'" style="color: rgba(255,255,255,.88); font-size: 13px; margin-top: 2px">
+            {{ trend.label }} · {{ trend.delta > 0 ? "+" : "" }}{{ trend.delta }} mg/dL in {{ trend.minutes }} min
           </div>
           <div style="color: rgba(255,255,255,.88); font-size: 13.5px; margin-top: 4px">
             {{ RANGE_LABEL[classify(last.value, params)] }} · {{ last.tag }}
@@ -220,7 +227,7 @@ import { useGlucoseStore } from "~/stores/glucose";
 import { useSettingsStore } from "~/stores/settings";
 import {
   classify, RANGE_TONE, RANGE_LABEL, READING_TAGS, rangeStats, insulinOnBoard, targetMid,
-  type ReadingTag,
+  glucoseTrend, type ReadingTag,
 } from "~/utils/diabetes";
 
 const glucose = useGlucoseStore();
@@ -256,6 +263,9 @@ const adviceText = computed(() => {
   const base = `La correzione stimata sarebbe di ${corr} unità, al netto dell'insulina già attiva.`;
   return k === "molto-alta" ? `${base} Con valori così alti può valere la pena controllare i chetoni.` : base;
 });
+
+// La tendenza usa solo le ultime due misurazioni, se abbastanza ravvicinate.
+const trend = computed(() => glucoseTrend(glucose.readings));
 
 const iob = computed(() => insulinOnBoard(glucose.recentBoluses(params.value.duration), params.value));
 

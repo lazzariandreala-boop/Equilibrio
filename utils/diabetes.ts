@@ -200,3 +200,81 @@ export const READING_TAGS = [
 ] as const;
 
 export type ReadingTag = (typeof READING_TAGS)[number];
+
+/**
+ * Tendenza della glicemia fra le ultime due misurazioni.
+ *
+ * Con le misurazioni capillari i valori sono sporadici: calcolare una pendenza
+ * fra letture distanti ore darebbe un numero senza significato. Per questo la
+ * tendenza si calcola solo se le due misure distano meno di 90 minuti.
+ */
+export type TrendKind = "crollo" | "scende" | "stabile" | "sale" | "impennata" | "sconosciuta";
+
+export interface Trend {
+  kind: TrendKind;
+  /** Variazione in mg/dL al minuto. */
+  rate: number;
+  /** Differenza assoluta fra le due misurazioni. */
+  delta: number;
+  minutes: number;
+  arrow: string;
+  label: string;
+  /** Rotazione della freccia, in gradi. */
+  rotation: number;
+}
+
+const TREND_WINDOW_MIN = 90;
+
+export function glucoseTrend(readings: { at: number; value: number }[]): Trend {
+  const unknown: Trend = {
+    kind: "sconosciuta",
+    rate: 0,
+    delta: 0,
+    minutes: 0,
+    arrow: "→",
+    label: "tendenza non calcolabile",
+    rotation: 0,
+  };
+
+  const sorted = [...readings].sort((a, b) => b.at - a.at);
+  if (sorted.length < 2) return unknown;
+
+  const [last, prev] = sorted;
+  const minutes = (last.at - prev.at) / 60000;
+  if (minutes <= 0 || minutes > TREND_WINDOW_MIN) return unknown;
+
+  const delta = last.value - prev.value;
+  const rate = delta / minutes;
+
+  // Soglie analoghe a quelle usate dai sensori in continuo.
+  let kind: TrendKind;
+  if (rate <= -3) kind = "crollo";
+  else if (rate <= -1) kind = "scende";
+  else if (rate < 1) kind = "stabile";
+  else if (rate < 3) kind = "sale";
+  else kind = "impennata";
+
+  const meta: Record<Exclude<TrendKind, "sconosciuta">, { arrow: string; label: string; rotation: number }> = {
+    crollo: { arrow: "↓", label: "in rapida discesa", rotation: 0 },
+    scende: { arrow: "↘", label: "in lenta discesa", rotation: 0 },
+    stabile: { arrow: "→", label: "stabile", rotation: 0 },
+    sale: { arrow: "↗", label: "in lenta salita", rotation: 0 },
+    impennata: { arrow: "↑", label: "in rapida salita", rotation: 0 },
+  };
+
+  return {
+    kind,
+    rate: Math.round(rate * 100) / 100,
+    delta,
+    minutes: Math.round(minutes),
+    ...meta[kind],
+  };
+}
+
+export const TREND_TONE: Record<TrendKind, "water" | "move" | "food" | "alcohol"> = {
+  crollo: "alcohol",
+  scende: "food",
+  stabile: "move",
+  sale: "food",
+  impennata: "alcohol",
+};
