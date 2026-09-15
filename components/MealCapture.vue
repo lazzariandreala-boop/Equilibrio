@@ -107,6 +107,21 @@
         </div>
       </div>
 
+      <!-- Stima del bolo: compare solo con la gestione del diabete attiva -->
+      <NuxtLink v-if="settings.profile.diabetes && sum.cho > 0" to="/glicemia"
+        class="tap rounded-3xl flex items-center gap-3" style="padding: 12px 13px; background: var(--move-soft)">
+        <Syringe :size="18" color="var(--move)" class="shrink-0" />
+        <div class="min-w-0 flex-1">
+          <div class="text-ink" style="font-size: 13.5px; font-weight: 600">
+            Bolo stimato per il pasto: {{ mealBolus }} unità
+          </div>
+          <div class="text-dim" style="font-size: 12px">
+            {{ sum.cho }} g con rapporto 1:{{ settings.diabetes.icr }} · apri il calcolo completo
+          </div>
+        </div>
+        <ChevronRight :size="16" class="text-faint shrink-0" />
+      </NuxtLink>
+
       <div class="rounded-4xl p-3.5" style="background: var(--raised)">
         <FoodSearch @pick="onSearchPick" />
       </div>
@@ -135,10 +150,11 @@
 </template>
 
 <script setup lang="ts">
-import { Camera, Images, PenLine, Sparkles, X, Plus, Search, AlertTriangle } from "lucide-vue-next";
+import { Camera, Images, PenLine, Sparkles, X, Plus, Search, AlertTriangle, Syringe, ChevronRight } from "lucide-vue-next";
 import type { RecognizedItem } from "~/composables/useRecognition";
 import { estimateLocally } from "~/utils/foods";
 import { checkFoods, SEVERITY_TONE } from "~/utils/pregnancy";
+import { suggestBolus } from "~/utils/diabetes";
 import { useSettingsStore } from "~/stores/settings";
 
 const props = withDefaults(defineProps<{ initialItems?: RecognizedItem[] | null }>(), {
@@ -149,6 +165,10 @@ const { recognizeBase64, estimate, fileToBase64 } = useRecognition();
 const settings = useSettingsStore();
 
 // Gli avvisi si aggiornano man mano che le voci cambiano.
+const mealBolus = computed(
+  () => suggestBolus({ carbs: sum.value.cho, params: settings.diabetes }).rounded,
+);
+
 const risks = computed(() =>
   settings.profile.pregnant ? checkFoods(items.value.map((i) => i.name).filter(Boolean)) : [],
 );

@@ -2,6 +2,7 @@ import { useDayStore } from "~/stores/day";
 import { useSettingsStore } from "~/stores/settings";
 import { useCycleStore } from "~/stores/cycle";
 import { usePregnancyStore } from "~/stores/pregnancy";
+import { useGlucoseStore } from "~/stores/glucose";
 
 // Persistenza locale (offline + demo). La sincronizzazione cloud è in useCloudSync.
 export default defineNuxtPlugin((nuxtApp) => {
@@ -9,12 +10,14 @@ export default defineNuxtPlugin((nuxtApp) => {
   const settings = useSettingsStore(nuxtApp.$pinia as any);
   const cycle = useCycleStore(nuxtApp.$pinia as any);
   const pregnancy = usePregnancyStore(nuxtApp.$pinia as any);
+  const glucose = useGlucoseStore(nuxtApp.$pinia as any);
 
   try {
     day.hydrate(JSON.parse(localStorage.getItem("equilibrio:day") || "null"));
     settings.hydrate(JSON.parse(localStorage.getItem("equilibrio:settings") || "null"));
     cycle.hydrate(JSON.parse(localStorage.getItem("equilibrio:cycle") || "null"));
     pregnancy.hydrate(JSON.parse(localStorage.getItem("equilibrio:pregnancy") || "null"));
+    glucose.hydrate(JSON.parse(localStorage.getItem("equilibrio:glucose") || "null"));
   } catch {
     /* primo avvio */
   }
@@ -31,5 +34,8 @@ export default defineNuxtPlugin((nuxtApp) => {
   });
   pregnancy.$subscribe((_m, state) => {
     localStorage.setItem("equilibrio:pregnancy", JSON.stringify(state));
+  });
+  glucose.$subscribe((_m, state) => {
+    localStorage.setItem("equilibrio:glucose", JSON.stringify(state));
   });
 });

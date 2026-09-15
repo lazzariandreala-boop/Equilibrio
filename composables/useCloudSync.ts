@@ -3,6 +3,7 @@ import { useDayStore } from "~/stores/day";
 import { useSettingsStore } from "~/stores/settings";
 import { useCycleStore } from "~/stores/cycle";
 import { usePregnancyStore } from "~/stores/pregnancy";
+import { useGlucoseStore } from "~/stores/glucose";
 
 // Sincronizzazione cloud opzionale: attiva solo con Firebase configurato + utente loggato.
 // Realtime: le modifiche fatte su un dispositivo arrivano live sugli altri (onSnapshot),
@@ -14,6 +15,7 @@ export function useCloudSync() {
   const settings = useSettingsStore();
   const cycle = useCycleStore();
   const pregnancy = usePregnancyStore();
+  const glucose = useGlucoseStore();
   let timer: any = null;
   let unsub: null | (() => void) = null;
   let started = false;
@@ -25,7 +27,7 @@ export function useCloudSync() {
     return JSON.stringify({
       day: { streak: day.streak, days: day.days },
       // profile era escluso: peso e preferenze non seguivano l'account.
-      settings: { goals: settings.goals, reminders: settings.reminders, profile: settings.profile },
+      settings: { goals: settings.goals, reminders: settings.reminders, profile: settings.profile, diabetes: settings.diabetes },
       cycle: { entries: cycle.entries },
       pregnancy: {
         reference: pregnancy.reference,
@@ -33,6 +35,7 @@ export function useCloudSync() {
         basis: pregnancy.basis,
         appointments: pregnancy.appointments,
       },
+      glucose: { readings: glucose.readings, boluses: glucose.boluses },
     });
   }
 
@@ -42,6 +45,7 @@ export function useCloudSync() {
     settings.hydrate(data.settings);
     cycle.hydrate(data.cycle);
     pregnancy.hydrate(data.pregnancy);
+    glucose.hydrate(data.glucose);
     lastSync = snapshot(); // allinea la firma: nessun push di ritorno
   }
 
@@ -64,7 +68,7 @@ export function useCloudSync() {
         day: { streak: day.streak, days: day.days },
         // Deve coincidere con snapshot(): se qui manca qualcosa, la firma
         // cambia ma il dato non viene mai salvato davvero.
-        settings: { goals: settings.goals, reminders: settings.reminders, profile: settings.profile },
+        settings: { goals: settings.goals, reminders: settings.reminders, profile: settings.profile, diabetes: settings.diabetes },
         cycle: { entries: cycle.entries },
         pregnancy: {
           reference: pregnancy.reference,
@@ -72,6 +76,7 @@ export function useCloudSync() {
           basis: pregnancy.basis,
           appointments: pregnancy.appointments,
         },
+        glucose: { readings: glucose.readings, boluses: glucose.boluses },
         updatedAt: Date.now(),
       },
       { merge: true },
@@ -110,6 +115,7 @@ export function useCloudSync() {
           settings.$subscribe(schedulePush);
           cycle.$subscribe(schedulePush);
           pregnancy.$subscribe(schedulePush);
+          glucose.$subscribe(schedulePush);
         }
 
         // Logout: chiudi la sottoscrizione realtime.

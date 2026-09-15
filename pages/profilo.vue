@@ -80,6 +80,77 @@
       </Expandable>
     </div>
 
+    <!-- Diabete -->
+    <div class="rise" style="animation-delay: 100ms">
+      <Expandable title="Diabete" :icon="Droplet" tone="water" :subtitle="diabetesSummary">
+        <div class="space-y-2.5">
+          <SettingToggleRow label="Gestione del diabete" tone="water" :on="settings.profile.diabetes"
+            @toggle="settings.profile.diabetes = !settings.profile.diabetes" />
+
+          <template v-if="settings.profile.diabetes">
+            <NuxtLink to="/glicemia" class="tap rounded-3xl flex items-center gap-3"
+              style="padding: 12px 14px; background: var(--raised)">
+              <Droplet :size="19" color="var(--water)" />
+              <span class="text-ink flex-1" style="font-size: 14.5px; font-weight: 600">Apri il diario glicemico</span>
+              <ChevronRight :size="17" class="text-faint" />
+            </NuxtLink>
+
+            <div class="rounded-3xl space-y-3" style="padding: 13px 14px; background: var(--raised)">
+              <div class="text-ink" style="font-size: 14px; font-weight: 600">Parametri glicemici</div>
+
+              <div class="flex gap-2.5">
+                <div class="flex-1">
+                  <div class="text-faint mb-1" style="font-size: 11.5px">Obiettivo min</div>
+                  <input v-model.number="settings.diabetes.targetMin" type="number" inputmode="numeric" :class="numCls" />
+                </div>
+                <div class="flex-1">
+                  <div class="text-faint mb-1" style="font-size: 11.5px">Obiettivo max</div>
+                  <input v-model.number="settings.diabetes.targetMax" type="number" inputmode="numeric" :class="numCls" />
+                </div>
+              </div>
+
+              <div class="flex gap-2.5">
+                <div class="flex-1">
+                  <div class="text-faint mb-1" style="font-size: 11.5px">FSI (mg/dL per 1U)</div>
+                  <input v-model.number="settings.diabetes.isf" type="number" inputmode="numeric" :class="numCls" />
+                  <div class="text-faint" style="font-size: 11px; margin-top: 3px">Di quanto scendi con 1 unità</div>
+                </div>
+                <div class="flex-1">
+                  <div class="text-faint mb-1" style="font-size: 11.5px">I:C (g per 1U)</div>
+                  <input v-model.number="settings.diabetes.icr" type="number" inputmode="numeric" :class="numCls" />
+                  <div class="text-faint" style="font-size: 11px; margin-top: 3px">Grammi coperti da 1 unità</div>
+                </div>
+              </div>
+
+              <div class="flex gap-2.5">
+                <div class="flex-1">
+                  <div class="text-faint mb-1" style="font-size: 11.5px">Insulina rapida</div>
+                  <input v-model="settings.diabetes.rapidInsulin" :class="numCls" placeholder="Es. Humalog" />
+                </div>
+                <div class="flex-1">
+                  <div class="text-faint mb-1" style="font-size: 11.5px">Insulina basale</div>
+                  <input v-model="settings.diabetes.basalInsulin" :class="numCls" placeholder="Es. Toujeo" />
+                </div>
+              </div>
+
+              <div>
+                <div class="text-faint mb-1" style="font-size: 11.5px">Durata dell'insulina rapida (ore)</div>
+                <input v-model.number="settings.diabetes.duration" type="number" inputmode="numeric" :class="numCls" />
+                <div class="text-faint" style="font-size: 11px; margin-top: 3px">
+                  Serve a sottrarre l'insulina ancora attiva dai boli successivi
+                </div>
+              </div>
+
+              <p class="text-faint" style="font-size: 12px; line-height: 1.5">
+                Questi valori li stabilisce il diabetologo: inseriscili come sono nel tuo schema.
+                I calcoli dell'app sono stime costruite su di essi.
+              </p>
+            </div>
+          </template>
+        </div>
+      </Expandable>
+    </div>
+
     <!-- Promemoria -->
     <div class="rise" style="animation-delay: 120ms">
       <div class="display mb-2.5 px-1" style="font-weight: 700; font-size: 19px">Promemoria</div>
@@ -302,6 +373,14 @@ function togglePregnant() {
   settings.profile.pregnant = now;
   if (now && !preg.configured) navigateTo("/gravidanza");
 }
+
+const numCls = "bg-card border border-line text-ink rounded-2xl px-3 py-2.5 w-full tabular";
+
+const diabetesSummary = computed(() => {
+  if (!settings.profile.diabetes) return "non attiva";
+  const d = settings.diabetes;
+  return `obiettivo ${d.targetMin}–${d.targetMax} · FSI ${d.isf} · 1:${d.icr}`;
+});
 
 const pregSummary = computed(() => {
   if (!preg.configured) return "Imposta la data di inizio";

@@ -55,6 +55,22 @@
       </div>
     </div>
 
+    <NuxtLink v-if="settings.profile.diabetes" to="/glicemia" class="tap block rounded-4xl rise"
+      style="padding: 12px 14px; animation-delay: 230ms"
+      :style="{ background: 'var(--card)', border: `1px solid var(--${glucoseTone}-soft)`, boxShadow: 'var(--tile-shadow)' }">
+      <div class="flex items-center gap-3">
+        <div class="rounded-full flex items-center justify-center shrink-0" style="width: 40px; height: 40px"
+          :style="{ background: `var(--${glucoseTone}-soft)`, border: `1.5px solid var(--${glucoseTone})` }">
+          <Droplet :size="19" :color="`var(--${glucoseTone})`" />
+        </div>
+        <div class="min-w-0 flex-1">
+          <div class="text-ink" style="font-size: 14.5px; font-weight: 600">{{ glucoseLine }}</div>
+          <div class="text-faint" style="font-size: 12.5px">{{ glucoseDetail }}</div>
+        </div>
+        <ChevronRight :size="18" :color="`var(--${glucoseTone})`" />
+      </div>
+    </NuxtLink>
+
     <NuxtLink to="/storico" class="tap block rounded-4xl rise"
       style="background: var(--card); border: 1px solid var(--line); padding: 12px 14px;
              box-shadow: inset 0 1px 0 rgba(255,255,255,.05); animation-delay: 260ms">
@@ -74,7 +90,9 @@
 </template>
 
 <script setup lang="ts">
-import { GlassWater, Footprints, UtensilsCrossed, Wine, Sprout, ChevronRight, CalendarHeart } from "lucide-vue-next";
+import { GlassWater, Footprints, UtensilsCrossed, Wine, Sprout, ChevronRight, CalendarHeart, Droplet } from "lucide-vue-next";
+import { useGlucoseStore } from "~/stores/glucose";
+import { classify, RANGE_TONE, RANGE_LABEL, insulinOnBoard } from "~/utils/diabetes";
 import { useDayStore } from "~/stores/day";
 import { useSettingsStore } from "~/stores/settings";
 import { lastNDays, keyToDate } from "~/utils/date";
@@ -120,6 +138,28 @@ const message = computed(() => {
   if (n === 2) return "Buon ritmo, continua.";
   if (n === 1) return "Un passo è già partito.";
   return "Si comincia quando vuoi.";
+});
+
+// ── glicemia ──
+const glucose = useGlucoseStore();
+
+const glucoseTone = computed(() => {
+  const r = glucose.lastReading;
+  return r ? RANGE_TONE[classify(r.value, settings.diabetes)] : "water";
+});
+
+const glucoseLine = computed(() => {
+  const r = glucose.lastReading;
+  if (!r) return "Nessuna glicemia registrata";
+  return `${r.value} mg/dL · ${RANGE_LABEL[classify(r.value, settings.diabetes)]}`;
+});
+
+const glucoseDetail = computed(() => {
+  const r = glucose.lastReading;
+  if (!r) return "Tocca per registrare la prima misurazione";
+  const active = insulinOnBoard(glucose.recentBoluses(settings.diabetes.duration), settings.diabetes);
+  const when = new Date(r.at).toLocaleTimeString("it-IT", { hour: "2-digit", minute: "2-digit" });
+  return active > 0 ? `misurata alle ${when} · ${active} U ancora attive` : `misurata alle ${when}`;
 });
 
 const soberDots = computed(() =>
