@@ -244,3 +244,34 @@ html.dark .raised-3d {
     grid-column: 1 / -1;
   }
 }
+
+/* ── Dashboard su desktop: griglia a 12 colonne ────────────
+   Le card dichiarano quanto spazio occupare, così riempiono la
+   riga invece di lasciare metà pagina vuota. */
+.desk-only {
+  display: none;
+}
+
+@media (min-width: 1024px) {
+  .dash {
+    display: grid;
+    grid-template-columns: repeat(12, minmax(0, 1fr));
+    gap: 16px;
+    align-items: start;
+  }
+  .dash > * {
+    margin-top: 0 !important;
+    grid-column: span 12;
+  }
+  .dash > .d3 { grid-column: span 3; }
+  .dash > .d4 { grid-column: span 4; }
+  .dash > .d5 { grid-column: span 5; }
+  .dash > .d6 { grid-column: span 6; }
+  .dash > .d7 { grid-column: span 7; }
+  .dash > .d8 { grid-column: span 8; }
+
+  /* Contenuti che hanno senso solo dove c'è spazio. */
+  .desk-only {
+    display: block;
+  }
+}
