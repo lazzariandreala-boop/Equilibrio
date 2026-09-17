@@ -48,6 +48,7 @@ const fmtShort = (key: string) => {
 };
 
 const view = computed(() => {
+  // Con entrambi attivi vince la gravidanza, che è l'informazione del momento.
   if (settings.profile.pregnant) {
     if (!preg.configured) {
       return { tone: "alcohol", icon: Baby, headline: "In attesa", label: "imposta la data", predicted: "" };

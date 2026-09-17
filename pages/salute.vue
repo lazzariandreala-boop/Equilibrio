@@ -140,8 +140,9 @@
       </div>
     </div>
 
-    <!-- ── Ciclo ── -->
-    <div v-else-if="settings.profile.cycleTracking" class="panel d6">
+    <!-- ── Ciclo: resta consultabile anche in gravidanza, dove però le
+         previsioni sono sospese ── -->
+    <div v-if="settings.profile.cycleTracking" class="panel d6">
       <div class="flex items-center justify-between" style="margin-bottom: 12px">
         <div class="flex items-center gap-2">
           <CalendarHeart :size="18" color="var(--alcohol)" />
@@ -157,10 +158,21 @@
           {{ cycleView.headline }}
         </div>
         <div style="color: rgba(255,255,255,.88); font-size: 12.5px">{{ cycleView.label }}</div>
+
+        <!-- Ultimi dieci giorni: pieno = giorno registrato -->
         <div class="flex gap-1 justify-start" style="margin-top: 10px">
-          <span v-for="(clean, i) in cycleDots" :key="i" class="rounded-full"
-            :style="{ width: '7px', height: '20px', background: clean ? 'rgba(255,255,255,.92)' : 'rgba(255,255,255,.26)' }" />
+          <span v-for="(isPeriod, i) in cycleDots" :key="i" class="rounded-full"
+            :style="{ width: '7px', height: '20px',
+                      background: isPeriod ? 'rgba(255,255,255,.95)' : 'rgba(255,255,255,.26)' }" />
         </div>
+      </div>
+
+      <div class="rounded-3xl flex items-center gap-2.5" style="padding: 10px 13px; background: var(--raised); margin-top: 10px">
+        <CalendarDays :size="15" color="var(--alcohol)" class="shrink-0" />
+        <span class="text-dim" style="font-size: 12px; line-height: 1.35">
+          {{ cycle.entries.length }} {{ cycle.entries.length === 1 ? "ciclo registrato" : "cicli registrati" }}
+          <template v-if="cycle.entries.length >= 2"> · media {{ cycle.averageLength }} giorni</template>
+        </span>
       </div>
 
       <NuxtLink to="/ciclo" class="tap grad-alcohol rounded-full flex items-center justify-center gap-2 cta-glow-alcohol"
@@ -299,7 +311,7 @@ const nextAppointment = computed(() => preg.upcoming[0] ?? null);
 
 // ── ciclo ──
 const cycleDots = computed(() =>
-  lastNDays(10, keyToDate(day.date)).reverse().map((k) => day.summaryOf(k).alcGrams >= 0 && !cycleDay(k)),
+  lastNDays(10, keyToDate(day.date)).reverse().map((k) => cycleDay(k)),
 );
 function cycleDay(key: string) {
   return cycle.entries.some((e) => {
@@ -309,6 +321,10 @@ function cycleDay(key: string) {
 }
 
 const cycleView = computed(() => {
+  // In gravidanza le previsioni non hanno senso: si mostra il diario.
+  if (settings.profile.pregnant) {
+    return { tone: "alcohol", headline: "Previsioni sospese", label: "il diario resta consultabile" };
+  }
   const s = cycle.status;
   if (s.kind === "nessun-dato") return { tone: "alcohol", headline: "Inizia", label: "registra il primo ciclo" };
   if (s.kind === "in-corso") return { tone: "alcohol", headline: `Giorno ${s.days}`, label: "ciclo in corso" };

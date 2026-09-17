@@ -37,11 +37,12 @@ export function useNavItems() {
     if (settings.profile.diabetes) {
       list.push({ to: "/glicemia", icon: Droplet, label: "Glicemia", tone: "water", mobileOnly: true });
     }
-    // In gravidanza le previsioni del ciclo sono sospese: si mostra la sezione
-    // dedicata al posto di quella del ciclo, non entrambe.
+      // Le due sezioni possono convivere: in gravidanza il diario del ciclo
+    // resta consultabile, solo senza previsioni.
     if (settings.profile.pregnant) {
       list.push({ to: "/gravidanza", icon: Baby, label: "Gravidanza", tone: "alcohol", mobileOnly: true });
-    } else if (settings.profile.cycleTracking) {
+    }
+    if (settings.profile.cycleTracking) {
       list.push({ to: "/ciclo", icon: CalendarHeart, label: "Ciclo", tone: "alcohol", mobileOnly: true });
     }
 
