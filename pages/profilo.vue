@@ -255,6 +255,33 @@
         </p>
       </div>
 
+      <!-- Chiave personale: sposta il costo del riconoscimento sul proprio account -->
+      <div class="rounded-4xl mb-2.5" style="padding: 13px 14px"
+        :style="{ background: 'var(--card)', border: '1px solid var(--line)', boxShadow: 'var(--tile-shadow)' }">
+        <div class="flex items-center gap-3">
+          <div class="rounded-2xl flex items-center justify-center shrink-0"
+            style="width: 44px; height: 44px; background: var(--food-soft)">
+            <Sparkles :size="21" color="var(--food)" />
+          </div>
+          <div class="flex-1 min-w-0">
+            <div style="font-weight: 600; font-size: 15px">Riconoscimento dei pasti</div>
+            <div class="text-dim" style="font-size: 12.5px">
+              {{ settings.keys.gemini ? "usa la tua chiave" : "usa la chiave condivisa dell'app" }}
+            </div>
+          </div>
+        </div>
+
+        <input v-model="settings.keys.gemini" type="password" autocomplete="off"
+          class="bg-raised border border-line text-ink rounded-2xl px-3 py-2.5 w-full"
+          style="font-size: 13.5px; margin-top: 10px" placeholder="Chiave Gemini (facoltativa)" />
+
+        <p class="text-faint" style="font-size: 12px; margin-top: 8px; line-height: 1.5">
+          Senza chiave il riconoscimento delle foto funziona lo stesso, ma consuma la quota condivisa.
+          Puoi crearne una gratuita su Google AI Studio e incollarla qui: resta salvata solo nel tuo
+          account e le richieste peseranno sul tuo.
+        </p>
+      </div>
+
       <div class="rounded-4xl flex items-center gap-3" style="padding: 13px 14px"
         :style="{ background: 'var(--card)', border: '1px solid var(--line)', boxShadow: 'var(--tile-shadow)' }">
         <div class="rounded-2xl flex items-center justify-center shrink-0"
@@ -350,7 +377,7 @@
 
 <script setup lang="ts">
 import { User, GlassWater, Footprints, UtensilsCrossed, Scale, HeartPulse, Droplet, Moon, BellRing, Cloud, Target, Link2, X, Plus,
-  Baby, CalendarHeart, BookOpen, ChevronRight } from "lucide-vue-next";
+  Baby, CalendarHeart, BookOpen, ChevronRight, Sparkles } from "lucide-vue-next";
 import { doc, getDoc, setDoc } from "firebase/firestore";
 import { useSettingsStore } from "~/stores/settings";
 import { usePregnancyStore } from "~/stores/pregnancy";

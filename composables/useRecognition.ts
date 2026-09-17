@@ -1,3 +1,4 @@
+import { useSettingsStore } from "~/stores/settings";
 export interface RecognizedItem {
   name: string;
   qty: string;
@@ -23,6 +24,10 @@ function normalize(a: any): RecognizedItem {
 }
 
 export function useRecognition() {
+  const settings = useSettingsStore();
+  /** Chiave personale dell'utente, se ne ha configurata una. */
+  const userKey = () => settings.keys?.gemini?.trim() || undefined;
+
   const base = useRuntimeConfig().public.apiBase || "";
 
   function readDataUrl(file: File): Promise<string> {
@@ -73,7 +78,7 @@ export function useRecognition() {
   async function recognizeBase64(data: string, media: string): Promise<RecognizedItem[]> {
     const res = await $fetch<{ alimenti: RecognizedItem[] }>(`${base}/api/recognize`, {
       method: "POST",
-      body: { image: data, media },
+      body: { image: data, media, key: userKey() },
     });
     return (res.alimenti || []).map(normalize);
   }
@@ -82,7 +87,7 @@ export function useRecognition() {
   async function estimate(text: string): Promise<RecognizedItem[]> {
     const res = await $fetch<{ alimenti: RecognizedItem[] }>(`${base}/api/estimate`, {
       method: "POST",
-      body: { text },
+      body: { text, key: userKey() },
     });
     return (res.alimenti || []).map(normalize);
   }

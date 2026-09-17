@@ -4,7 +4,12 @@ export default defineEventHandler(async (event) => {
   const { geminiApiKey } = useRuntimeConfig();
   const body = await readBody<{ image?: string; media?: string }>(event);
 
-  if (!geminiApiKey) {
+  // Se l'utente ha configurato la propria chiave, le richieste pesano sul suo
+  // account invece che su quello condiviso.
+  const userKey = typeof (body as any)?.key === "string" ? (body as any).key.trim() : "";
+  const apiKey = userKey || geminiApiKey;
+
+  if (!apiKey) {
     throw createError({ statusCode: 503, statusMessage: "Riconoscimento non configurato (manca NUXT_GEMINI_API_KEY)." });
   }
   if (!body?.image) {
@@ -20,7 +25,7 @@ export default defineEventHandler(async (event) => {
     "Tutti i numeri interi.";
 
   const model = "gemini-2.5-flash";
-  const url = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${geminiApiKey}`;
+  const url = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`;
 
   let raw: any;
   try {

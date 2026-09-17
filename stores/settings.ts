@@ -28,6 +28,8 @@ export const useSettingsStore = defineStore("settings", {
     goals: <Goals>{ water: 2000, moveMin: 30, kcal: 2000 },
     profile: <Profile>{ weightKg: 75, pregnant: false, cycleTracking: false, diabetes: false },
     diabetes: <DiabetesParams>{ ...DEFAULT_PARAMS },
+    /** Chiavi personali: se presenti, le richieste usano queste invece di quelle condivise. */
+    keys: { gemini: "" },
     reminders: <Reminders>{
       water: true,
       waterTimes: ["10:00", "13:00", "16:00", "19:00"],
@@ -42,6 +44,7 @@ export const useSettingsStore = defineStore("settings", {
       if (raw.goals) this.goals = { ...this.goals, ...raw.goals };
       if (raw.profile) this.profile = { ...this.profile, ...raw.profile };
       if (raw.diabetes) this.diabetes = { ...this.diabetes, ...raw.diabetes };
+      if (raw.keys) this.keys = { ...this.keys, ...raw.keys };
       if (raw.reminders) this.reminders = { ...this.reminders, ...raw.reminders };
     },
   },

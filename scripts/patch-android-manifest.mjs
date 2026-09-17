@@ -47,6 +47,29 @@ if (!existsSync(PATH)) {
 const APP_GRADLE = "android/app/build.gradle";
 if (existsSync(APP_GRADLE) && existsSync("android-config/debug.keystore")) {
   let g = readFileSync(APP_GRADLE, "utf8");
+  // Firma di release: la chiave arriva dai secret, mai dal repository.
+  if (process.env.RELEASE_KEYSTORE_PATH && !g.includes("equilibrioRelease")) {
+    g = g.replace(
+      "    buildTypes {",
+      `    signingConfigs {
+        equilibrioRelease {
+            storeFile file(System.getenv("RELEASE_KEYSTORE_PATH"))
+            storePassword System.getenv("RELEASE_STORE_PASSWORD")
+            keyAlias System.getenv("RELEASE_KEY_ALIAS")
+            keyPassword System.getenv("RELEASE_KEY_PASSWORD")
+            v1SigningEnabled true
+            v2SigningEnabled true
+        }
+    }
+    buildTypes {
+        release {
+            signingConfig signingConfigs.equilibrioRelease
+        }`,
+    );
+    writeFileSync(APP_GRADLE, g);
+    console.log("✓ Firma di release configurata dai secret");
+  }
+
   if (!g.includes("equilibrioDebug")) {
     g = g.replace(
       "    buildTypes {",
