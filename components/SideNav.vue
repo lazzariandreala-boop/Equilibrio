@@ -10,7 +10,7 @@
     </div>
 
     <nav class="flex flex-col" style="gap: 4px">
-      <NuxtLink v-for="item in items" :key="item.to" :to="item.to"
+      <NuxtLink v-for="item in desktopItems" :key="item.to" :to="item.to"
         class="tap flex items-center gap-3 rounded-3xl"
         style="padding: 11px 13px"
         :style="isActive(item.to)
@@ -46,6 +46,7 @@ import logoDark from "~/assets/logo-dark.png";
 
 const { isDark, toggle } = useTheme();
 const { items, isActive } = useNavItems();
+const desktopItems = computed(() => items.value.filter((i) => !i.mobileOnly));
 const date = fmtIT();
 </script>
 

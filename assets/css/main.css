@@ -270,6 +270,11 @@ html.dark .raised-3d {
   .dash > .d7 { grid-column: span 7; }
   .dash > .d8 { grid-column: span 8; }
 
+  /* La colonna laterale è trasparente sul telefono: qui torna un blocco. */
+  .dash > .side-stack {
+    grid-column: span 4;
+  }
+
   /* Contenuti che hanno senso solo dove c'è spazio. */
   .desk-only {
     display: block;

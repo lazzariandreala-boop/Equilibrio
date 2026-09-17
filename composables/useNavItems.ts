@@ -7,15 +7,26 @@ import { useSettingsStore } from "~/stores/settings";
  * Voci di navigazione, condivise fra la barra in basso (mobile) e il menù
  * laterale (desktop): tenerle in un posto solo evita che le due si allontanino.
  */
+export interface NavItem {
+  to: string;
+  icon: any;
+  label: string;
+  tone: string;
+  /** Nascosto sul desktop, dove la sezione vive nella dashboard. */
+  mobileOnly?: boolean;
+}
+
 export function useNavItems() {
   const settings = useSettingsStore();
   const route = useRoute();
 
   const items = computed(() => {
-    const list = [
+    const list: NavItem[] = [
       { to: "/", icon: Home, label: "Oggi", tone: "water" },
-      { to: "/pasti", icon: Utensils, label: "Pasti", tone: "food" },
-      { to: "/movimento", icon: Activity, label: "Sport", tone: "move" },
+      // Su desktop pasti e movimento hanno un pannello nella dashboard:
+      // tenerli anche nel menù sarebbe un doppione.
+      { to: "/pasti", icon: Utensils, label: "Pasti", tone: "food", mobileOnly: true },
+      { to: "/movimento", icon: Activity, label: "Sport", tone: "move", mobileOnly: true },
       { to: "/corpo", icon: Scale, label: "Corpo", tone: "water" },
     ];
 
