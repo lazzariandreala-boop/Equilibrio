@@ -21,6 +21,14 @@ export default defineNuxtConfig({
         { name: "theme-color", content: "#100E0D" },
         { name: "description", content: "Un passo per volta: idratazione, alcol, movimento e pasti." },
       ],
+      // Il tema va applicato prima che il browser dipinga: applicarlo dal
+      // codice dell'app produce un lampo chiaro a ogni ricaricamento.
+      script: [
+        {
+          innerHTML: `(function(){try{var t=localStorage.getItem("equilibrio:theme");var d=t?t==="dark":window.matchMedia("(prefers-color-scheme: dark)").matches;var e=document.documentElement;e.classList.toggle("dark",d);e.style.colorScheme=d?"dark":"light";var m=document.querySelector('meta[name="theme-color"]');if(m)m.setAttribute("content",d?"#0D0F14":"#F1ECE4");}catch(e){}})()`,
+          tagPosition: "head",
+        },
+      ],
       link: [
         { rel: "icon", type: "image/png", href: "/favicon.png" },
         { rel: "apple-touch-icon", href: "/apple-touch-icon.png" },

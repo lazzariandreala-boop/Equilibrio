@@ -5,7 +5,7 @@
     <div v-if="!ready" class="fixed inset-0 flex flex-col items-center justify-center bg-surface" style="z-index: 100">
       <!-- L'alone segue la forma del logo, che è quadrato: un bagliore
            circolare lo faceva sembrare inscritto in un cerchio. -->
-      <img :src="logo" alt="" width="104" height="104"
+      <img :src="isDark ? logoDark : logoLight" alt="" width="104" height="104"
         style="border-radius: 26px; box-shadow: 0 0 0 1px var(--line), 0 14px 40px -8px var(--water-glow)" />
       <div class="display text-ink" style="font-size: 24px; font-weight: 800; margin-top: 18px">Equilibrio</div>
       <div class="flex gap-1.5" style="margin-top: 16px">
@@ -22,9 +22,10 @@
 
 <script setup lang="ts">
 import { useDayStore } from "~/stores/day";
-import logo from "~/assets/logo-dark.png";
+import logoDark from "~/assets/logo-dark.png";
+import logoLight from "~/assets/logo-light.png";
 
-const { init: initTheme } = useTheme();
+const { init: initTheme, isDark } = useTheme();
 const { init: initAuth, ready } = useAuth();
 const { start: startSync } = useCloudSync();
 const day = useDayStore();
