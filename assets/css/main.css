@@ -269,6 +269,7 @@ html.dark .raised-3d {
   .dash > .d6 { grid-column: span 6; }
   .dash > .d7 { grid-column: span 7; }
   .dash > .d8 { grid-column: span 8; }
+  .dash > .d12 { grid-column: span 12; }
 
   /* La colonna laterale è trasparente sul telefono: qui torna un blocco. */
   .dash > .side-stack {

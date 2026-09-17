@@ -12,7 +12,7 @@
           boxShadow: 'var(--nav-shadow)',
           scrollbarWidth: 'none',
         }">
-        <NuxtLink v-for="item in items" :key="item.to" :to="item.to"
+        <NuxtLink v-for="item in mobileItems" :key="item.to" :to="item.to"
           class="tap rounded-3xl flex flex-col items-center relative shrink-0"
           :style="{
             padding: '8px 0 7px',
@@ -36,9 +36,10 @@
 
 <script setup lang="ts">
 const { items, isActive } = useNavItems();
+const mobileItems = computed(() => items.value.filter((i) => !i.desktopOnly));
 
 /** Oltre sei voci le etichette non ci stanno più: si passa allo scorrimento. */
-const scrollable = computed(() => items.value.length > 6);
+const scrollable = computed(() => mobileItems.value.length > 6);
 const active = isActive;
 </script>
 
