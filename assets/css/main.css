@@ -190,3 +190,29 @@ html.dark .raised-3d {
 .cta-glow-water { box-shadow: inset 0 1.5px 0 rgba(255,255,255,.42), 0 12px 30px -6px var(--water-glow); }
 .cta-glow-move { box-shadow: inset 0 1.5px 0 rgba(255,255,255,.42), 0 12px 30px -6px var(--move-glow); }
 .cta-glow-alcohol { box-shadow: inset 0 1.5px 0 rgba(255,255,255,.42), 0 12px 30px -6px var(--alcohol-glow); }
+
+/* ── Adattamenti per schermi ampi ──────────────────────────
+   Da 1024px in su la navigazione è laterale e c'è più larghezza
+   utile: le griglie a due colonne pensate per il telefono possono
+   respirare, e le card non devono più essere compresse. */
+@media (min-width: 1024px) {
+  /* Le quattro voci della dashboard stanno su una riga sola. */
+  .desk-4 {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+  /* Riquadri che sul telefono stanno affiancati a due a due. */
+  .desk-3 {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+  /* Le schede dal basso diventano finestre centrate. */
+  .sheet-panel {
+    border-radius: 28px !important;
+    max-width: 560px;
+    margin-bottom: 4vh;
+    max-height: 86vh !important;
+  }
+  /* Il selettore del giorno non deve occupare tutta la riga. */
+  .day-nav {
+    max-width: 420px;
+  }
+}

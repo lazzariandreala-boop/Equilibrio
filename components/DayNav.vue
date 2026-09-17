@@ -1,5 +1,5 @@
 <template>
-  <div class="flex items-center justify-between rounded-4xl px-2 py-2"
+  <div class="day-nav flex items-center justify-between rounded-4xl px-2 py-2"
     style="background: var(--raised); border: 1px solid var(--line)">
     <button class="tap p-2 rounded-2xl" aria-label="Giorno precedente" @click="day.shiftDate(-1)">
       <ChevronLeft :size="20" :color="`var(--${tone})`" />

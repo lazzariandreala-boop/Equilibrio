@@ -10,7 +10,7 @@
     </div>
     <BalanceHero v-else :pct="overall" :on-track="onTrack" />
 
-    <div class="grid grid-cols-2 gap-3">
+    <div class="grid grid-cols-2 desk-4 gap-3">
       <div class="rise" style="animation-delay: 60ms">
         <MetricTile to="/acqua" :icon="GlassWater" tone="water" label="Acqua" :value="today.water" unit="ml"
           :sub="`/ ${settings.goals.water} ml`" :progress="p.water" />

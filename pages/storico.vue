@@ -13,7 +13,7 @@
     </div>
 
     <!-- riepilogo del periodo -->
-    <div class="grid grid-cols-2 gap-3 rise" style="animation-delay: 60ms">
+    <div class="grid grid-cols-2 desk-4 gap-3 rise" style="animation-delay: 60ms">
       <div v-for="s in stats" :key="s.label" class="rounded-4xl relative overflow-hidden"
         :style="{
           background: `linear-gradient(155deg, ${s.tone === 'water' ? 'var(--water-soft)' : `var(--${s.tone}-soft)`}, var(--card) 82%)`,
