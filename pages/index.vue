@@ -1,6 +1,6 @@
 <template>
-  <div class="space-y-3">
-    <DayNav />
+  <div class="space-y-3 desk-grid">
+    <DayNav class="desk-span" />
 
     <!-- Con il ciclo monitorato la sintesi si stringe e cede metà spazio
          alla card del ciclo, raggiungibile senza passare dal Profilo. -->
@@ -8,7 +8,7 @@
       <BalanceMini :marks="marks" :message="message" />
       <CycleMini />
     </div>
-    <BalanceHero v-else :pct="overall" :on-track="onTrack" />
+    <BalanceHero class="desk-span" v-else :pct="overall" :on-track="onTrack" />
 
     <div class="grid grid-cols-2 desk-4 gap-3">
       <div class="rise" style="animation-delay: 60ms">

@@ -1,8 +1,8 @@
 <template>
-  <div class="space-y-3">
-    <DayNav />
+  <div class="space-y-3 desk-grid">
+    <DayNav class="desk-span" />
 
-    <HeroCard tone="water" :icon="GlassWater" :title="day.isToday ? 'Acqua di oggi' : 'Acqua del giorno'"
+    <HeroCard class="desk-span" tone="water" :icon="GlassWater" :title="day.isToday ? 'Acqua di oggi' : 'Acqua del giorno'"
       :value="today.water" unit="ml" :caption="`obiettivo ${settings.goals.water} ml`"
       :progress="(today.water / settings.goals.water) * 100" :stats="stats" />
 
@@ -21,7 +21,7 @@
       <Minus :size="16" /> Togli 250 ml
     </button>
 
-    <EmptyState v-if="today.water === 0" tone="water" style="animation-delay: 170ms"
+    <EmptyState class="desk-span" v-if="today.water === 0" tone="water" style="animation-delay: 170ms"
       :title="day.isToday ? 'Non hai ancora bevuto' : 'Nessuna acqua registrata'"
       subtitle="Un bicchiere a ogni pasto è già metà obiettivo. Bere poco per volta funziona meglio che recuperare la sera." />
 

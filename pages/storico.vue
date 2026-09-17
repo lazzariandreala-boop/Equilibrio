@@ -1,5 +1,5 @@
 <template>
-  <div class="space-y-3">
+  <div class="space-y-3 desk-grid">
     <!-- periodo -->
     <div class="rise flex gap-1.5 p-1.5 rounded-4xl"
       style="background: var(--raised); border: 1px solid var(--line)">
@@ -66,7 +66,7 @@
 
     <!-- elenco dei giorni -->
     <div class="rise" style="animation-delay: 120ms">
-      <Expandable title="Giorno per giorno" :icon="CalendarDays" tone="alcohol"
+      <Expandable class="desk-span" title="Giorno per giorno" :icon="CalendarDays" tone="alcohol"
         :subtitle="`${keys.length} giorni · ${agg.activeDays} con dati`">
         <div class="space-y-2">
         <button v-for="k in keys" :key="k" class="tap w-full text-left rounded-4xl flex items-center gap-3"

@@ -1,5 +1,5 @@
 <template>
-  <div class="rise rounded-5xl text-center relative overflow-hidden"
+  <div class="block-wide rise rounded-5xl text-center relative overflow-hidden"
     style="background: var(--card); border: 1px solid var(--line); padding: 16px 18px 18px;
            box-shadow: var(--tile-shadow)">
     <EmptyIllustration :variant="tone" :size="88" class="mx-auto" />

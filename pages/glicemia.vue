@@ -1,5 +1,5 @@
 <template>
-  <div class="space-y-3">
+  <div class="space-y-3 desk-grid">
     <!-- Ultima misurazione -->
     <div v-if="last" class="rise rounded-5xl relative overflow-hidden" :class="`grad-${lastTone}`"
       :style="{ boxShadow: `0 12px 30px -10px var(--${lastTone}-glow)` }">
@@ -35,7 +35,7 @@
       </div>
     </div>
 
-    <EmptyState v-else tone="water" title="Nessuna misurazione"
+    <EmptyState class="desk-span" v-else tone="water" title="Nessuna misurazione"
       subtitle="Registra la prima glicemia: da lì l'app calcola tempo nell'obiettivo, media e boli suggeriti." />
 
     <div class="flex gap-2.5 rise" style="animation-delay: 70ms">
@@ -102,7 +102,7 @@
 
     <!-- Registro -->
     <div v-if="timeline.length" class="rise" style="animation-delay: 150ms">
-      <Expandable title="Registro" :icon="ListOrdered" tone="water" :subtitle="`${timeline.length} voci recenti`">
+      <Expandable class="desk-span" title="Registro" :icon="ListOrdered" tone="water" :subtitle="`${timeline.length} voci recenti`">
         <div class="space-y-2">
           <div v-for="e in timeline" :key="e.key" class="rounded-3xl flex items-center gap-3"
             style="padding: 11px 13px; background: var(--raised)">

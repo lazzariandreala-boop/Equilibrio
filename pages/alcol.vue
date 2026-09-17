@@ -1,8 +1,8 @@
 <template>
-  <div class="space-y-3">
-    <DayNav />
+  <div class="space-y-3 desk-grid">
+    <DayNav class="desk-span" />
 
-    <HeroCard tone="alcohol" :icon="ShieldCheck" :title="day.isToday ? 'Senza alcol' : 'Senza alcol, a quel giorno'"
+    <HeroCard class="desk-span" tone="alcohol" :icon="ShieldCheck" :title="day.isToday ? 'Senza alcol' : 'Senza alcol, a quel giorno'"
       :value="day.streak" :unit="day.streak === 1 ? 'giorno' : 'giorni'" :caption="caption" :stats="stats">
       <!-- ultimi 14 giorni: pieno = pulito -->
       <div class="flex gap-1 justify-center" style="margin-top: 16px">
@@ -33,7 +33,7 @@
       <Plus :size="19" /> Registra cosa ho bevuto
     </button>
 
-    <EmptyState v-if="!today.drinks.length" tone="alcohol" style="animation-delay: 170ms"
+    <EmptyState class="desk-span" v-if="!today.drinks.length" tone="alcohol" style="animation-delay: 170ms"
       :title="day.isToday ? 'Nessuna bevanda oggi' : 'Nessuna bevanda in questo giorno'"
       subtitle="La striscia cresce da sola: basta lasciarla correre." />
 

@@ -1,8 +1,8 @@
 <template>
-  <div class="space-y-3">
+  <div class="space-y-3 desk-grid">
     <!-- Nessuna data: si chiede subito, perché senza non si calcola nulla -->
     <div v-if="!preg.configured" class="rise">
-      <EmptyState tone="alcohol" title="Quando è iniziata?"
+      <EmptyState class="desk-span" tone="alcohol" title="Quando è iniziata?"
         subtitle="Serve una data per calcolare a che settimana sei e la data presunta del parto." />
       <button class="tap w-full rounded-full py-3.5 font-semibold grad-alcohol cta-glow-alcohol"
         style="color: #fff; font-size: 15.5px; margin-top: 12px" @click="openDate()">
@@ -82,7 +82,7 @@
 
       <!-- Scaletta dei controlli -->
       <div class="rise" style="animation-delay: 150ms">
-        <Expandable title="Controlli consigliati" :icon="Stethoscope" tone="water"
+        <Expandable class="desk-span" title="Controlli consigliati" :icon="Stethoscope" tone="water"
           :subtitle="`prossimo intorno alla ${nextCheck?.week ?? '—'}ª settimana`">
           <div class="space-y-2">
             <div v-for="c in PRENATAL_SCHEDULE" :key="c.week" class="rounded-3xl" style="padding: 11px 13px"
@@ -110,7 +110,7 @@
 
       <!-- Storico visite -->
       <div v-if="preg.past.length" class="rise" style="animation-delay: 190ms">
-        <Expandable title="Visite passate" :icon="History" tone="alcohol" :subtitle="`${preg.past.length} registrate`">
+        <Expandable class="desk-span" title="Visite passate" :icon="History" tone="alcohol" :subtitle="`${preg.past.length} registrate`">
           <div class="space-y-2">
             <AppointmentRow v-for="a in preg.past" :key="a.id" :appointment="a"
               @open="openAppointment(a)" @toggle="preg.toggleDone(a.id)" />

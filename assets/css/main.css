@@ -216,3 +216,31 @@ html.dark .raised-3d {
     max-width: 420px;
   }
 }
+
+/* ── Disposizione su due colonne per schermi ampi ──────────
+   Le pagine sono pensate come una colonna verticale: sul desktop
+   diventano una griglia, così le card riempiono lo spazio invece
+   di allungarsi a vuoto. Gli elementi marcati occupano tutta la
+   larghezza. */
+@media (min-width: 1024px) {
+  .desk-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 16px;
+    align-items: start;
+  }
+  /* Annulla la spaziatura verticale: qui la gestisce la griglia. */
+  .desk-grid > * {
+    margin-top: 0 !important;
+  }
+  .desk-span {
+    grid-column: 1 / -1;
+  }
+  /* Eroi e sezioni comprimibili occupano l'intera riga, anche quando
+     sono avvolti in un contenitore: si riconoscono dal marcatore. */
+  .desk-grid > .block-wide,
+  .desk-grid > *:has(> .block-wide),
+  .desk-grid > *:has(.block-wide) {
+    grid-column: 1 / -1;
+  }
+}

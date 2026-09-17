@@ -1,5 +1,5 @@
 <template>
-  <div class="rise rounded-5xl relative overflow-hidden"
+  <div class="block-wide rise rounded-5xl relative overflow-hidden"
     style="background: var(--card); border: 1px solid var(--line); box-shadow: var(--tile-shadow)">
     <!-- alba dietro le colline: paesaggio appena accennato, dà profondità -->
     <svg class="absolute pointer-events-none" viewBox="0 0 200 120" aria-hidden="true"

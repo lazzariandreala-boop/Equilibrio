@@ -1,8 +1,8 @@
 <template>
-  <div class="space-y-4">
-    <DayNav />
+  <div class="space-y-4 desk-grid">
+    <DayNav class="desk-span" />
 
-    <HeroCard tone="move" :icon="ActivityIcon" :title="day.isToday ? 'Movimento di oggi' : 'Movimento del giorno'"
+    <HeroCard class="desk-span" tone="move" :icon="ActivityIcon" :title="day.isToday ? 'Movimento di oggi' : 'Movimento del giorno'"
       :value="day.moveMin" unit="min" :caption="`obiettivo ${settings.goals.moveMin} min`"
       :progress="(day.moveMin / settings.goals.moveMin) * 100" :stats="stats" />
 
@@ -37,7 +37,7 @@
       </div>
     </div>
 
-    <EmptyState v-else tone="move" style="animation-delay: 140ms"
+    <EmptyState class="desk-span" v-else tone="move" style="animation-delay: 140ms"
       :title="day.isToday ? 'Niente ancora oggi' : 'Nessuna attività in questo giorno'"
       subtitle="Anche dieci minuti di camminata contano." />
 

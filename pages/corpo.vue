@@ -1,5 +1,5 @@
 <template>
-  <div class="space-y-3">
+  <div class="space-y-3 desk-grid">
     <!-- periodo -->
     <div class="rise flex gap-1.5 p-1.5 rounded-4xl"
       style="background: var(--raised); border: 1px solid var(--line)">
@@ -14,7 +14,7 @@
     </div>
 
     <!-- non collegato -->
-    <EmptyState v-if="!connected && !busy" tone="water"
+    <EmptyState class="desk-span" v-if="!connected && !busy" tone="water"
       :title="expired ? 'Sessione Withings scaduta' : 'Withings non collegato'"
       :subtitle="expired
         ? 'Apri il Profilo, scollega Withings e ricollegalo: i dati torneranno tutti, non si perde nulla.'
@@ -66,7 +66,7 @@
 
       <!-- Tutto il resto della composizione corporea sta qui: in pagina
            resta il peso, che è il dato che si guarda ogni giorno. -->
-      <Expandable title="Altri valori" :icon="Activity" tone="alcohol" :subtitle="othersSummary">
+      <Expandable class="desk-span" title="Altri valori" :icon="Activity" tone="alcohol" :subtitle="othersSummary">
         <div class="space-y-2.5">
           <MeasureCard v-if="has('visceralFat')" tone="food" :icon="Flame" label="Grasso viscerale"
             :value="fmt(s.visceralFat.last, 0)" unit="indice" :delta="s.visceralFat.delta" better="lower"

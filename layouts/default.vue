@@ -29,27 +29,20 @@ const showChrome = computed(() => route.path !== "/login");
 }
 
 @media (min-width: 1024px) {
+  /* Il contenuto occupa lo spazio residuo e vi si centra dentro: con un
+     margine sinistro fisso resterebbe incollato al menù. */
   .app-shell {
-    /* Lo spazio del menù laterale, poi una colonna di lettura comoda:
-       stirare le card su tutta la larghezza le renderebbe vuote. */
     margin-left: 238px;
-    max-width: 780px;
+    max-width: none;
     padding-bottom: 32px;
   }
   .app-main {
-    padding: 28px 32px 0;
+    max-width: 1180px;
+    margin: 0 auto;
+    padding: 28px 36px 0;
   }
   .mobile-header {
     display: none;
-  }
-}
-
-/* Su schermi molto ampi la colonna resta centrata nello spazio residuo. */
-@media (min-width: 1400px) {
-  .app-shell {
-    margin-left: 238px;
-    margin-right: auto;
-    max-width: 880px;
   }
 }
 </style>

@@ -1,8 +1,8 @@
 <template>
-  <div class="space-y-3">
-    <DayNav />
+  <div class="space-y-3 desk-grid">
+    <DayNav class="desk-span" />
 
-    <HeroCard tone="food" :icon="Flame" :title="day.isToday ? 'Pasti di oggi' : 'Pasti del giorno'"
+    <HeroCard class="desk-span" tone="food" :icon="Flame" :title="day.isToday ? 'Pasti di oggi' : 'Pasti del giorno'"
       :value="day.totals.kcal" unit="kcal" :caption="`obiettivo ${settings.goals.kcal} kcal`"
       :progress="(day.totals.kcal / settings.goals.kcal) * 100" :stats="macros">
       <div v-if="day.totals.alc > 0" class="text-center"
@@ -16,7 +16,7 @@
       <Camera :size="19" /> Scatta o aggiungi un pasto
     </button>
 
-    <EmptyState v-if="today.meals.length === 0" tone="food"
+    <EmptyState class="desk-span" v-if="today.meals.length === 0" tone="food"
       :title="day.isToday ? 'Nessun pasto registrato' : 'Nessun pasto in questo giorno'"
       subtitle="Inizia con una foto: ci pensa l'app a stimare i valori."
       :actions="quick" style="animation-delay: 130ms" @action="open" />

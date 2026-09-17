@@ -1,5 +1,5 @@
 <template>
-  <div class="space-y-3">
+  <div class="space-y-3 desk-grid">
     <!-- Stato attuale -->
     <div v-if="settings.profile.pregnant" class="rise rounded-5xl relative overflow-hidden grad-alcohol"
       style="box-shadow: 0 14px 34px -10px var(--alcohol-glow)">
@@ -45,7 +45,7 @@
       </div>
     </div>
 
-    <EmptyState v-else tone="alcohol" title="Nessun ciclo registrato"
+    <EmptyState class="desk-span" v-else tone="alcohol" title="Nessun ciclo registrato"
       subtitle="Segna il primo giorno: dopo due registrazioni l'app inizia a stimare quando aspettarti il prossimo." />
 
     <div class="flex gap-2.5 rise" style="animation-delay: 70ms">
@@ -77,7 +77,7 @@
 
     <!-- Storico -->
     <div v-if="cycle.entries.length" class="rise" style="animation-delay: 120ms">
-      <Expandable title="Cicli registrati" :icon="CalendarDays" tone="alcohol"
+      <Expandable class="desk-span" title="Cicli registrati" :icon="CalendarDays" tone="alcohol"
         :subtitle="`${cycle.entries.length} registrazioni`" :default-open="true">
         <div class="space-y-2">
           <button v-for="e in cycle.sorted" :key="e.start" class="tap w-full text-left rounded-3xl"

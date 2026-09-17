@@ -1,5 +1,5 @@
 <template>
-  <div class="rise rounded-5xl overflow-hidden relative" :class="`grad-${tone}`"
+  <div class="block-wide rise rounded-5xl overflow-hidden relative" :class="`grad-${tone}`"
     :style="{
       boxShadow: `0 18px 40px -8px var(--${tone}-glow), 0 2px 8px rgba(0,0,0,.28)`,
     }">

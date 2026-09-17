@@ -1,5 +1,5 @@
 <template>
-  <div class="space-y-5">
+  <div class="space-y-5 desk-grid">
     <!-- Account -->
     <div class="rise rounded-4xl flex items-center gap-3.5" style="padding: 13px 14px"
       :style="{ background: 'var(--card)', boxShadow: 'inset 0 0 0 1.5px var(--water-soft), var(--tile-shadow)' }">
@@ -22,7 +22,7 @@
 
     <!-- Obiettivi -->
     <div class="rise" style="animation-delay: 60ms">
-      <Expandable title="Obiettivi giornalieri" :icon="Target" tone="water"
+      <Expandable class="desk-span" title="Obiettivi giornalieri" :icon="Target" tone="water"
         :subtitle="`${settings.goals.water} ml · ${settings.goals.moveMin} min · ${settings.goals.kcal} kcal`">
         <div class="space-y-2.5">
         <GoalCard :icon="GlassWater" tone="water" label="Acqua" :value="settings.goals.water" unit="ml"
@@ -40,7 +40,7 @@
 
     <!-- Salute femminile -->
     <div class="rise" style="animation-delay: 90ms">
-      <Expandable title="Ciclo e gravidanza" :icon="Baby" tone="alcohol" :subtitle="womenSummary">
+      <Expandable class="desk-span" title="Ciclo e gravidanza" :icon="Baby" tone="alcohol" :subtitle="womenSummary">
         <div class="space-y-2.5">
           <SettingToggleRow label="Monitoraggio del ciclo" tone="alcohol" :on="settings.profile.cycleTracking"
             @toggle="settings.profile.cycleTracking = !settings.profile.cycleTracking" />
@@ -82,7 +82,7 @@
 
     <!-- Diabete -->
     <div class="rise" style="animation-delay: 100ms">
-      <Expandable title="Diabete" :icon="Droplet" tone="water" :subtitle="diabetesSummary">
+      <Expandable class="desk-span" title="Diabete" :icon="Droplet" tone="water" :subtitle="diabetesSummary">
         <div class="space-y-2.5">
           <SettingToggleRow label="Gestione del diabete" tone="water" :on="settings.profile.diabetes"
             @toggle="settings.profile.diabetes = !settings.profile.diabetes" />
@@ -178,7 +178,7 @@
 
     <!-- Connessioni -->
     <div class="rise" style="animation-delay: 180ms">
-      <Expandable title="Connessioni" :icon="Link2" tone="move" :subtitle="connectionsSummary">
+      <Expandable class="desk-span" title="Connessioni" :icon="Link2" tone="move" :subtitle="connectionsSummary">
 
       <div class="rounded-4xl p-4 mb-2.5" :style="{ background: wConnected ? 'var(--move-soft)' : 'var(--raised)' }">
         <div class="flex items-center gap-3">
