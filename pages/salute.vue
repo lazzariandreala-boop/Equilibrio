@@ -1,5 +1,5 @@
 <template>
-  <div class="space-y-3 dash">
+  <div class="space-y-3.5 dash">
     <!-- ── Corpo ── -->
     <div class="panel d6">
       <div class="flex items-center justify-between" style="margin-bottom: 12px">

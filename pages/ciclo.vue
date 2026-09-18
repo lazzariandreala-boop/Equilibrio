@@ -1,5 +1,5 @@
 <template>
-  <div class="space-y-3 desk-grid">
+  <div class="space-y-3.5 desk-grid">
     <!-- Stato attuale -->
     <div v-if="settings.profile.pregnant" class="rise rounded-5xl relative overflow-hidden grad-alcohol"
       style="box-shadow: 0 14px 34px -10px var(--alcohol-glow)">

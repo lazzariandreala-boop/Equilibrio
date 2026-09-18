@@ -1,5 +1,5 @@
 <template>
-  <div class="space-y-3 desk-grid">
+  <div class="space-y-3.5 desk-grid">
     <DayNav class="desk-span" />
 
     <HeroCard class="desk-span" tone="alcohol" :icon="ShieldCheck" :title="day.isToday ? 'Senza alcol' : 'Senza alcol, a quel giorno'"
@@ -11,7 +11,7 @@
       </div>
     </HeroCard>
 
-    <div class="grid grid-cols-2 gap-2.5 rise" style="animation-delay: 70ms">
+    <div class="grid grid-cols-2 gap-3 rise" style="animation-delay: 70ms">
       <button class="tap rounded-4xl p-4 flex flex-col items-start gap-2.5"
         style="background: var(--move-soft); border: 1px solid var(--line); box-shadow: inset 0 1px 0 rgba(255,255,255,.06)" @click="day.cleanDay()">
         <div class="rounded-2xl grad-move flex items-center justify-center" style="width: 40px; height: 40px">

@@ -1,5 +1,5 @@
 <template>
-  <div class="space-y-3 desk-grid">
+  <div class="space-y-3.5 desk-grid">
     <!-- Nessuna data: si chiede subito, perché senza non si calcola nulla -->
     <div v-if="!preg.configured" class="rise">
       <EmptyState class="desk-span" tone="alcohol" title="Quando è iniziata?"

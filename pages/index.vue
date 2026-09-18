@@ -1,5 +1,5 @@
 <template>
-  <div class="space-y-3 dash">
+  <div class="space-y-3.5 dash">
     <DayNav class="d8" />
 
     <!-- Chip della data: sul telefono l'informazione è già nell'intestazione -->
@@ -11,14 +11,14 @@
 
     <!-- Con il ciclo monitorato la sintesi si stringe e cede metà spazio alla card del ciclo -->
     <div v-if="settings.profile.cycleTracking || settings.profile.pregnant"
-      class="grid grid-cols-2 gap-3 rise" style="min-height: 150px">
+      class="grid grid-cols-2 gap-3.5 rise" style="min-height: 150px">
       <BalanceMini :marks="marks" :message="message" />
       <CycleMini />
     </div>
     <BalanceHero v-else :pct="overall" :on-track="onTrack" />
 
     <!-- Le quattro voci -->
-    <div class="grid grid-cols-2 desk-4 gap-3 d8">
+    <div class="grid grid-cols-2 desk-4 gap-3.5 d8">
       <div class="rise" style="animation-delay: 60ms">
         <MetricTile to="/acqua" :icon="GlassWater" tone="water" label="Acqua" :value="today.water" unit="ml"
           :sub="`/ ${settings.goals.water} ml`" :progress="p.water" />
@@ -293,9 +293,12 @@ const soberDots = computed(() =>
 </script>
 
 <style scoped>
-/* Sul telefono i due riquadri della colonna sono righe normali. */
+/* Colonna sempre in verticale: con display:contents la spaziatura del
+   contenitore non raggiungeva i riquadri, che restavano attaccati. */
 .side-stack {
-  display: contents;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
 }
 .panel {
   background: var(--card);
@@ -307,8 +310,6 @@ const soberDots = computed(() =>
 
 @media (min-width: 1024px) {
   .side-stack {
-    display: flex;
-    flex-direction: column;
     gap: 16px;
   }
 }

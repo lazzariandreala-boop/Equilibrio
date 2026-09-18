@@ -1,5 +1,5 @@
 <template>
-  <div class="space-y-3 desk-grid">
+  <div class="space-y-3.5 desk-grid">
     <!-- Ultima misurazione -->
     <div v-if="last" class="rise rounded-5xl relative overflow-hidden" :class="`grad-${lastTone}`"
       :style="{ boxShadow: `0 12px 30px -10px var(--${lastTone}-glow)` }">

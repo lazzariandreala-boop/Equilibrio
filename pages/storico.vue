@@ -1,5 +1,5 @@
 <template>
-  <div class="space-y-3 desk-grid">
+  <div class="space-y-3.5 desk-grid">
     <!-- periodo -->
     <div class="rise flex gap-1.5 p-1.5 rounded-4xl"
       style="background: var(--raised); border: 1px solid var(--line)">
@@ -13,7 +13,7 @@
     </div>
 
     <!-- riepilogo del periodo -->
-    <div class="grid grid-cols-2 desk-4 gap-3 rise" style="animation-delay: 60ms">
+    <div class="grid grid-cols-2 desk-4 gap-3.5 rise" style="animation-delay: 60ms">
       <div v-for="s in stats" :key="s.label" class="rounded-4xl relative overflow-hidden"
         :style="{
           background: `linear-gradient(155deg, ${s.tone === 'water' ? 'var(--water-soft)' : `var(--${s.tone}-soft)`}, var(--card) 82%)`,
