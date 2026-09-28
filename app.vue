@@ -22,6 +22,8 @@
 
 <script setup lang="ts">
 import { useDayStore } from "~/stores/day";
+import { useSettingsStore } from "~/stores/settings";
+import { isRouteAllowed } from "~/utils/features";
 import logoDark from "~/assets/logo-dark.png";
 import logoLight from "~/assets/logo-light.png";
 
@@ -31,6 +33,17 @@ const { start: startSync } = useCloudSync();
 const day = useDayStore();
 const route = useRoute();
 const apiBase = useRuntimeConfig().public.apiBase || "";
+const settings = useSettingsStore();
+
+// Spegnendo una funzione dal Profilo mentre la sua pagina è aperta (per
+// esempio da un'altra scheda o da un altro dispositivo sincronizzato)
+// non si deve restare su una sezione che non dovrebbe più esistere.
+watch(
+  () => [route.path, settings.profile.cycleTracking, settings.profile.pregnant, settings.profile.diabetes],
+  () => {
+    if (!isRouteAllowed(route.path, settings)) navigateTo("/", { replace: true });
+  },
+);
 const { user } = useAuth();
 
 // Quando l'autenticazione si risolve, la rotta corrente va rivalutata:
