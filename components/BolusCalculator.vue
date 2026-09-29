@@ -2,8 +2,9 @@
   <div class="space-y-3.5">
     <div class="flex gap-2.5">
       <div class="flex-1">
-        <div class="text-faint mb-1.5" style="font-size: 0.75rem">Glicemia (mg/dL)</div>
-        <input v-model.number="glucoseValue" type="number" inputmode="numeric"
+        <div class="text-faint mb-1.5" style="font-size: 0.75rem">Glicemia ({{ gu.unit.value }})</div>
+        <input v-model.number="glucoseValue" type="number"
+          :inputmode="gu.unit.value === 'mmol/L' ? 'decimal' : 'numeric'" :step="gu.step.value"
           class="bg-card border border-line text-ink rounded-2xl px-3 py-2.5 w-full tabular" />
       </div>
       <div class="flex-1">
@@ -65,8 +66,8 @@
     </div>
 
     <p class="text-faint" style="font-size: 0.75rem; line-height: 1.5">
-      Stima calcolata sui parametri che hai impostato (obiettivo {{ targetMid(params) }} mg/dL,
-      FSI {{ params.isf }}, rapporto 1:{{ params.icr }}). La dose resta una decisione tua e del tuo
+      Stima calcolata sui parametri che hai impostato (obiettivo {{ gu.fmt(targetMid(params)) }} {{ gu.unit.value }},
+      FSI {{ gu.fmt(params.isf) }} {{ gu.unit.value }} per unità, rapporto 1:{{ params.icr }}). La dose resta una decisione tua e del tuo
       diabetologo: se il numero non torna, fidati dello schema che avete concordato.
     </p>
 
@@ -93,14 +94,16 @@ const glucose = useGlucoseStore();
 const settings = useSettingsStore();
 const params = computed(() => settings.diabetes);
 
-const glucoseValue = ref<number>(props.initialGlucose ?? 0);
+const gu = useGlucoseUnit();
+// Il valore iniziale arriva in mg/dL dalla misurazione: si mostra nell'unità scelta.
+const glucoseValue = ref<number>(props.initialGlucose ? gu.show(props.initialGlucose) : 0);
 const carbs = ref<number>(props.initialCarbs ?? 0);
 
 const iob = computed(() => insulinOnBoard(glucose.recentBoluses(params.value.duration), params.value));
 
 const suggestion = computed(() =>
   suggestBolus({
-    glucose: glucoseValue.value > 0 ? glucoseValue.value : null,
+    glucose: glucoseValue.value > 0 ? gu.store(glucoseValue.value) : null,
     carbs: carbs.value,
     params: params.value,
     iob: iob.value,
@@ -137,7 +140,7 @@ function save() {
     units: units.value,
     kind,
     carbs: carbs.value || undefined,
-    glucose: glucoseValue.value || undefined,
+    glucose: glucoseValue.value > 0 ? gu.store(glucoseValue.value) : undefined,
   });
 }
 </script>

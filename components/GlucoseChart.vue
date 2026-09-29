@@ -32,8 +32,8 @@
         </template>
       </svg>
 
-      <div class="absolute text-faint tabular" style="top: -2px; right: 0; font-size: 0.625rem">{{ max }}</div>
-      <div class="absolute text-faint tabular" style="bottom: -2px; right: 0; font-size: 0.625rem">{{ min }}</div>
+      <div class="absolute text-faint tabular" style="top: -2px; right: 0; font-size: 0.625rem">{{ gu.fmt(max) }}</div>
+      <div class="absolute text-faint tabular" style="bottom: -2px; right: 0; font-size: 0.625rem">{{ gu.fmt(min) }}</div>
     </div>
 
     <!-- Etichette dell'asse orizzontale -->
@@ -63,6 +63,7 @@ const props = withDefaults(
 );
 
 const uid = Math.random().toString(36).slice(2, 7);
+const gu = useGlucoseUnit();
 const W = 300;
 const H = 100;
 

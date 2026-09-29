@@ -67,8 +67,8 @@
       <div v-if="lastReading" class="rounded-4xl relative overflow-hidden" :class="`grad-${glucoseTone}`"
         style="padding: 14px 16px">
         <div class="display tabular flex items-baseline gap-1.5">
-          <span style="color: #fff; font-size: 2.125rem; font-weight: 800; line-height: 1">{{ lastReading.value }}</span>
-          <span style="color: #fff; font-size: 0.9375rem; font-weight: 700; opacity: .9">mg/dL</span>
+          <span style="color: #fff; font-size: 2.125rem; font-weight: 800; line-height: 1">{{ gu.fmt(lastReading.value) }}</span>
+          <span style="color: #fff; font-size: 0.9375rem; font-weight: 700; opacity: .9">{{ gu.unit.value }}</span>
           <span v-if="trend.kind !== 'sconosciuta'" class="display"
             style="color: #fff; font-size: 1.625rem; font-weight: 800">{{ trend.arrow }}</span>
         </div>
@@ -246,6 +246,7 @@ import { lastNDays, fmtShort, keyToDate } from "~/utils/date";
 const day = useDayStore();
 const settings = useSettingsStore();
 const glucose = useGlucoseStore();
+const gu = useGlucoseUnit();
 const cycle = useCycleStore();
 const preg = usePregnancyStore();
 
@@ -301,7 +302,7 @@ const trend = computed(() => glucoseTrend(glucose.readings));
 const glucoseStats = computed(() => rangeStats(glucose.valuesSince(7), settings.diabetes));
 const glucoseCells = computed(() => [
   { value: `${glucoseStats.value.inRange}%`, label: "nell'obiettivo", color: "var(--move)" },
-  { value: String(glucoseStats.value.average), label: "media", color: "var(--ink)" },
+  { value: gu.fmt(glucoseStats.value.average), label: `media ${gu.unit.value}`, color: "var(--ink)" },
   { value: `${glucoseStats.value.gmi}%`, label: "glicata", color: "var(--ink)" },
 ]);
 

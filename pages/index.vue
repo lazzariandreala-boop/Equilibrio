@@ -265,6 +265,7 @@ const macroCells = computed(() => [
 
 // ── glicemia ──
 const glucose = useGlucoseStore();
+const gu = useGlucoseUnit();
 
 const glucoseTone = computed(() => {
   const r = glucose.lastReading;
@@ -274,7 +275,7 @@ const glucoseTone = computed(() => {
 const glucoseLine = computed(() => {
   const r = glucose.lastReading;
   if (!r) return "Nessuna glicemia registrata";
-  return `${r.value} mg/dL · ${RANGE_LABEL[classify(r.value, settings.diabetes)]}`;
+  return `${gu.fmt(r.value)} ${gu.unit.value} · ${RANGE_LABEL[classify(r.value, settings.diabetes)]}`;
 });
 
 const glucoseTrendInfo = computed(() => glucoseTrend(glucose.readings));

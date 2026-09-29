@@ -22,6 +22,8 @@ export interface DiabetesParams {
   duration: number;
   rapidInsulin: string;
   basalInsulin: string;
+  /** Unità con cui mostrare e inserire la glicemia. */
+  unit: GlucoseUnit;
 }
 
 export const DEFAULT_PARAMS: DiabetesParams = {
@@ -32,6 +34,7 @@ export const DEFAULT_PARAMS: DiabetesParams = {
   duration: 4,
   rapidInsulin: "",
   basalInsulin: "",
+  unit: "mg/dL",
 };
 
 /** Valore centrale dell'intervallo: è l'obiettivo delle correzioni. */
@@ -299,3 +302,32 @@ export const TREND_OPTIONS = [
   { key: "sale" as const, arrow: "↗", label: "in lenta salita" },
   { key: "impennata" as const, arrow: "↑", label: "in rapida salita" },
 ];
+
+// ── Unità di misura ─────────────────────────────────────────
+// I valori si salvano sempre in mg/dL: l'unità scelta cambia solo come
+// vengono mostrati e inseriti. Così passare da un'unità all'altra non
+// altera mai i dati registrati.
+export type GlucoseUnit = "mg/dL" | "mmol/L";
+
+/** Fattore di conversione: 1 mmol/L di glucosio = 18,0182 mg/dL. */
+export const MGDL_PER_MMOL = 18.0182;
+
+/** Da mg/dL all'unità scelta, già arrotondato come si usa scriverlo. */
+export function toUnit(mgdl: number, unit: GlucoseUnit): number {
+  if (unit === "mmol/L") return Math.round((mgdl / MGDL_PER_MMOL) * 10) / 10;
+  return Math.round(mgdl);
+}
+
+/** Dall'unità scelta a mg/dL, per il salvataggio. */
+export function fromUnit(value: number, unit: GlucoseUnit): number {
+  return unit === "mmol/L" ? Math.round(value * MGDL_PER_MMOL) : Math.round(value);
+}
+
+/** Testo pronto da mostrare, con la virgola decimale italiana. */
+export function fmtGlucose(mgdl: number, unit: GlucoseUnit): string {
+  const v = toUnit(mgdl, unit);
+  return unit === "mmol/L" ? v.toFixed(1).replace(".", ",") : String(v);
+}
+
+/** Passo dei campi numerici: in mmol/L servono i decimali. */
+export const unitStep = (unit: GlucoseUnit) => (unit === "mmol/L" ? 0.1 : 1);

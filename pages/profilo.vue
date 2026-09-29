@@ -123,21 +123,36 @@
             <div class="rounded-3xl space-y-3" style="padding: 13px 14px; background: var(--raised)">
               <div class="text-ink" style="font-size: 0.875rem; font-weight: 600">Parametri glicemici</div>
 
-              <div class="flex gap-2.5">
-                <div class="flex-1">
-                  <div class="text-faint mb-1" style="font-size: 0.7188rem">Obiettivo min</div>
-                  <input v-model.number="settings.diabetes.targetMin" type="number" inputmode="numeric" :class="numCls" />
-                </div>
-                <div class="flex-1">
-                  <div class="text-faint mb-1" style="font-size: 0.7188rem">Obiettivo max</div>
-                  <input v-model.number="settings.diabetes.targetMax" type="number" inputmode="numeric" :class="numCls" />
+              <!-- Unità: i dati restano salvati in mg/dL, cambia solo come si vedono -->
+              <div>
+                <div class="text-faint mb-1" style="font-size: 0.7188rem">Unità di misura</div>
+                <div class="grid grid-cols-2 gap-2" role="radiogroup" aria-label="Unità della glicemia">
+                  <button v-for="u in (['mg/dL', 'mmol/L'] as const)" :key="u" class="tap rounded-2xl py-2.5 font-semibold"
+                    role="radio" :aria-checked="settings.diabetes.unit === u" style="font-size: 0.875rem"
+                    :style="settings.diabetes.unit === u
+                      ? { background: 'var(--water)', color: '#fff' }
+                      : { background: 'var(--card)', color: 'var(--dim)', border: '1px solid var(--line)' }"
+                    @click="settings.diabetes.unit = u">
+                    {{ u }}
+                  </button>
                 </div>
               </div>
 
               <div class="flex gap-2.5">
                 <div class="flex-1">
-                  <div class="text-faint mb-1" style="font-size: 0.7188rem">FSI (mg/dL per 1U)</div>
-                  <input v-model.number="settings.diabetes.isf" type="number" inputmode="numeric" :class="numCls" />
+                  <div class="text-faint mb-1" style="font-size: 0.7188rem">Obiettivo min ({{ gu.unit.value }})</div>
+                  <input v-model.number="targetMinView" type="number" :step="gu.step.value" inputmode="decimal" :class="numCls" />
+                </div>
+                <div class="flex-1">
+                  <div class="text-faint mb-1" style="font-size: 0.7188rem">Obiettivo max ({{ gu.unit.value }})</div>
+                  <input v-model.number="targetMaxView" type="number" :step="gu.step.value" inputmode="decimal" :class="numCls" />
+                </div>
+              </div>
+
+              <div class="flex gap-2.5">
+                <div class="flex-1">
+                  <div class="text-faint mb-1" style="font-size: 0.7188rem">FSI ({{ gu.unit.value }} per 1U)</div>
+                  <input v-model.number="isfView" type="number" :step="gu.step.value" inputmode="decimal" :class="numCls" />
                   <div class="text-faint" style="font-size: 0.6875rem; margin-top: 3px">Di quanto scendi con 1 unità</div>
                 </div>
                 <div class="flex-1">
@@ -428,10 +443,25 @@ function togglePregnant() {
 
 const numCls = "bg-card border border-line text-ink rounded-2xl px-3 py-2.5 w-full tabular";
 
+// I parametri sono salvati in mg/dL: questi campi li mostrano nell'unità
+// scelta e riconvertono quello che si digita. Anche l'FSI è una differenza
+// di glicemia, quindi si converte allo stesso modo.
+const gu = useGlucoseUnit();
+const unitField = (key: "targetMin" | "targetMax" | "isf") =>
+  computed({
+    get: () => gu.show(settings.diabetes[key]),
+    set: (v: number) => {
+      if (Number.isFinite(v) && v > 0) settings.diabetes[key] = gu.store(v);
+    },
+  });
+const targetMinView = unitField("targetMin");
+const targetMaxView = unitField("targetMax");
+const isfView = unitField("isf");
+
 const diabetesSummary = computed(() => {
   if (!settings.profile.diabetes) return "non attiva";
   const d = settings.diabetes;
-  return `obiettivo ${d.targetMin}–${d.targetMax} · FSI ${d.isf} · 1:${d.icr}`;
+  return `obiettivo ${gu.fmt(d.targetMin)}–${gu.fmt(d.targetMax)} ${gu.unit.value} · 1:${d.icr}`;
 });
 
 const pregSummary = computed(() => {

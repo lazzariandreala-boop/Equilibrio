@@ -9,12 +9,12 @@
       <div class="relative flex items-center gap-4" style="padding: 14px 16px">
         <div class="min-w-0">
           <div class="display tabular flex items-baseline gap-1">
-            <span style="color: #fff; font-size: 2.75rem; font-weight: 800; line-height: 1">{{ last.value }}</span>
+            <span style="color: #fff; font-size: 2.75rem; font-weight: 800; line-height: 1">{{ gu.fmt(last.value) }}</span>
             <span v-if="trend.kind !== 'sconosciuta'" class="display"
               style="color: #fff; font-size: 1.875rem; font-weight: 800; line-height: 1">{{ trend.arrow }}</span>
           </div>
           <div style="color: rgba(255,255,255,.88); font-size: 0.7812rem; margin-top: 2px">
-            mg/dL · {{ RANGE_LABEL[classify(last.value, params)] }}
+            {{ gu.unit.value }} · {{ RANGE_LABEL[classify(last.value, params)] }}
           </div>
           <div style="color: rgba(255,255,255,.72); font-size: 0.7188rem">{{ last.tag }} · {{ ago(last.at) }}</div>
         </div>
@@ -129,9 +129,10 @@
         <!-- valore e andamento stanno insieme: si compilano di seguito -->
         <div class="rounded-4xl" style="padding: 11px 13px" :style="{ background: 'var(--raised)' }">
           <div class="text-faint text-center" style="font-size: 0.7188rem; letter-spacing: .4px; text-transform: uppercase">
-            Valore glicemico (mg/dL)
+            Valore glicemico ({{ gu.unit.value }})
           </div>
-          <input v-model.number="rf.value" type="number" inputmode="numeric"
+          <input v-model.number="rf.value" type="number" :inputmode="gu.unit.value === 'mmol/L' ? 'decimal' : 'numeric'"
+            :step="gu.step.value"
             class="bg-transparent text-ink w-full text-center display tabular"
             style="font-size: 2.625rem; font-weight: 800; border: none; outline: none; padding: 2px 0" placeholder="—" />
 
@@ -160,22 +161,22 @@
         </div>
 
         <!-- fuori intervallo: la correzione si apre da qui, senza cercarla -->
-        <div v-if="rf.value > 0 && classify(rf.value, params) !== 'in-range'" class="rounded-3xl flex items-center gap-3"
+        <div v-if="rfMgdl > 0 && classify(rfMgdl, params) !== 'in-range'" class="rounded-3xl flex items-center gap-3"
           style="padding: 12px 13px"
-          :style="{ background: `var(--${RANGE_TONE[classify(rf.value, params)]}-soft)`,
-                    border: `1px solid var(--${RANGE_TONE[classify(rf.value, params)]})` }">
+          :style="{ background: `var(--${RANGE_TONE[classify(rfMgdl, params)]}-soft)`,
+                    border: `1px solid var(--${RANGE_TONE[classify(rfMgdl, params)]})` }">
           <div class="min-w-0 flex-1">
             <div class="text-ink" style="font-size: 0.875rem; font-weight: 700">
-              {{ RANGE_LABEL[classify(rf.value, params)] }}
+              {{ RANGE_LABEL[classify(rfMgdl, params)] }}
             </div>
             <div class="text-dim" style="font-size: 0.7812rem">
-              obiettivo {{ params.targetMin }}–{{ params.targetMax }} mg/dL
+              obiettivo {{ gu.fmt(params.targetMin) }}–{{ gu.fmt(params.targetMax) }} {{ gu.unit.value }}
             </div>
           </div>
           <button class="tap rounded-2xl px-3.5 py-2 font-semibold shrink-0"
-            :style="{ background: `var(--${RANGE_TONE[classify(rf.value, params)]})`, color: '#fff', fontSize: '0.8125rem' }"
+            :style="{ background: `var(--${RANGE_TONE[classify(rfMgdl, params)]})`, color: '#fff', fontSize: '0.8125rem' }"
             @click="saveAndCorrect">
-            {{ classify(rf.value, params) === "bassa" || classify(rf.value, params) === "molto-bassa"
+            {{ classify(rfMgdl, params) === "bassa" || classify(rfMgdl, params) === "molto-bassa"
               ? "Risali" : "Correggi" }} →
           </button>
         </div>
@@ -258,6 +259,7 @@ import {
 } from "~/utils/diabetes";
 
 const glucose = useGlucoseStore();
+const gu = useGlucoseUnit();
 const settings = useSettingsStore();
 const params = computed(() => settings.diabetes);
 
@@ -341,7 +343,7 @@ const statCells = computed(() => [
   { value: `${stats.value.inRange}%`, label: "nell'obiettivo", color: "var(--move)" },
   { value: `${stats.value.below}%`, label: "sotto", color: "var(--food)" },
   { value: `${stats.value.above}%`, label: "sopra", color: "var(--alcohol)" },
-  { value: String(stats.value.average), label: "media mg/dL", color: "var(--ink)" },
+  { value: gu.fmt(stats.value.average), label: `media ${gu.unit.value}`, color: "var(--ink)" },
   { value: `${stats.value.gmi}%`, label: "glicata stimata", color: "var(--ink)" },
   { value: String(stats.value.count), label: "misurazioni", color: "var(--ink)" },
 ]);
@@ -353,7 +355,7 @@ const timeline = computed(() => {
     kind: "glicemia" as const,
     at: x.at,
     tone: RANGE_TONE[classify(x.value, params.value)],
-    title: `${x.value} mg/dL${x.trend ? ` ${TREND_OPTIONS.find((t) => t.key === x.trend)?.arrow ?? ""}` : ""}`,
+    title: `${gu.fmt(x.value)} ${gu.unit.value}${x.trend ? ` ${TREND_OPTIONS.find((t) => t.key === x.trend)?.arrow ?? ""}` : ""}`,
     subtitle: [
       x.tag,
       x.mood ? MOODS.find((m) => m.key === x.mood)?.emoji : null,
@@ -371,7 +373,7 @@ const timeline = computed(() => {
     at: x.at,
     tone: "move",
     title: `${x.units} unità · ${x.kind}`,
-    subtitle: [x.carbs ? `${x.carbs} g` : null, x.glucose ? `da ${x.glucose} mg/dL` : null, ago(x.at)]
+    subtitle: [x.carbs ? `${x.carbs} g` : null, x.glucose ? `da ${gu.fmt(x.glucose)} ${gu.unit.value}` : null, ago(x.at)]
       .filter(Boolean)
       .join(" · "),
   }));
@@ -385,6 +387,8 @@ function removeEntry(e: { kind: string; id: string }) {
 
 // ── inserimento ──
 const readingOpen = ref(false);
+/** Valore inserito riportato in mg/dL: è quello che si classifica e si salva. */
+const rfMgdl = computed(() => (rf.value > 0 ? gu.store(rf.value) : 0));
 const rf = reactive({
   value: 0,
   tag: "prima del pasto" as ReadingTag,
@@ -428,7 +432,7 @@ function saveReading(): boolean {
   if (!(rf.value > 0)) return false;
   glucose.addReading({
     at: chosenAt(),
-    value: rf.value,
+    value: rfMgdl.value,
     tag: rf.tag,
     notes: rf.notes.trim() || undefined,
     trend: rf.trend,
