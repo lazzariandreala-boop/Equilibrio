@@ -27,6 +27,21 @@
       </NuxtLink>
     </nav>
 
+    <!-- Moduli facoltativi: solo quelli accesi nel Profilo -->
+    <template v-if="modules.length">
+      <div class="text-faint" style="font-size: 0.6875rem; font-weight: 700; letter-spacing: .6px;
+        text-transform: uppercase; padding: 18px 13px 6px">Moduli</div>
+      <nav class="flex flex-col" style="gap: 4px" aria-label="Moduli attivi">
+        <NuxtLink v-for="m in modules" :key="m.to" :to="m.to"
+          class="tap flex items-center gap-3 rounded-3xl" style="padding: 10px 13px"
+          :style="isActive(m.to) ? { background: `var(--${m.tone}-soft)` } : {}">
+          <component :is="m.icon" :size="19" :color="isActive(m.to) ? `var(--${m.tone})` : 'var(--faint)'" />
+          <span :style="{ fontSize: '0.875rem', fontWeight: 600,
+            color: isActive(m.to) ? `var(--${m.tone})` : 'var(--dim)' }">{{ m.label }}</span>
+        </NuxtLink>
+      </nav>
+    </template>
+
     <button class="tap flex items-center gap-3 rounded-3xl mt-auto" style="padding: 11px 13px"
       :aria-label="isDark ? 'Passa al tema chiaro' : 'Passa al tema scuro'" @click="toggle">
       <Sun v-if="isDark" :size="19" color="var(--food)" />
@@ -45,8 +60,7 @@ import logoLight from "~/assets/logo-light.png";
 import logoDark from "~/assets/logo-dark.png";
 
 const { isDark, toggle } = useTheme();
-const { items, isActive } = useNavItems();
-const desktopItems = computed(() => items.value.filter((i) => !i.mobileOnly));
+const { desktopItems, modules, isActive } = useNavItems();
 const date = fmtIT();
 </script>
 

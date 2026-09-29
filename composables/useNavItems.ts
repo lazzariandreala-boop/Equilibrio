@@ -1,61 +1,64 @@
 import {
-  Home, Utensils, Activity, CalendarDays, User, Scale, Droplet, Baby, CalendarHeart, HeartPulse,
+  Home, Utensils, Activity, User, HeartPulse, Droplet, Baby, CalendarHeart,
 } from "lucide-vue-next";
 import { useSettingsStore } from "~/stores/settings";
 
-/**
- * Voci di navigazione, condivise fra la barra in basso (mobile) e il menù
- * laterale (desktop): tenerle in un posto solo evita che le due si allontanino.
- */
 export interface NavItem {
   to: string;
   icon: any;
   label: string;
   tone: string;
-  /** Nascosto sul desktop, dove la sezione vive in una pagina riassuntiva. */
-  mobileOnly?: boolean;
-  /** Mostrato solo sul desktop. */
-  desktopOnly?: boolean;
 }
 
+/** Pagine che fanno parte della sezione Salute: la sua voce resta accesa. */
+const HEALTH_ROUTES = ["/salute", "/corpo", "/storico"];
+
+/**
+ * Voci di navigazione, condivise fra barra in basso, menù laterale e header.
+ *
+ * La barra ha sempre le stesse cinque voci: le linee guida di Android e iOS
+ * ne indicano al massimo cinque, e oltre quel numero o si comprimono le
+ * etichette o si fa scorrere la barra, nascondendo voci a chi non sa che ci
+ * sono. I moduli facoltativi (glicemia, ciclo, gravidanza) diventano invece
+ * scorciatoie nell'header, visibili solo se attivi.
+ */
 export function useNavItems() {
   const settings = useSettingsStore();
   const route = useRoute();
 
-  const items = computed(() => {
-    const list: NavItem[] = [
-      { to: "/", icon: Home, label: "Oggi", tone: "water" },
-      // Su desktop pasti e movimento hanno un pannello nella dashboard:
-      // tenerli anche nel menù sarebbe un doppione.
-      { to: "/pasti", icon: Utensils, label: "Pasti", tone: "food", mobileOnly: true },
-      { to: "/movimento", icon: Activity, label: "Sport", tone: "move", mobileOnly: true },
-      { to: "/corpo", icon: Scale, label: "Corpo", tone: "water", mobileOnly: true },
-      // Sul desktop le sezioni salute confluiscono in una pagina unica.
-      { to: "/salute", icon: HeartPulse, label: "Salute", tone: "water", desktopOnly: true },
-    ];
+  /** Barra in basso del telefono: fissa, sempre cinque voci. */
+  const mobileItems = computed<NavItem[]>(() => [
+    { to: "/", icon: Home, label: "Oggi", tone: "water" },
+    { to: "/pasti", icon: Utensils, label: "Pasti", tone: "food" },
+    { to: "/movimento", icon: Activity, label: "Sport", tone: "move" },
+    { to: "/salute", icon: HeartPulse, label: "Salute", tone: "alcohol" },
+    { to: "/profilo", icon: User, label: "Profilo", tone: "water" },
+  ]);
 
-    if (settings.profile.diabetes) {
-      list.push({ to: "/glicemia", icon: Droplet, label: "Glicemia", tone: "water", mobileOnly: true });
-    }
-      // Le due sezioni possono convivere: in gravidanza il diario del ciclo
-    // resta consultabile, solo senza previsioni.
-    if (settings.profile.pregnant) {
-      list.push({ to: "/gravidanza", icon: Baby, label: "Gravidanza", tone: "alcohol", mobileOnly: true });
-    }
-    if (settings.profile.cycleTracking) {
-      list.push({ to: "/ciclo", icon: CalendarHeart, label: "Ciclo", tone: "alcohol", mobileOnly: true });
-    }
+  /** Menù laterale del desktop: pasti e sport vivono nella dashboard. */
+  const desktopItems = computed<NavItem[]>(() => [
+    { to: "/", icon: Home, label: "Oggi", tone: "water" },
+    { to: "/salute", icon: HeartPulse, label: "Salute", tone: "alcohol" },
+    { to: "/profilo", icon: User, label: "Profilo", tone: "water" },
+  ]);
 
-    list.push(
-      { to: "/storico", icon: CalendarDays, label: "Storico", tone: "alcohol", mobileOnly: true },
-      { to: "/profilo", icon: User, label: "Profilo", tone: "water" },
-    );
+  /** Moduli facoltativi attivi: compaiono solo se la loro spunta è accesa. */
+  const modules = computed<NavItem[]>(() => {
+    const list: NavItem[] = [];
+    if (settings.profile.diabetes) list.push({ to: "/glicemia", icon: Droplet, label: "Glicemia", tone: "water" });
+    if (settings.profile.pregnant) list.push({ to: "/gravidanza", icon: Baby, label: "Gravidanza", tone: "alcohol" });
+    if (settings.profile.cycleTracking) list.push({ to: "/ciclo", icon: CalendarHeart, label: "Ciclo", tone: "alcohol" });
     return list;
   });
 
-  // Acqua e Alcol sono figlie della dashboard: la voce "Oggi" resta accesa.
-  const isActive = (to: string) =>
-    to === "/" ? ["/", "/acqua", "/alcol"].includes(route.path) : route.path === to;
+  const isActive = (to: string) => {
+    if (to === "/") return ["/", "/acqua", "/alcol"].includes(route.path);
+    if (to === "/salute") return HEALTH_ROUTES.includes(route.path);
+    return route.path === to;
+  };
 
-  return { items, isActive };
+  // Compatibilità con chi usava ancora l'elenco unico.
+  const items = mobileItems;
+
+  return { items, mobileItems, desktopItems, modules, isActive };
 }
