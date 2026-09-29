@@ -4,8 +4,8 @@
       <img :src="isDark ? logoDark : logoLight" alt="" width="42" height="42"
         style="border-radius: 13px; box-shadow: 0 0 0 1px var(--line)" />
       <div class="min-w-0">
-        <div class="display text-ink" style="font-size: 19px; font-weight: 800; line-height: 1.1">Equilibrio</div>
-        <div class="text-faint truncate" style="font-size: 12px; text-transform: capitalize">{{ date }}</div>
+        <div class="display text-ink" style="font-size: 1.1875rem; font-weight: 800; line-height: 1.1">Equilibrio</div>
+        <div class="text-faint truncate" style="font-size: 0.75rem; text-transform: capitalize">{{ date }}</div>
       </div>
     </div>
 
@@ -19,7 +19,7 @@
         <component :is="item.icon" :size="20"
           :color="isActive(item.to) ? `var(--${item.tone})` : 'var(--faint)'" />
         <span :style="{
-          fontSize: '14.5px', fontWeight: 600,
+          fontSize: '0.9062rem', fontWeight: 600,
           color: isActive(item.to) ? `var(--${item.tone})` : 'var(--dim)',
         }">{{ item.label }}</span>
         <span v-if="isActive(item.to)" class="rounded-full ml-auto"
@@ -31,7 +31,7 @@
       :aria-label="isDark ? 'Passa al tema chiaro' : 'Passa al tema scuro'" @click="toggle">
       <Sun v-if="isDark" :size="19" color="var(--food)" />
       <Moon v-else :size="19" color="var(--alcohol)" />
-      <span class="text-dim" style="font-size: 14px; font-weight: 600">
+      <span class="text-dim" style="font-size: 0.875rem; font-weight: 600">
         {{ isDark ? "Tema chiaro" : "Tema scuro" }}
       </span>
     </button>

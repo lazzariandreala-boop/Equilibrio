@@ -6,12 +6,12 @@
       :value="day.totals.kcal" unit="kcal" :caption="`obiettivo ${settings.goals.kcal} kcal`"
       :progress="(day.totals.kcal / settings.goals.kcal) * 100" :stats="macros">
       <div v-if="day.totals.alc > 0" class="text-center"
-        style="color: rgba(255,255,255,.85); font-size: 12px; margin-top: 14px">
+        style="color: rgba(255,255,255,.85); font-size: 0.75rem; margin-top: 14px">
         Contiene alcol — registrato anche in Alcol
       </div>
     </HeroCard>
 
-    <button class="tap w-full rounded-full py-3.5 font-semibold flex items-center justify-center gap-2.5 grad-food rise cta-glow-food" style="color: #fff; font-size: 15.5px; animation-delay: 70ms"
+    <button class="tap w-full rounded-full py-3.5 font-semibold flex items-center justify-center gap-2.5 grad-food rise cta-glow-food" style="color: #fff; font-size: 0.9688rem; animation-delay: 70ms"
       @click="open()">
       <Camera :size="19" /> Scatta o aggiungi un pasto
     </button>
@@ -30,8 +30,8 @@
             <UtensilsCrossed :size="19" color="var(--food)" />
           </div>
           <div class="min-w-0 flex-1">
-            <div class="truncate" style="font-weight: 600; font-size: 15px">{{ m.name }}</div>
-            <div class="text-dim tabular" style="font-size: 12.5px">
+            <div class="truncate" style="font-weight: 600; font-size: 0.9375rem">{{ m.name }}</div>
+            <div class="text-dim tabular" style="font-size: 0.7812rem">
               {{ m.kcal }} kcal · C {{ m.cho }} · P {{ m.pro }} · G {{ m.fat }} · F {{ m.fib ?? 0 }}
               <span v-if="m.alc > 0" class="text-alcohol"> · alc {{ m.alc }} g</span>
             </div>
@@ -43,18 +43,18 @@
         <div v-if="m.items?.length" style="padding: 0 14px 12px">
           <div v-for="(it, j) in m.items" :key="j" class="flex items-center justify-between gap-3"
             style="padding: 6px 0; border-top: 1px solid var(--line)">
-            <span class="text-dim truncate" style="font-size: 12.5px">
+            <span class="text-dim truncate" style="font-size: 0.7812rem">
               {{ it.name }}<span v-if="it.qty" class="text-faint"> · {{ it.qty }}</span>
             </span>
-            <span class="text-faint tabular shrink-0" style="font-size: 12px">{{ it.kcal }} kcal</span>
+            <span class="text-faint tabular shrink-0" style="font-size: 0.75rem">{{ it.kcal }} kcal</span>
           </div>
         </div>
 
         <div class="flex" style="padding: 0 8px 8px">
-          <button class="tap flex-1 rounded-2xl py-2 text-dim" style="font-size: 12.5px" @click="edit(i)">
+          <button class="tap flex-1 rounded-2xl py-2 text-dim" style="font-size: 0.7812rem" @click="edit(i)">
             Modifica
           </button>
-          <button class="tap flex-1 rounded-2xl py-2 text-faint" style="font-size: 12.5px" @click="day.removeMeal(i)">
+          <button class="tap flex-1 rounded-2xl py-2 text-faint" style="font-size: 0.7812rem" @click="day.removeMeal(i)">
             Elimina
           </button>
         </div>

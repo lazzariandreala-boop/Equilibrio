@@ -2,25 +2,25 @@
   <div>
     <!-- SCELTA -->
     <div v-if="phase === 'start'" class="space-y-3">
-      <p class="text-dim" style="font-size: 14px; line-height: 1.5">
+      <p class="text-dim" style="font-size: 0.875rem; line-height: 1.5">
         Fotografa il piatto oppure scrivi cosa hai mangiato: stimo io calorie e valori nutrizionali, poi puoi correggere tutto.
       </p>
       <div class="flex gap-2.5">
         <button class="tap grad-food flex-1 py-3.5 rounded-3xl font-semibold flex items-center justify-center gap-2"
-          style="color: #fff; font-size: 15px" @click="fromPhoto('camera')">
+          style="color: #fff; font-size: 0.9375rem" @click="fromPhoto('camera')">
           <Camera :size="18" /> Scatta ora
         </button>
         <button class="tap bg-raised text-ink flex-1 py-3.5 rounded-3xl font-semibold flex items-center justify-center gap-2"
-          style="font-size: 15px" @click="fromPhoto('gallery')">
+          style="font-size: 0.9375rem" @click="fromPhoto('gallery')">
           <Images :size="17" /> Galleria
         </button>
       </div>
       <button class="tap bg-raised text-ink w-full py-3.5 rounded-3xl font-semibold flex items-center justify-center gap-2"
-        style="font-size: 15px" @click="phase = 'describe'">
+        style="font-size: 0.9375rem" @click="phase = 'describe'">
         <PenLine :size="16" /> Descrivi a parole
       </button>
       <button class="tap bg-raised text-ink w-full py-3.5 rounded-3xl font-semibold flex items-center justify-center gap-2"
-        style="font-size: 15px" @click="startSearch">
+        style="font-size: 0.9375rem" @click="startSearch">
         <Search :size="16" /> Cerca un alimento
       </button>
     </div>
@@ -28,18 +28,18 @@
     <!-- DESCRIZIONE A PAROLE -->
     <div v-else-if="phase === 'describe'" class="space-y-3">
       <div>
-        <div class="text-faint mb-1.5" style="font-size: 12px">Cosa hai mangiato o bevuto?</div>
+        <div class="text-faint mb-1.5" style="font-size: 0.75rem">Cosa hai mangiato o bevuto?</div>
         <textarea v-model="description" rows="3" :class="inputCls"
           placeholder="Es. un piatto di pasta al pomodoro, due fette di pane e un'insalata mista" />
       </div>
-      <p v-if="err" class="text-food" style="font-size: 13px; line-height: 1.45">{{ err }}</p>
+      <p v-if="err" class="text-food" style="font-size: 0.8125rem; line-height: 1.45">{{ err }}</p>
 
       <button class="tap grad-food w-full py-3.5 rounded-3xl font-semibold flex items-center justify-center gap-2"
-        style="color: #fff; font-size: 15px" :disabled="!description.trim()"
+        style="color: #fff; font-size: 0.9375rem" :disabled="!description.trim()"
         :style="!description.trim() ? { opacity: 0.5 } : {}" @click="runEstimate">
         <Sparkles :size="17" /> Stima i valori
       </button>
-      <button class="tap bg-raised text-dim w-full py-3 rounded-3xl font-semibold" style="font-size: 14px"
+      <button class="tap bg-raised text-dim w-full py-3 rounded-3xl font-semibold" style="font-size: 0.875rem"
         @click="startBlank">
         Inserisco i valori a mano
       </button>
@@ -53,18 +53,18 @@
 
     <!-- REVISIONE -->
     <div v-else class="space-y-4">
-      <p v-if="err" class="text-food" style="font-size: 13px; line-height: 1.45">{{ err }}</p>
+      <p v-if="err" class="text-food" style="font-size: 0.8125rem; line-height: 1.45">{{ err }}</p>
 
       <div v-for="(it, i) in items" :key="i" class="rounded-4xl p-3.5 space-y-2.5" style="background: var(--raised)">
         <div class="flex gap-2">
           <div style="flex: 2">
-            <div class="text-faint" style="font-size: 11px">Nome</div>
+            <div class="text-faint" style="font-size: 0.6875rem">Nome</div>
             <textarea v-model="it.name" rows="1" :class="inputCls"
               style="resize: none; overflow: hidden; line-height: 1.35"
               @input="autoGrow($event)" />
           </div>
           <div style="flex: 1.1">
-            <div class="text-faint" style="font-size: 11px">Quantità</div>
+            <div class="text-faint" style="font-size: 0.6875rem">Quantità</div>
             <div class="flex gap-1.5">
               <!-- Il valore si legge dall'evento: con v-model il gestore
                    riceverebbe ancora la quantità precedente. -->
@@ -84,7 +84,7 @@
         </div>
         <div class="grid grid-cols-5 gap-1.5">
           <div v-for="f in fields" :key="f.key">
-            <div class="text-faint" style="font-size: 10.5px">{{ f.label }}</div>
+            <div class="text-faint" style="font-size: 0.6562rem">{{ f.label }}</div>
             <input v-model.number="(it as any)[f.key]" type="number" inputmode="numeric" class="tabular"
               :class="inputCls" style="padding-left: 8px; padding-right: 4px" @change="rebase(i)" />
           </div>
@@ -98,10 +98,10 @@
           <div class="flex items-start gap-2.5">
             <AlertTriangle :size="16" :color="`var(--${SEVERITY_TONE[r.severity]})`" style="margin-top: 2px; flex-shrink: 0" />
             <div class="min-w-0">
-              <div class="text-ink" style="font-size: 13.5px; font-weight: 600">
+              <div class="text-ink" style="font-size: 0.8438rem; font-weight: 600">
                 {{ r.food }}: {{ r.severity === "evitare" ? "da evitare" : r.severity === "limitare" ? "da limitare" : "attenzione" }}
               </div>
-              <div class="text-dim" style="font-size: 12.5px; line-height: 1.4; margin-top: 2px">{{ r.advice }}</div>
+              <div class="text-dim" style="font-size: 0.7812rem; line-height: 1.4; margin-top: 2px">{{ r.advice }}</div>
             </div>
           </div>
         </div>
@@ -112,10 +112,10 @@
         class="tap rounded-3xl flex items-center gap-3" style="padding: 12px 13px; background: var(--move-soft)">
         <Syringe :size="18" color="var(--move)" class="shrink-0" />
         <div class="min-w-0 flex-1">
-          <div class="text-ink" style="font-size: 13.5px; font-weight: 600">
+          <div class="text-ink" style="font-size: 0.8438rem; font-weight: 600">
             Bolo stimato per il pasto: {{ mealBolus }} unità
           </div>
-          <div class="text-dim" style="font-size: 12px">
+          <div class="text-dim" style="font-size: 0.75rem">
             {{ sum.cho }} g con rapporto 1:{{ settings.diabetes.icr }} · apri il calcolo completo
           </div>
         </div>
@@ -126,23 +126,23 @@
         <FoodSearch @pick="onSearchPick" />
       </div>
 
-      <p class="text-faint px-1" style="font-size: 12px; line-height: 1.4">
+      <p class="text-faint px-1" style="font-size: 0.75rem; line-height: 1.4">
         Cambiando la quantità, calorie e valori si ricalcolano in proporzione.
       </p>
 
-      <button class="text-dim flex items-center gap-1" style="font-size: 14px" @click="addBlank">
+      <button class="text-dim flex items-center gap-1" style="font-size: 0.875rem" @click="addBlank">
         <Plus :size="16" /> Aggiungi voce vuota
       </button>
 
       <div class="rounded-3xl p-3.5" style="background: var(--food-soft)">
-        <div class="text-ink display" style="font-size: 15px; font-weight: 700">Totale: {{ sum.kcal }} kcal</div>
-        <div class="text-dim tabular" style="font-size: 12.5px; margin-top: 3px">
+        <div class="text-ink display" style="font-size: 0.9375rem; font-weight: 700">Totale: {{ sum.kcal }} kcal</div>
+        <div class="text-dim tabular" style="font-size: 0.7812rem; margin-top: 3px">
           Carboidrati {{ sum.cho }} g · Proteine {{ sum.pro }} g · Grassi {{ sum.fat }} g · Fibre {{ sum.fib }} g
           <span v-if="sum.alc > 0"> · Alcol {{ sum.alc }} g</span>
         </div>
       </div>
 
-      <button class="tap grad-food w-full py-3.5 rounded-3xl font-semibold" style="color: #fff; font-size: 15px" @click="save">
+      <button class="tap grad-food w-full py-3.5 rounded-3xl font-semibold" style="color: #fff; font-size: 0.9375rem" @click="save">
         Salva nel diario
       </button>
     </div>

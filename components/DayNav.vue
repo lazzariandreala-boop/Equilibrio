@@ -5,8 +5,8 @@
       <ChevronLeft :size="20" :color="`var(--${tone})`" />
     </button>
     <button class="tap flex flex-col items-center leading-tight px-3" @click="day.goToday()">
-      <span class="text-ink" style="font-weight: 700; font-size: 15.5px; text-transform: capitalize">{{ label }}</span>
-      <span v-if="!day.isToday" class="text-faint" style="font-size: 11px">tocca per tornare a oggi</span>
+      <span class="text-ink" style="font-weight: 700; font-size: 0.9688rem; text-transform: capitalize">{{ label }}</span>
+      <span v-if="!day.isToday" class="text-faint" style="font-size: 0.6875rem">tocca per tornare a oggi</span>
     </button>
     <button class="tap p-2 rounded-2xl" :disabled="day.isToday" :style="day.isToday ? { opacity: 0.3 } : {}"
       aria-label="Giorno successivo" @click="day.shiftDate(1)">

@@ -14,6 +14,8 @@ export interface Profile {
   cycleTracking: boolean;
   /** Attiva la gestione del diabete: glicemie, boli e calcolatore. */
   diabetes: boolean;
+  /** Moltiplicatore del testo, in aggiunta a quello di sistema. */
+  textScale: number;
 }
 export interface Reminders {
   water: boolean;
@@ -26,7 +28,7 @@ export interface Reminders {
 export const useSettingsStore = defineStore("settings", {
   state: () => ({
     goals: <Goals>{ water: 2000, moveMin: 30, kcal: 2000 },
-    profile: <Profile>{ weightKg: 75, pregnant: false, cycleTracking: false, diabetes: false },
+    profile: <Profile>{ weightKg: 75, pregnant: false, cycleTracking: false, diabetes: false, textScale: 1 },
     diabetes: <DiabetesParams>{ ...DEFAULT_PARAMS },
     /** Chiavi personali: se presenti, le richieste usano queste invece di quelle condivise. */
     keys: { gemini: "" },

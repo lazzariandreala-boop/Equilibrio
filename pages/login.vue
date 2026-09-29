@@ -4,8 +4,8 @@
       <div class="absolute rounded-full" style="inset: -22px; background: radial-gradient(circle, var(--water-glow), transparent 70%)" />
       <img :src="isDark ? logoDark : logoLight" alt="" width="112" height="112" style="border-radius: 26px" class="relative shadow-lift" />
     </div>
-    <div class="display text-ink" style="font-size: 34px; font-weight: 800">Equilibrio</div>
-    <p class="text-dim text-center mt-2.5 mb-9" style="font-size: 15px; line-height: 1.5">
+    <div class="display text-ink" style="font-size: 2.125rem; font-weight: 800">Equilibrio</div>
+    <p class="text-dim text-center mt-2.5 mb-9" style="font-size: 0.9375rem; line-height: 1.5">
       Un passo per volta.<br />Acqua, alcol, movimento, pasti — con calma.
     </p>
 
@@ -22,9 +22,9 @@
       {{ loading ? "Accesso in corso…" : "Accedi con Google" }}
     </button>
 
-    <p v-if="error" class="mt-4 text-center" style="color: #d9534f; font-size: 13px; max-width: 300px">{{ error }}</p>
+    <p v-if="error" class="mt-4 text-center" style="color: #d9534f; font-size: 0.8125rem; max-width: 300px">{{ error }}</p>
 
-    <p class="text-faint mt-6" style="font-size: 12px; text-align: center; max-width: 280px">
+    <p class="text-faint mt-6" style="font-size: 0.75rem; text-align: center; max-width: 280px">
       I tuoi dati restano tuoi. La sincronizzazione cloud è opzionale.
     </p>
   </div>

@@ -6,7 +6,7 @@
     <div class="desk-only rounded-4xl d4 flex items-center justify-center gap-2.5"
       :style="{ background: 'var(--card)', border: '1px solid var(--line)', padding: '13px 16px' }">
       <CalendarDays :size="17" color="var(--water)" />
-      <span class="text-ink" style="font-size: 14.5px; font-weight: 600; text-transform: capitalize">{{ fullDate }}</span>
+      <span class="text-ink" style="font-size: 0.9062rem; font-weight: 600; text-transform: capitalize">{{ fullDate }}</span>
     </div>
 
     <!-- Con il ciclo monitorato la sintesi si stringe e cede metà spazio alla card del ciclo -->
@@ -33,7 +33,7 @@
         <MetricTile to="/pasti" :icon="UtensilsCrossed" tone="food" label="Pasti" :value="day.totals.kcal" unit="kcal"
           :sub="`/ ${settings.goals.kcal} kcal`" :progress="p.food">
           <template #footer>
-            <div class="flex tabular" style="font-size: 12px">
+            <div class="flex tabular" style="font-size: 0.75rem">
               <span v-for="m in macros" :key="m.l" class="flex-1 flex items-center gap-1">
                 <span :style="{ color: `var(--${m.tone})`, fontWeight: 700 }">{{ m.l }}</span>
                 <span class="text-dim">{{ m.v }}</span>
@@ -55,7 +55,7 @@
                   boxShadow: clean ? '0 0 8px var(--alcohol-glow)' : 'none',
                 }" />
             </div>
-            <div style="color: var(--alcohol); font-size: 12px; font-weight: 600; margin-top: 7px">
+            <div style="color: var(--alcohol); font-size: 0.75rem; font-weight: 600; margin-top: 7px">
               {{ day.isToday ? "oggi" : "quel giorno" }}: {{ day.alcGrams }} g
             </div>
           </template>
@@ -74,14 +74,14 @@
             <Droplet :size="19" :color="`var(--${glucoseTone})`" />
           </div>
           <div class="min-w-0 flex-1">
-            <div class="text-ink flex items-center gap-1.5" style="font-size: 14.5px; font-weight: 600">
+            <div class="text-ink flex items-center gap-1.5" style="font-size: 0.9062rem; font-weight: 600">
               <span>{{ glucoseLine }}</span>
               <span v-if="glucoseTrendInfo.kind !== 'sconosciuta'" class="display"
-                :style="{ color: `var(--${glucoseTone})`, fontSize: '17px', fontWeight: 800 }">
+                :style="{ color: `var(--${glucoseTone})`, fontSize: '1.0625rem', fontWeight: 800 }">
                 {{ glucoseTrendInfo.arrow }}
               </span>
             </div>
-            <div class="text-faint" style="font-size: 12.5px">{{ glucoseDetail }}</div>
+            <div class="text-faint" style="font-size: 0.7812rem">{{ glucoseDetail }}</div>
           </div>
           <ChevronRight :size="18" :color="`var(--${glucoseTone})`" />
         </div>
@@ -96,8 +96,8 @@
             <Sprout :size="19" color="var(--food)" />
           </div>
           <div class="min-w-0 flex-1">
-            <div class="text-ink" style="font-size: 14.5px; font-weight: 600">Piccoli passi, grandi cambiamenti.</div>
-            <div class="text-faint" style="font-size: 12.5px">Guarda come stai andando nel tempo.</div>
+            <div class="text-ink" style="font-size: 0.9062rem; font-weight: 600">Piccoli passi, grandi cambiamenti.</div>
+            <div class="text-faint" style="font-size: 0.7812rem">Guarda come stai andando nel tempo.</div>
           </div>
           <ChevronRight :size="18" color="var(--food)" />
         </div>
@@ -109,9 +109,9 @@
       <div class="flex items-center justify-between" style="margin-bottom: 12px">
         <div class="flex items-center gap-2">
           <UtensilsCrossed :size="18" color="var(--food)" />
-          <span class="text-ink" style="font-size: 15.5px; font-weight: 700">Pasti di oggi</span>
+          <span class="text-ink" style="font-size: 0.9688rem; font-weight: 700">Pasti di oggi</span>
         </div>
-        <NuxtLink to="/pasti" class="flex items-center gap-1 text-food" style="font-size: 12.5px; font-weight: 600">
+        <NuxtLink to="/pasti" class="flex items-center gap-1 text-food" style="font-size: 0.7812rem; font-weight: 600">
           Vedi tutti <ChevronRight :size="14" />
         </NuxtLink>
       </div>
@@ -120,15 +120,15 @@
         <EmptyIllustration variant="food" :size="74" class="shrink-0" style="opacity: .95" />
         <div class="min-w-0 flex-1">
           <div class="display tabular flex items-baseline gap-1.5">
-            <span style="color: #fff; font-size: 34px; font-weight: 800; line-height: 1">{{ day.totals.kcal }}</span>
-            <span style="color: #fff; font-size: 15px; font-weight: 700; opacity: .9">kcal</span>
+            <span style="color: #fff; font-size: 2.125rem; font-weight: 800; line-height: 1">{{ day.totals.kcal }}</span>
+            <span style="color: #fff; font-size: 0.9375rem; font-weight: 700; opacity: .9">kcal</span>
           </div>
-          <div style="color: rgba(255,255,255,.85); font-size: 12.5px">obiettivo {{ settings.goals.kcal }} kcal</div>
+          <div style="color: rgba(255,255,255,.85); font-size: 0.7812rem">obiettivo {{ settings.goals.kcal }} kcal</div>
           <div class="flex items-center gap-2" style="margin-top: 9px">
             <div class="flex-1 rounded-full overflow-hidden" style="height: 7px; background: rgba(0,0,0,.18)">
               <div class="fill" style="background: #fff" :style="{ width: `${Math.min(100, p.food)}%` }" />
             </div>
-            <span class="tabular rounded-full" style="padding: 2px 8px; font-size: 11px; font-weight: 700;
+            <span class="tabular rounded-full" style="padding: 2px 8px; font-size: 0.6875rem; font-weight: 700;
               background: rgba(14,9,5,.8); color: #fff">{{ Math.round(p.food) }}%</span>
           </div>
         </div>
@@ -142,16 +142,16 @@
             <component :is="m.icon" :size="13" :color="`var(--${m.tone})`" />
           </div>
           <div class="min-w-0">
-            <div class="display tabular text-ink" style="font-size: 13.5px; font-weight: 700; line-height: 1.1">
-              {{ m.value }}<span style="font-size: 10px">g</span>
+            <div class="display tabular text-ink" style="font-size: 0.8438rem; font-weight: 700; line-height: 1.1">
+              {{ m.value }}<span style="font-size: 0.625rem">g</span>
             </div>
-            <div class="text-faint truncate" style="font-size: 10px">{{ m.label }}</div>
+            <div class="text-faint truncate" style="font-size: 0.625rem">{{ m.label }}</div>
           </div>
         </div>
       </div>
 
       <NuxtLink to="/pasti" class="tap grad-food rounded-full flex items-center justify-center gap-2 cta-glow-food"
-        style="color: #fff; font-size: 14.5px; font-weight: 600; padding: 12px 0; margin-top: 10px">
+        style="color: #fff; font-size: 0.9062rem; font-weight: 600; padding: 12px 0; margin-top: 10px">
         <Camera :size="17" /> Scatta o aggiungi un pasto
       </NuxtLink>
     </div>
@@ -160,9 +160,9 @@
       <div class="flex items-center justify-between" style="margin-bottom: 12px">
         <div class="flex items-center gap-2">
           <Footprints :size="18" color="var(--move)" />
-          <span class="text-ink" style="font-size: 15.5px; font-weight: 700">Sport</span>
+          <span class="text-ink" style="font-size: 0.9688rem; font-weight: 700">Sport</span>
         </div>
-        <NuxtLink to="/movimento" class="flex items-center gap-1 text-move" style="font-size: 12.5px; font-weight: 600">
+        <NuxtLink to="/movimento" class="flex items-center gap-1 text-move" style="font-size: 0.7812rem; font-weight: 600">
           Vedi tutti <ChevronRight :size="14" />
         </NuxtLink>
       </div>
@@ -171,22 +171,22 @@
         <EmptyIllustration variant="move" :size="74" class="shrink-0" style="opacity: .95" />
         <div class="min-w-0 flex-1">
           <div class="display tabular flex items-baseline gap-1.5">
-            <span style="color: #fff; font-size: 34px; font-weight: 800; line-height: 1">{{ day.moveMin }}</span>
-            <span style="color: #fff; font-size: 15px; font-weight: 700; opacity: .9">min</span>
+            <span style="color: #fff; font-size: 2.125rem; font-weight: 800; line-height: 1">{{ day.moveMin }}</span>
+            <span style="color: #fff; font-size: 0.9375rem; font-weight: 700; opacity: .9">min</span>
           </div>
-          <div style="color: rgba(255,255,255,.85); font-size: 12.5px">obiettivo {{ settings.goals.moveMin }} min</div>
+          <div style="color: rgba(255,255,255,.85); font-size: 0.7812rem">obiettivo {{ settings.goals.moveMin }} min</div>
           <div class="flex items-center gap-2" style="margin-top: 9px">
             <div class="flex-1 rounded-full overflow-hidden" style="height: 7px; background: rgba(0,0,0,.18)">
               <div class="fill" style="background: #fff" :style="{ width: `${Math.min(100, p.move)}%` }" />
             </div>
-            <span class="tabular rounded-full" style="padding: 2px 8px; font-size: 11px; font-weight: 700;
+            <span class="tabular rounded-full" style="padding: 2px 8px; font-size: 0.6875rem; font-weight: 700;
               background: rgba(5,14,9,.8); color: #fff">{{ Math.round(p.move) }}%</span>
           </div>
         </div>
       </div>
 
       <NuxtLink to="/movimento" class="tap grad-water rounded-full flex items-center justify-center gap-2 cta-glow-water"
-        style="color: #fff; font-size: 14.5px; font-weight: 600; padding: 12px 0; margin-top: 10px">
+        style="color: #fff; font-size: 0.9062rem; font-weight: 600; padding: 12px 0; margin-top: 10px">
         <Plus :size="17" /> Aggiungi allenamento
       </NuxtLink>
 
@@ -197,10 +197,10 @@
           <Lightbulb :size="16" color="var(--water)" />
         </div>
         <div class="min-w-0 flex-1">
-          <div class="text-ink" style="font-size: 12.5px; font-weight: 600; line-height: 1.35">
+          <div class="text-ink" style="font-size: 0.7812rem; font-weight: 600; line-height: 1.35">
             L'attività fisica migliora l'umore e la qualità del sonno
           </div>
-          <div class="text-faint" style="font-size: 11.5px">e ti aiuta a mantenere l'equilibrio.</div>
+          <div class="text-faint" style="font-size: 0.7188rem">e ti aiuta a mantenere l'equilibrio.</div>
         </div>
         <ChevronRight :size="16" class="text-faint" />
       </NuxtLink>

@@ -25,7 +25,7 @@ export default defineNuxtConfig({
       // codice dell'app produce un lampo chiaro a ogni ricaricamento.
       script: [
         {
-          innerHTML: `(function(){try{var t=localStorage.getItem("equilibrio:theme");var d=t?t==="dark":window.matchMedia("(prefers-color-scheme: dark)").matches;var e=document.documentElement;e.classList.toggle("dark",d);e.style.colorScheme=d?"dark":"light";var m=document.querySelector('meta[name="theme-color"]');if(m)m.setAttribute("content",d?"#0D0F14":"#F1ECE4");}catch(e){}})()`,
+          innerHTML: `(function(){try{var t=localStorage.getItem("equilibrio:theme");var d=t?t==="dark":window.matchMedia("(prefers-color-scheme: dark)").matches;var e=document.documentElement;e.classList.toggle("dark",d);e.style.colorScheme=d?"dark":"light";var m=document.querySelector('meta[name="theme-color"]');if(m)m.setAttribute("content",d?"#0D0F14":"#F1ECE4");var st=JSON.parse(localStorage.getItem("equilibrio:settings")||"null");var k=st&&st.profile&&st.profile.textScale;if(k&&k!==1)e.style.fontSize=(k*100)+"%";}catch(e){}})()`,
           tagPosition: "head",
         },
       ],

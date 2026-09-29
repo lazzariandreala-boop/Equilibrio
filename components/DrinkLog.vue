@@ -3,31 +3,31 @@
     <div class="grid grid-cols-2 gap-2.5">
       <button v-for="p in presets" :key="p.name" class="tap rounded-3xl p-3.5 text-left"
         style="background: var(--alcohol-soft)" @click="emit('log', { name: p.name, alc: p.alc, kcal: p.kcal })">
-        <div class="text-ink" style="font-weight: 600; font-size: 14px; line-height: 1.25">{{ p.name }}</div>
-        <div class="text-dim tabular" style="font-size: 12px; margin-top: 3px">≈ {{ p.alc }} g · {{ p.kcal }} kcal</div>
+        <div class="text-ink" style="font-weight: 600; font-size: 0.875rem; line-height: 1.25">{{ p.name }}</div>
+        <div class="text-dim tabular" style="font-size: 0.75rem; margin-top: 3px">≈ {{ p.alc }} g · {{ p.kcal }} kcal</div>
       </button>
     </div>
 
     <div class="rounded-4xl p-4 space-y-2.5" style="background: var(--raised)">
-      <div class="display" style="font-weight: 700; font-size: 15px">Personalizzato</div>
+      <div class="display" style="font-weight: 700; font-size: 0.9375rem">Personalizzato</div>
       <input v-model="custom.name" placeholder="Cosa hai bevuto" :class="inp" />
       <div class="flex gap-2.5">
         <div class="flex-1">
-          <div class="text-faint mb-1" style="font-size: 11.5px">Alcol (g)</div>
+          <div class="text-faint mb-1" style="font-size: 0.7188rem">Alcol (g)</div>
           <input v-model.number="custom.alc" type="number" inputmode="numeric" class="tabular" :class="inp" />
         </div>
         <div class="flex-1">
-          <div class="text-faint mb-1" style="font-size: 11.5px">kcal</div>
+          <div class="text-faint mb-1" style="font-size: 0.7188rem">kcal</div>
           <input v-model.number="custom.kcal" type="number" inputmode="numeric" class="tabular" :class="inp" />
         </div>
       </div>
-      <button class="tap grad-alcohol w-full py-3 rounded-2xl font-semibold" style="color: #fff; font-size: 14px"
+      <button class="tap grad-alcohol w-full py-3 rounded-2xl font-semibold" style="color: #fff; font-size: 0.875rem"
         @click="emit('log', { name: custom.name || 'Bevanda', alc: +custom.alc || 0, kcal: +custom.kcal || 0 })">
         Registra
       </button>
     </div>
 
-    <p class="text-faint text-center" style="font-size: 12.5px; line-height: 1.5">
+    <p class="text-faint text-center" style="font-size: 0.7812rem; line-height: 1.5">
       Registrare una ricaduta senza giudizio è già un atto di cura. I valori sono stime.
     </p>
   </div>

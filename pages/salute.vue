@@ -5,9 +5,9 @@
       <div class="flex items-center justify-between" style="margin-bottom: 12px">
         <div class="flex items-center gap-2">
           <Scale :size="18" color="var(--water)" />
-          <span class="text-ink" style="font-size: 15.5px; font-weight: 700">Corpo</span>
+          <span class="text-ink" style="font-size: 0.9688rem; font-weight: 700">Corpo</span>
         </div>
-        <NuxtLink to="/corpo" class="flex items-center gap-1 text-water" style="font-size: 12.5px; font-weight: 600">
+        <NuxtLink to="/corpo" class="flex items-center gap-1 text-water" style="font-size: 0.7812rem; font-weight: 600">
           Vedi tutto <ChevronRight :size="14" />
         </NuxtLink>
       </div>
@@ -16,10 +16,10 @@
         <div class="flex items-center gap-3">
           <div class="min-w-0 flex-1">
             <div class="display tabular flex items-baseline gap-1.5">
-              <span style="color: #fff; font-size: 34px; font-weight: 800; line-height: 1">{{ weight.last.toFixed(1) }}</span>
-              <span style="color: #fff; font-size: 15px; font-weight: 700; opacity: .9">kg</span>
+              <span style="color: #fff; font-size: 2.125rem; font-weight: 800; line-height: 1">{{ weight.last.toFixed(1) }}</span>
+              <span style="color: #fff; font-size: 0.9375rem; font-weight: 700; opacity: .9">kg</span>
             </div>
-            <div v-if="weight.delta !== null" style="color: rgba(255,255,255,.9); font-size: 12.5px">
+            <div v-if="weight.delta !== null" style="color: rgba(255,255,255,.9); font-size: 0.7812rem">
               {{ weight.delta > 0 ? "+" : "" }}{{ weight.delta.toFixed(1) }} kg negli ultimi 90 giorni
             </div>
           </div>
@@ -30,7 +30,7 @@
 
       <div v-else class="rounded-4xl text-center" style="padding: 20px 14px; background: var(--raised)">
         <Scale :size="26" color="var(--faint)" style="margin: 0 auto" />
-        <p class="text-dim" style="font-size: 13px; margin-top: 8px; line-height: 1.4">
+        <p class="text-dim" style="font-size: 0.8125rem; margin-top: 8px; line-height: 1.4">
           {{ bodyMessage }}
         </p>
       </div>
@@ -43,10 +43,10 @@
             <component :is="c.icon" :size="13" :color="`var(--${c.tone})`" />
           </div>
           <div class="min-w-0">
-            <div class="display tabular text-ink" style="font-size: 13.5px; font-weight: 700; line-height: 1.1">
+            <div class="display tabular text-ink" style="font-size: 0.8438rem; font-weight: 700; line-height: 1.1">
               {{ c.value }}
             </div>
-            <div class="text-faint truncate" style="font-size: 10px">{{ c.label }}</div>
+            <div class="text-faint truncate" style="font-size: 0.625rem">{{ c.label }}</div>
           </div>
         </div>
       </div>
@@ -57,9 +57,9 @@
       <div class="flex items-center justify-between" style="margin-bottom: 12px">
         <div class="flex items-center gap-2">
           <Droplet :size="18" :color="`var(--${glucoseTone})`" />
-          <span class="text-ink" style="font-size: 15.5px; font-weight: 700">Glicemia</span>
+          <span class="text-ink" style="font-size: 0.9688rem; font-weight: 700">Glicemia</span>
         </div>
-        <NuxtLink to="/glicemia" class="flex items-center gap-1" :style="{ color: `var(--${glucoseTone})`, fontSize: '12.5px', fontWeight: 600 }">
+        <NuxtLink to="/glicemia" class="flex items-center gap-1" :style="{ color: `var(--${glucoseTone})`, fontSize: '0.7812rem', fontWeight: 600 }">
           Vedi tutto <ChevronRight :size="14" />
         </NuxtLink>
       </div>
@@ -67,19 +67,19 @@
       <div v-if="lastReading" class="rounded-4xl relative overflow-hidden" :class="`grad-${glucoseTone}`"
         style="padding: 14px 16px">
         <div class="display tabular flex items-baseline gap-1.5">
-          <span style="color: #fff; font-size: 34px; font-weight: 800; line-height: 1">{{ lastReading.value }}</span>
-          <span style="color: #fff; font-size: 15px; font-weight: 700; opacity: .9">mg/dL</span>
+          <span style="color: #fff; font-size: 2.125rem; font-weight: 800; line-height: 1">{{ lastReading.value }}</span>
+          <span style="color: #fff; font-size: 0.9375rem; font-weight: 700; opacity: .9">mg/dL</span>
           <span v-if="trend.kind !== 'sconosciuta'" class="display"
-            style="color: #fff; font-size: 26px; font-weight: 800">{{ trend.arrow }}</span>
+            style="color: #fff; font-size: 1.625rem; font-weight: 800">{{ trend.arrow }}</span>
         </div>
-        <div style="color: rgba(255,255,255,.88); font-size: 12.5px">
+        <div style="color: rgba(255,255,255,.88); font-size: 0.7812rem">
           {{ RANGE_LABEL[classify(lastReading.value, settings.diabetes)] }} · {{ lastReading.tag }}
         </div>
       </div>
 
       <div v-else class="rounded-4xl text-center" style="padding: 20px 14px; background: var(--raised)">
         <Droplet :size="26" color="var(--faint)" style="margin: 0 auto" />
-        <p class="text-dim" style="font-size: 13px; margin-top: 8px">Nessuna misurazione registrata.</p>
+        <p class="text-dim" style="font-size: 0.8125rem; margin-top: 8px">Nessuna misurazione registrata.</p>
       </div>
 
       <template v-if="glucoseStats.count">
@@ -91,14 +91,14 @@
         <div class="grid grid-cols-3 gap-2" style="margin-top: 10px">
           <div v-for="c in glucoseCells" :key="c.label" class="rounded-3xl text-center"
             style="padding: 8px 4px; background: var(--raised)">
-            <div class="display tabular" :style="{ color: c.color, fontSize: '15px', fontWeight: 800 }">{{ c.value }}</div>
-            <div class="text-faint" style="font-size: 10px">{{ c.label }}</div>
+            <div class="display tabular" :style="{ color: c.color, fontSize: '0.9375rem', fontWeight: 800 }">{{ c.value }}</div>
+            <div class="text-faint" style="font-size: 0.625rem">{{ c.label }}</div>
           </div>
         </div>
       </template>
 
       <NuxtLink to="/glicemia" class="tap grad-water rounded-full flex items-center justify-center gap-2 cta-glow-water"
-        style="color: #fff; font-size: 14.5px; font-weight: 600; padding: 12px 0; margin-top: 10px">
+        style="color: #fff; font-size: 0.9062rem; font-weight: 600; padding: 12px 0; margin-top: 10px">
         <Plus :size="17" /> Registra una misurazione
       </NuxtLink>
     </div>
@@ -108,18 +108,18 @@
       <div class="flex items-center justify-between" style="margin-bottom: 12px">
         <div class="flex items-center gap-2">
           <Baby :size="18" color="var(--alcohol)" />
-          <span class="text-ink" style="font-size: 15.5px; font-weight: 700">Gravidanza</span>
+          <span class="text-ink" style="font-size: 0.9688rem; font-weight: 700">Gravidanza</span>
         </div>
-        <NuxtLink to="/gravidanza" class="flex items-center gap-1 text-alcohol" style="font-size: 12.5px; font-weight: 600">
+        <NuxtLink to="/gravidanza" class="flex items-center gap-1 text-alcohol" style="font-size: 0.7812rem; font-weight: 600">
           Vedi tutto <ChevronRight :size="14" />
         </NuxtLink>
       </div>
 
       <div v-if="preg.configured" class="rounded-4xl grad-alcohol relative overflow-hidden" style="padding: 14px 16px">
-        <div class="display" style="color: #fff; font-size: 30px; font-weight: 800; line-height: 1.05">
+        <div class="display" style="color: #fff; font-size: 1.875rem; font-weight: 800; line-height: 1.05">
           {{ pregInfo.weeks }}ª settimana
         </div>
-        <div style="color: rgba(255,255,255,.88); font-size: 12.5px">
+        <div style="color: rgba(255,255,255,.88); font-size: 0.7812rem">
           {{ TRIMESTER_LABEL[pregInfo.trimester] }} · {{ pregInfo.daysToDue }} giorni al termine
         </div>
         <div class="rounded-full overflow-hidden" style="height: 7px; background: rgba(0,0,0,.18); margin-top: 10px">
@@ -127,15 +127,15 @@
         </div>
       </div>
       <div v-else class="rounded-4xl text-center" style="padding: 20px 14px; background: var(--raised)">
-        <p class="text-dim" style="font-size: 13px">Imposta la data di inizio per vedere la settimana.</p>
+        <p class="text-dim" style="font-size: 0.8125rem">Imposta la data di inizio per vedere la settimana.</p>
       </div>
 
       <div v-if="nextAppointment" class="rounded-3xl flex items-center gap-3"
         style="padding: 11px 13px; background: var(--raised); margin-top: 10px">
         <Stethoscope :size="16" color="var(--alcohol)" class="shrink-0" />
         <div class="min-w-0 flex-1">
-          <div class="text-ink truncate" style="font-size: 13px; font-weight: 600">{{ nextAppointment.title }}</div>
-          <div class="text-faint" style="font-size: 11.5px">{{ fmtDay(nextAppointment.date) }}</div>
+          <div class="text-ink truncate" style="font-size: 0.8125rem; font-weight: 600">{{ nextAppointment.title }}</div>
+          <div class="text-faint" style="font-size: 0.7188rem">{{ fmtDay(nextAppointment.date) }}</div>
         </div>
       </div>
     </div>
@@ -146,18 +146,18 @@
       <div class="flex items-center justify-between" style="margin-bottom: 12px">
         <div class="flex items-center gap-2">
           <CalendarHeart :size="18" color="var(--alcohol)" />
-          <span class="text-ink" style="font-size: 15.5px; font-weight: 700">Ciclo</span>
+          <span class="text-ink" style="font-size: 0.9688rem; font-weight: 700">Ciclo</span>
         </div>
-        <NuxtLink to="/ciclo" class="flex items-center gap-1 text-alcohol" style="font-size: 12.5px; font-weight: 600">
+        <NuxtLink to="/ciclo" class="flex items-center gap-1 text-alcohol" style="font-size: 0.7812rem; font-weight: 600">
           Vedi tutto <ChevronRight :size="14" />
         </NuxtLink>
       </div>
 
       <div class="rounded-4xl relative overflow-hidden" :class="`grad-${cycleView.tone}`" style="padding: 14px 16px">
-        <div class="display" style="color: #fff; font-size: 30px; font-weight: 800; line-height: 1.05">
+        <div class="display" style="color: #fff; font-size: 1.875rem; font-weight: 800; line-height: 1.05">
           {{ cycleView.headline }}
         </div>
-        <div style="color: rgba(255,255,255,.88); font-size: 12.5px">{{ cycleView.label }}</div>
+        <div style="color: rgba(255,255,255,.88); font-size: 0.7812rem">{{ cycleView.label }}</div>
 
         <!-- Ultimi dieci giorni: pieno = giorno registrato -->
         <div class="flex gap-1 justify-start" style="margin-top: 10px">
@@ -169,14 +169,14 @@
 
       <div class="rounded-3xl flex items-center gap-2.5" style="padding: 10px 13px; background: var(--raised); margin-top: 10px">
         <CalendarDays :size="15" color="var(--alcohol)" class="shrink-0" />
-        <span class="text-dim" style="font-size: 12px; line-height: 1.35">
+        <span class="text-dim" style="font-size: 0.75rem; line-height: 1.35">
           {{ cycle.entries.length }} {{ cycle.entries.length === 1 ? "ciclo registrato" : "cicli registrati" }}
           <template v-if="cycle.entries.length >= 2"> · media {{ cycle.averageLength }} giorni</template>
         </span>
       </div>
 
       <NuxtLink to="/ciclo" class="tap grad-alcohol rounded-full flex items-center justify-center gap-2 cta-glow-alcohol"
-        style="color: #fff; font-size: 14.5px; font-weight: 600; padding: 12px 0; margin-top: 10px">
+        style="color: #fff; font-size: 0.9062rem; font-weight: 600; padding: 12px 0; margin-top: 10px">
         <Plus :size="17" /> Registra un ciclo
       </NuxtLink>
     </div>
@@ -186,9 +186,9 @@
       <div class="flex items-center justify-between" style="margin-bottom: 12px">
         <div class="flex items-center gap-2">
           <CalendarDays :size="18" color="var(--food)" />
-          <span class="text-ink" style="font-size: 15.5px; font-weight: 700">Ultimi sette giorni</span>
+          <span class="text-ink" style="font-size: 0.9688rem; font-weight: 700">Ultimi sette giorni</span>
         </div>
-        <NuxtLink to="/storico" class="flex items-center gap-1 text-food" style="font-size: 12.5px; font-weight: 600">
+        <NuxtLink to="/storico" class="flex items-center gap-1 text-food" style="font-size: 0.7812rem; font-weight: 600">
           Vedi tutto <ChevronRight :size="14" />
         </NuxtLink>
       </div>
@@ -201,10 +201,10 @@
             :style="{ background: `var(--${st.tone}-soft)` }">
             <component :is="st.icon" :size="16" :color="`var(--${st.tone})`" />
           </div>
-          <div class="display tabular" :style="{ color: `var(--${st.tone})`, fontSize: '22px', fontWeight: 800, marginTop: '8px' }">
-            {{ st.value }}<span class="text-dim" style="font-size: 12px; font-weight: 600"> {{ st.unit }}</span>
+          <div class="display tabular" :style="{ color: `var(--${st.tone})`, fontSize: '1.375rem', fontWeight: 800, marginTop: '8px' }">
+            {{ st.value }}<span class="text-dim" style="font-size: 0.75rem; font-weight: 600"> {{ st.unit }}</span>
           </div>
-          <div class="text-dim" style="font-size: 11.5px">{{ st.label }}</div>
+          <div class="text-dim" style="font-size: 0.7188rem">{{ st.label }}</div>
         </div>
       </div>
 
@@ -214,14 +214,14 @@
           <span class="rounded-full shrink-0" style="width: 8px; height: 8px"
             :style="{ background: day.summaryOf(k).alcGrams > 0 ? 'var(--alcohol)'
               : day.summaryOf(k).hasData ? 'var(--move)' : 'var(--line)' }" />
-          <span class="text-ink" style="font-size: 13.5px; font-weight: 600; text-transform: capitalize; min-width: 110px">
+          <span class="text-ink" style="font-size: 0.8438rem; font-weight: 600; text-transform: capitalize; min-width: 110px">
             {{ fmtShort(k) }}
           </span>
-          <span v-if="day.summaryOf(k).hasData" class="text-dim tabular flex-1" style="font-size: 12.5px">
+          <span v-if="day.summaryOf(k).hasData" class="text-dim tabular flex-1" style="font-size: 0.7812rem">
             {{ day.summaryOf(k).water }} ml · {{ day.summaryOf(k).kcal }} kcal ·
             {{ day.summaryOf(k).moveMin }} min · {{ day.summaryOf(k).alcGrams }} g
           </span>
-          <span v-else class="text-faint flex-1" style="font-size: 12.5px">nessun dato</span>
+          <span v-else class="text-faint flex-1" style="font-size: 0.7812rem">nessun dato</span>
           <ChevronRight :size="16" class="text-faint shrink-0" />
         </button>
       </div>

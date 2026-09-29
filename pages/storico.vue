@@ -3,7 +3,7 @@
     <!-- periodo -->
     <div class="rise flex gap-1.5 p-1.5 rounded-4xl"
       style="background: var(--raised); border: 1px solid var(--line)">
-      <button v-for="m in modes" :key="m.key" class="tap flex-1 py-3 rounded-3xl font-semibold" style="font-size: 14.5px"
+      <button v-for="m in modes" :key="m.key" class="tap flex-1 py-3 rounded-3xl font-semibold" style="font-size: 0.9062rem"
         :style="mode === m.key
           ? { background: 'var(--card)', color: 'var(--ink)', boxShadow: `inset 0 0 0 1px var(--alcohol), 0 0 16px -4px var(--alcohol-glow)` }
           : { color: 'var(--dim)' }"
@@ -56,10 +56,10 @@
           </div>
 
           <div class="display tabular flex items-baseline gap-1" style="margin-top: auto; padding-top: 12px">
-            <span :style="{ color: `var(--${s.tone})`, fontSize: '30px', fontWeight: 800, lineHeight: 1 }">{{ s.value }}</span>
-            <span class="text-dim" style="font-size: 13px; font-weight: 600">{{ s.unit }}</span>
+            <span :style="{ color: `var(--${s.tone})`, fontSize: '1.875rem', fontWeight: 800, lineHeight: 1 }">{{ s.value }}</span>
+            <span class="text-dim" style="font-size: 0.8125rem; font-weight: 600">{{ s.unit }}</span>
           </div>
-          <div class="text-dim" style="font-size: 12.5px; margin-top: 3px">{{ s.label }}</div>
+          <div class="text-dim" style="font-size: 0.7812rem; margin-top: 3px">{{ s.label }}</div>
         </div>
       </div>
     </div>
@@ -82,23 +82,23 @@
             }" />
 
           <div class="min-w-0 flex-1">
-            <div class="text-ink truncate" style="font-weight: 700; font-size: 14.5px; text-transform: capitalize">
-              {{ fmtShort(k) }}<span v-if="k === todayK" class="text-water" style="font-size: 12px; font-weight: 600"> · Oggi</span>
+            <div class="text-ink truncate" style="font-weight: 700; font-size: 0.9062rem; text-transform: capitalize">
+              {{ fmtShort(k) }}<span v-if="k === todayK" class="text-water" style="font-size: 0.75rem; font-weight: 600"> · Oggi</span>
             </div>
             <div v-if="sum(k).hasData" class="flex flex-wrap items-center gap-x-3 gap-y-0.5 tabular"
-              style="font-size: 12.5px; margin-top: 3px">
+              style="font-size: 0.7812rem; margin-top: 3px">
               <span class="flex items-center gap-1"><GlassWater :size="13" color="var(--water)" /><span class="text-dim">{{ sum(k).water }} ml</span></span>
               <span class="flex items-center gap-1"><UtensilsCrossed :size="13" color="var(--food)" /><span class="text-dim">{{ sum(k).kcal }} kcal</span></span>
               <span class="flex items-center gap-1"><Footprints :size="13" color="var(--move)" /><span class="text-dim">{{ sum(k).moveMin }} min</span></span>
               <span class="flex items-center gap-1"><Wine :size="13" color="var(--alcohol)" /><span class="text-dim">{{ sum(k).alcGrams }} g</span></span>
             </div>
-            <div v-else class="text-faint" style="font-size: 12.5px; margin-top: 3px">nessun dato</div>
+            <div v-else class="text-faint" style="font-size: 0.7812rem; margin-top: 3px">nessun dato</div>
           </div>
 
             <ChevronRight :size="18" class="text-faint shrink-0" />
           </button>
         </div>
-        <p class="text-faint text-center" style="font-size: 12px; margin-top: 10px">
+        <p class="text-faint text-center" style="font-size: 0.75rem; margin-top: 10px">
           Tocca un giorno per aprirlo o aggiungere dati.
         </p>
       </Expandable>

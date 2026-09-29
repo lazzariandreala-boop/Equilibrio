@@ -11,7 +11,7 @@
             <span class="rounded-full" style="width: 40px; height: 4px; background: var(--line)" />
           </div>
           <div class="sticky flex items-center justify-between px-5 py-3" style="top: 0; background: var(--surface); z-index: 2">
-            <h3 class="display text-ink" style="font-size: 19px; font-weight: 700">{{ title }}</h3>
+            <h3 class="display text-ink" style="font-size: 1.1875rem; font-weight: 700">{{ title }}</h3>
             <button class="tap text-dim rounded-2xl p-2 bg-raised" aria-label="Chiudi" @click="$emit('update:modelValue', false)">
               <X :size="19" />
             </button>

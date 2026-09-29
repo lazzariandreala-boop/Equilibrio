@@ -8,7 +8,7 @@
 
     <div class="flex gap-1.5 p-1.5 rounded-3xl" style="background: var(--raised)">
       <button v-for="f in filters" :key="f.key" class="tap flex-1 py-2 rounded-2xl font-semibold"
-        style="font-size: 12.5px"
+        style="font-size: 0.7812rem"
         :style="filter === f.key
           ? { background: 'var(--card)', color: 'var(--ink)', boxShadow: 'var(--shadow)' }
           : { color: 'var(--dim)' }"
@@ -22,22 +22,22 @@
         :style="{ background: `var(--${tone(r.severity)}-soft)` }">
         <div class="flex items-center gap-2">
           <span class="rounded-full" :style="{
-            padding: '3px 9px', fontSize: '10.5px', fontWeight: 700, textTransform: 'uppercase',
+            padding: '3px 9px', fontSize: '0.6562rem', fontWeight: 700, textTransform: 'uppercase',
             background: `var(--${tone(r.severity)})`, color: '#fff', letterSpacing: '.4px',
           }">{{ r.severity }}</span>
-          <span class="text-ink" style="font-weight: 600; font-size: 14.5px">{{ r.title }}</span>
+          <span class="text-ink" style="font-weight: 600; font-size: 0.9062rem">{{ r.title }}</span>
         </div>
-        <p class="text-dim" style="font-size: 12.5px; line-height: 1.45; margin-top: 6px">{{ r.reason }}</p>
-        <p class="text-ink" style="font-size: 12.5px; line-height: 1.45; margin-top: 4px">{{ r.advice }}</p>
+        <p class="text-dim" style="font-size: 0.7812rem; line-height: 1.45; margin-top: 6px">{{ r.reason }}</p>
+        <p class="text-ink" style="font-size: 0.7812rem; line-height: 1.45; margin-top: 4px">{{ r.advice }}</p>
       </div>
 
-      <p v-if="!shown.length" class="text-faint text-center" style="font-size: 13px; padding: 18px">
+      <p v-if="!shown.length" class="text-faint text-center" style="font-size: 0.8125rem; padding: 18px">
         Nessuna corrispondenza. Se un alimento non è in elenco non significa che sia da evitare:
         nel dubbio chiedi all'ostetrica.
       </p>
     </div>
 
-    <p class="text-faint" style="font-size: 12px; line-height: 1.5">
+    <p class="text-faint" style="font-size: 0.75rem; line-height: 1.5">
       Indicazioni generali su listeriosi, toxoplasmosi, salmonella, mercurio e caffeina.
       Ogni gravidanza è diversa: il riferimento resta sempre il tuo medico o la tua ostetrica.
     </p>

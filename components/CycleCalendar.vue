@@ -5,7 +5,7 @@
       <button class="tap p-2 rounded-2xl" aria-label="Mese precedente" @click="shift(-1)">
         <ChevronLeft :size="19" color="var(--alcohol)" />
       </button>
-      <span class="text-ink" style="font-weight: 700; font-size: 15px; text-transform: capitalize">
+      <span class="text-ink" style="font-weight: 700; font-size: 0.9375rem; text-transform: capitalize">
         {{ monthLabel }}
       </span>
       <button class="tap p-2 rounded-2xl" aria-label="Mese successivo" @click="shift(1)">
@@ -15,7 +15,7 @@
 
     <!-- intestazione dei giorni -->
     <div class="grid grid-cols-7" style="margin-top: 12px">
-      <div v-for="d in WEEK" :key="d" class="text-faint text-center" style="font-size: 11px; font-weight: 600">
+      <div v-for="d in WEEK" :key="d" class="text-faint text-center" style="font-size: 0.6875rem; font-weight: 600">
         {{ d }}
       </div>
     </div>
@@ -26,7 +26,7 @@
         <div v-if="cell" class="flex items-center justify-center rounded-full relative"
           style="width: 100%; max-width: 38px; aspect-ratio: 1"
           :style="styleOf(cell)">
-          <span :style="{ fontSize: '13px', fontWeight: kind(cell) === 'nessuno' ? 500 : 700 }">{{ cell.day }}</span>
+          <span :style="{ fontSize: '0.8125rem', fontWeight: kind(cell) === 'nessuno' ? 500 : 700 }">{{ cell.day }}</span>
           <span v-if="cell.key === today" class="absolute rounded-full"
             :style="{ bottom: '3px', width: '4px', height: '4px', background: kind(cell) === 'nessuno' ? 'var(--ink)' : '#fff' }" />
         </div>
@@ -37,24 +37,24 @@
     <div class="flex flex-wrap gap-x-4 gap-y-2" style="margin-top: 14px">
       <div class="flex items-center gap-1.5">
         <span class="rounded-full grad-alcohol" style="width: 12px; height: 12px" />
-        <span class="text-dim" style="font-size: 12px">giorni registrati</span>
+        <span class="text-dim" style="font-size: 0.75rem">giorni registrati</span>
       </div>
       <div class="flex items-center gap-1.5">
         <span class="rounded-full" style="width: 12px; height: 12px; border: 1.5px dashed var(--alcohol)" />
-        <span class="text-dim" style="font-size: 12px">previsione</span>
+        <span class="text-dim" style="font-size: 0.75rem">previsione</span>
       </div>
       <div class="flex items-center gap-1.5">
         <span class="rounded-full" style="width: 12px; height: 12px; background: var(--line)" />
-        <span class="text-dim" style="font-size: 12px">oggi</span>
+        <span class="text-dim" style="font-size: 0.75rem">oggi</span>
       </div>
     </div>
 
     <!-- andamento della durata: si vede subito se il ciclo è regolare -->
     <div v-if="gaps.length >= 2" style="margin-top: 16px">
-      <div class="display text-ink mb-2" style="font-size: 15px; font-weight: 700">Quanto varia</div>
+      <div class="display text-ink mb-2" style="font-size: 0.9375rem; font-weight: 700">Quanto varia</div>
       <div class="flex items-end gap-1.5" style="height: 64px">
         <div v-for="(g, i) in gaps" :key="i" class="flex-1 flex flex-col items-center justify-end" style="height: 100%">
-          <span class="tabular text-faint" style="font-size: 10px; margin-bottom: 3px">{{ g.len }}</span>
+          <span class="tabular text-faint" style="font-size: 0.625rem; margin-bottom: 3px">{{ g.len }}</span>
           <div class="w-full rounded-t-lg"
             :style="{
               height: `${barHeight(g.len)}%`,
@@ -62,7 +62,7 @@
             }" />
         </div>
       </div>
-      <p class="text-faint" style="font-size: 12px; margin-top: 8px; line-height: 1.45">
+      <p class="text-faint" style="font-size: 0.75rem; margin-top: 8px; line-height: 1.45">
         Intervalli fra un inizio e il successivo, dal più vecchio al più recente. Media {{ cycle.averageLength }} giorni;
         le barre arancioni si discostano di oltre 4 giorni.
       </p>

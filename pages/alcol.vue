@@ -17,18 +17,18 @@
         <div class="rounded-2xl grad-move flex items-center justify-center" style="width: 40px; height: 40px">
           <Check :size="20" color="#fff" />
         </div>
-        <span class="text-ink text-left" style="font-weight: 600; font-size: 14.5px">Giornata pulita</span>
+        <span class="text-ink text-left" style="font-weight: 600; font-size: 0.9062rem">Giornata pulita</span>
       </button>
       <button class="tap rounded-4xl p-4 flex flex-col items-start gap-2.5"
         style="background: var(--water-soft); border: 1px solid var(--line); box-shadow: inset 0 1px 0 rgba(255,255,255,.06)" @click="urgeOpen = true">
         <div class="rounded-2xl grad-water flex items-center justify-center" style="width: 40px; height: 40px">
           <Wind :size="20" color="#fff" />
         </div>
-        <span class="text-ink text-left" style="font-weight: 600; font-size: 14.5px">Ho voglia</span>
+        <span class="text-ink text-left" style="font-weight: 600; font-size: 0.9062rem">Ho voglia</span>
       </button>
     </div>
 
-    <button class="tap w-full rounded-full py-3.5 font-semibold flex items-center justify-center gap-2.5 grad-alcohol rise cta-glow-alcohol" style="color: #fff; font-size: 15.5px; animation-delay: 120ms"
+    <button class="tap w-full rounded-full py-3.5 font-semibold flex items-center justify-center gap-2.5 grad-alcohol rise cta-glow-alcohol" style="color: #fff; font-size: 0.9688rem; animation-delay: 120ms"
       @click="drinkOpen = true">
       <Plus :size="19" /> Registra cosa ho bevuto
     </button>
@@ -38,15 +38,15 @@
       subtitle="La striscia cresce da sola: basta lasciarla correre." />
 
     <div v-else class="rise" style="animation-delay: 170ms">
-      <div class="display mb-2.5 px-1" style="font-weight: 700; font-size: 17px">
+      <div class="display mb-2.5 px-1" style="font-weight: 700; font-size: 1.0625rem">
         {{ day.isToday ? "Oggi" : "Quel giorno" }} · <span class="tabular text-alcohol">{{ day.alcGrams }} g</span> di alcol
       </div>
       <div class="space-y-2">
         <AppCard v-for="(d, i) in today.drinks" :key="i" pad="p-3.5">
           <div class="flex items-center justify-between gap-3">
-            <span class="text-ink truncate" style="font-size: 14px; font-weight: 500">{{ d.name }}</span>
+            <span class="text-ink truncate" style="font-size: 0.875rem; font-weight: 500">{{ d.name }}</span>
             <div class="flex items-center gap-2.5 shrink-0">
-              <span class="text-alcohol tabular" style="font-size: 13px; font-weight: 600">{{ d.alc }} g</span>
+              <span class="text-alcohol tabular" style="font-size: 0.8125rem; font-weight: 600">{{ d.alc }} g</span>
               <button class="text-faint p-1" aria-label="Rimuovi" @click="day.removeDrink(i)"><X :size="15" /></button>
             </div>
           </div>

@@ -1,6 +1,6 @@
 <template>
   <div>
-    <div class="text-faint mb-1.5" style="font-size: 12px">Cerca un alimento</div>
+    <div class="text-faint mb-1.5" style="font-size: 0.75rem">Cerca un alimento</div>
     <div class="relative">
       <input v-model="q" :class="inputCls" placeholder="Es. pasta, yogurt greco, Saikebon…" @input="onType" />
       <Loader2 v-if="busy" :size="16" class="absolute text-faint animate-spin"
@@ -10,30 +10,30 @@
     <div v-if="results.length" class="mt-2 space-y-1.5" style="max-height: 240px; overflow-y: auto">
       <button v-for="(r, i) in results" :key="i" class="tap w-full text-left rounded-2xl px-3 py-2.5"
         style="background: var(--raised)" @click="choose(r)">
-        <div class="text-ink truncate" style="font-size: 14px; font-weight: 600">{{ r.name }}</div>
-        <div class="text-dim tabular" style="font-size: 11.5px">
+        <div class="text-ink truncate" style="font-size: 0.875rem; font-weight: 600">{{ r.name }}</div>
+        <div class="text-dim tabular" style="font-size: 0.7188rem">
           per 100 g · {{ r.kcal }} kcal · C {{ r.cho }} · P {{ r.pro }} · G {{ r.fat }} · F {{ r.fib }}
           <span class="text-faint"> · {{ r.source }}</span>
         </div>
       </button>
     </div>
 
-    <p v-else-if="searched && !busy" class="text-faint" style="font-size: 12.5px; margin-top: 8px">
+    <p v-else-if="searched && !busy" class="text-faint" style="font-size: 0.7812rem; margin-top: 8px">
       Nessun risultato. Puoi comunque scrivere il nome e inserire i valori a mano.
     </p>
 
     <!-- porzione -->
     <div v-if="picked" class="rounded-3xl p-3.5 mt-3" style="background: var(--food-soft)">
-      <div class="text-ink truncate" style="font-size: 14px; font-weight: 600">{{ picked.name }}</div>
+      <div class="text-ink truncate" style="font-size: 0.875rem; font-weight: 600">{{ picked.name }}</div>
       <div class="flex items-center gap-2 mt-2.5">
         <input v-model.number="grams" type="number" inputmode="numeric" class="tabular flex-1" :class="inputCls" />
-        <span class="text-dim" style="font-size: 14px">grammi</span>
-        <button class="tap grad-food rounded-2xl px-4 py-2.5 font-semibold" style="color: #fff; font-size: 14px"
+        <span class="text-dim" style="font-size: 0.875rem">grammi</span>
+        <button class="tap grad-food rounded-2xl px-4 py-2.5 font-semibold" style="color: #fff; font-size: 0.875rem"
           @click="confirm">
           Aggiungi
         </button>
       </div>
-      <div class="text-dim tabular" style="font-size: 12px; margin-top: 8px">
+      <div class="text-dim tabular" style="font-size: 0.75rem; margin-top: 8px">
         = {{ scaled.kcal }} kcal · C {{ scaled.cho }} · P {{ scaled.pro }} · G {{ scaled.fat }} · F {{ scaled.fib }}
       </div>
     </div>

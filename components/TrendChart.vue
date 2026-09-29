@@ -22,10 +22,10 @@
     </svg>
 
     <!-- estremi della scala: senza, il grafico non dice quanto vale -->
-    <div v-if="points.length" class="absolute text-faint tabular" style="top: -2px; right: 0; font-size: 10px">
+    <div v-if="points.length" class="absolute text-faint tabular" style="top: -2px; right: 0; font-size: 0.625rem">
       {{ fmt(max) }}
     </div>
-    <div v-if="points.length" class="absolute text-faint tabular" style="bottom: -2px; right: 0; font-size: 10px">
+    <div v-if="points.length" class="absolute text-faint tabular" style="bottom: -2px; right: 0; font-size: 0.625rem">
       {{ fmt(min) }}
     </div>
   </div>

@@ -7,8 +7,8 @@
         style="border-radius: 13px; object-fit: cover"
         :style="{ boxShadow: `0 0 0 1px var(--line), 0 6px 16px -4px var(--${tone}-glow)` }" />
       <div>
-        <div class="display text-ink" style="font-size: 22px; font-weight: 800; line-height: 1.1">Equilibrio</div>
-        <div :style="{ color: `var(--${tone})`, fontSize: '12.5px', textTransform: 'capitalize', fontWeight: 500 }">
+        <div class="display text-ink" style="font-size: 1.375rem; font-weight: 800; line-height: 1.1">Equilibrio</div>
+        <div :style="{ color: `var(--${tone})`, fontSize: '0.7812rem', textTransform: 'capitalize', fontWeight: 500 }">
           {{ date }}
         </div>
       </div>

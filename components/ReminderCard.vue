@@ -11,8 +11,8 @@
     </div>
 
     <div class="flex-1 min-w-0">
-      <div class="text-ink truncate" style="font-size: 14px; font-weight: 600">{{ label }}</div>
-      <div class="truncate" :style="{ color: `var(--${tone})`, fontSize: '12px', fontWeight: 500 }">{{ detail }}</div>
+      <div class="text-ink truncate" style="font-size: 0.875rem; font-weight: 600">{{ label }}</div>
+      <div class="truncate" :style="{ color: `var(--${tone})`, fontSize: '0.75rem', fontWeight: 500 }">{{ detail }}</div>
     </div>
 
     <!-- .stop: toccando l'interruttore non si apre anche il dettaglio -->

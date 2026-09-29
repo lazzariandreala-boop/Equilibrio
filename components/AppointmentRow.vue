@@ -10,15 +10,15 @@
     </button>
 
     <button class="tap flex-1 min-w-0 text-left" @click="$emit('open')">
-      <div class="text-ink truncate" style="font-size: 14.5px; font-weight: 600"
+      <div class="text-ink truncate" style="font-size: 0.9062rem; font-weight: 600"
         :style="appointment.done ? { textDecoration: 'line-through' } : {}">
         {{ appointment.title }}
       </div>
-      <div class="text-dim truncate" style="font-size: 12.5px; margin-top: 1px">
+      <div class="text-dim truncate" style="font-size: 0.7812rem; margin-top: 1px">
         {{ fmtDate(appointment.date) }}<span v-if="appointment.time"> · {{ appointment.time }}</span>
         <span v-if="appointment.place"> · {{ appointment.place }}</span>
       </div>
-      <p v-if="appointment.notes" class="text-faint" style="font-size: 12px; margin-top: 4px; line-height: 1.4">
+      <p v-if="appointment.notes" class="text-faint" style="font-size: 0.75rem; margin-top: 4px; line-height: 1.4">
         {{ appointment.notes }}
       </p>
     </button>

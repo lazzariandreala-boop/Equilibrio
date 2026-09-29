@@ -14,14 +14,14 @@
           <component :is="icon" :size="21" color="#fff" />
         </div>
         <div class="min-w-0 flex-1">
-          <div class="text-dim truncate" style="font-size: 13.5px">{{ label }}</div>
+          <div class="text-dim truncate" style="font-size: 0.8438rem">{{ label }}</div>
           <div class="display tabular flex items-baseline gap-1" style="margin-top: 1px">
-            <span :style="{ color: `var(--${tone})`, fontSize: '25px', fontWeight: 800, lineHeight: 1.05 }">
+            <span :style="{ color: `var(--${tone})`, fontSize: '1.5625rem', fontWeight: 800, lineHeight: 1.05 }">
               {{ value }}
             </span>
-            <span class="text-dim" style="font-size: 12.5px; font-weight: 600">{{ unit }}</span>
+            <span class="text-dim" style="font-size: 0.7812rem; font-weight: 600">{{ unit }}</span>
           </div>
-          <div class="text-faint tabular" style="font-size: 12px">{{ sub }}</div>
+          <div class="text-faint tabular" style="font-size: 0.75rem">{{ sub }}</div>
         </div>
       </div>
 
@@ -30,7 +30,7 @@
         <div class="track" style="height: 7px; margin-top: 10px">
           <div class="fill" :style="{ width: `${clamped}%`, background: `var(--${tone})`, boxShadow: `0 0 8px var(--${tone}-glow)` }" />
         </div>
-        <div v-if="!$slots.footer" class="tabular" :style="{ color: `var(--${tone})`, fontSize: '12px', fontWeight: 600, marginTop: '6px' }">
+        <div v-if="!$slots.footer" class="tabular" :style="{ color: `var(--${tone})`, fontSize: '0.75rem', fontWeight: 600, marginTop: '6px' }">
           {{ Math.round(clamped) }}% dell'obiettivo
         </div>
       </template>

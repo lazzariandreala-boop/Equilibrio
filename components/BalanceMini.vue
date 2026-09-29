@@ -18,15 +18,15 @@
     </svg>
 
     <div class="relative flex flex-col h-full" style="padding: 14px">
-      <div class="text-dim" style="font-size: 13px">
+      <div class="text-dim" style="font-size: 0.8125rem">
         {{ day.isToday ? "Equilibrio di oggi" : "Equilibrio del giorno" }}
       </div>
 
       <div style="margin-top: 6px">
-        <div class="display" style="color: var(--food); font-size: 27px; font-weight: 800; line-height: 1.1">
+        <div class="display" style="color: var(--food); font-size: 1.6875rem; font-weight: 800; line-height: 1.1">
           {{ onTrack }} {{ onTrack === 1 ? "abitudine" : "abitudini" }}
         </div>
-        <div class="display" style="color: var(--food); font-size: 14px; font-weight: 700; opacity: .85">
+        <div class="display" style="color: var(--food); font-size: 0.875rem; font-weight: 700; opacity: .85">
           su 4 ben avviate
         </div>
       </div>
@@ -38,7 +38,7 @@
       </div>
 
       <div class="flex items-center gap-1.5 mt-auto" style="padding-top: 10px">
-        <span class="text-dim" style="font-size: 12.5px; line-height: 1.3">{{ message }}</span>
+        <span class="text-dim" style="font-size: 0.7812rem; line-height: 1.3">{{ message }}</span>
         <Heart :size="13" color="var(--food)" class="shrink-0" />
       </div>
     </div>

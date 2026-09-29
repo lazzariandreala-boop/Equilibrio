@@ -7,8 +7,8 @@
         <component :is="icon" :size="19" :color="`var(--${tone})`" />
       </div>
       <div class="min-w-0 flex-1 text-left">
-        <div class="text-ink" style="font-weight: 700; font-size: 16px">{{ title }}</div>
-        <div v-if="subtitle" class="text-faint truncate" style="font-size: 12.5px">{{ subtitle }}</div>
+        <div class="text-ink" style="font-weight: 700; font-size: 1rem">{{ title }}</div>
+        <div v-if="subtitle" class="text-faint truncate" style="font-size: 0.7812rem">{{ subtitle }}</div>
       </div>
       <ChevronDown :size="19" class="text-faint shrink-0"
         :style="{ transition: 'transform 260ms cubic-bezier(.22,1,.36,1)', transform: open ? 'rotate(180deg)' : 'none' }" />

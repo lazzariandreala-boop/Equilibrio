@@ -1,7 +1,7 @@
 <template>
   <div>
-    <div class="display tabular text-center mb-6" :style="{ fontSize: '54px', fontWeight: 800, color: `var(--${tone})`, lineHeight: 1 }">
-      {{ local }}<span class="text-dim" style="font-size: 18px; font-weight: 600"> {{ unit }}</span>
+    <div class="display tabular text-center mb-6" :style="{ fontSize: '3.375rem', fontWeight: 800, color: `var(--${tone})`, lineHeight: 1 }">
+      {{ local }}<span class="text-dim" style="font-size: 1.125rem; font-weight: 600"> {{ unit }}</span>
     </div>
 
     <div class="flex items-center gap-3 mb-5">
@@ -16,7 +16,7 @@
     </div>
 
     <div class="grid grid-cols-3 gap-2 mb-5">
-      <button v-for="p in presets" :key="p" class="tap rounded-2xl py-3 font-semibold tabular" style="font-size: 15px"
+      <button v-for="p in presets" :key="p" class="tap rounded-2xl py-3 font-semibold tabular" style="font-size: 0.9375rem"
         :class="local === p ? `grad-${tone}` : 'bg-raised text-dim'"
         :style="local === p ? { color: '#fff' } : {}"
         @click="local = p">
@@ -24,7 +24,7 @@
       </button>
     </div>
 
-    <button class="tap w-full py-3.5 rounded-3xl font-semibold" :class="`grad-${tone}`" style="color: #fff; font-size: 15px"
+    <button class="tap w-full py-3.5 rounded-3xl font-semibold" :class="`grad-${tone}`" style="color: #fff; font-size: 0.9375rem"
       @click="$emit('save', local)">
       Salva obiettivo
     </button>

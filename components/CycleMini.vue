@@ -14,15 +14,15 @@
       </div>
 
       <div class="mt-auto" style="padding-top: 12px">
-        <div class="display" style="color: #fff; font-size: 26px; font-weight: 800; line-height: 1.08">
+        <div class="display" style="color: #fff; font-size: 1.625rem; font-weight: 800; line-height: 1.08">
           {{ headline }}
         </div>
-        <div style="color: rgba(255,255,255,.85); font-size: 12.5px; margin-top: 2px; line-height: 1.3">
+        <div style="color: rgba(255,255,255,.85); font-size: 0.7812rem; margin-top: 2px; line-height: 1.3">
           {{ label }}
         </div>
       </div>
 
-      <div v-if="predicted" style="color: rgba(255,255,255,.72); font-size: 11px; margin-top: 8px">
+      <div v-if="predicted" style="color: rgba(255,255,255,.72); font-size: 0.6875rem; margin-top: 8px">
         previsto {{ predicted }}
       </div>
     </div>

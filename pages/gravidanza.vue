@@ -5,7 +5,7 @@
       <EmptyState class="desk-span" tone="alcohol" title="Quando è iniziata?"
         subtitle="Serve una data per calcolare a che settimana sei e la data presunta del parto." />
       <button class="tap w-full rounded-full py-3.5 font-semibold grad-alcohol cta-glow-alcohol"
-        style="color: #fff; font-size: 15.5px; margin-top: 12px" @click="openDate()">
+        style="color: #fff; font-size: 0.9688rem; margin-top: 12px" @click="openDate()">
         Imposta la data
       </button>
     </div>
@@ -20,15 +20,15 @@
         <div class="relative" style="padding: 18px">
           <div class="flex items-center gap-2">
             <Baby :size="18" color="#fff" />
-            <span style="color: #fff; font-size: 14px; font-weight: 700">{{ TRIMESTER_LABEL[info.trimester] }}</span>
+            <span style="color: #fff; font-size: 0.875rem; font-weight: 700">{{ TRIMESTER_LABEL[info.trimester] }}</span>
           </div>
 
           <div class="text-center" style="margin-top: 12px">
-            <div class="display" style="color: #fff; font-size: 46px; font-weight: 800; line-height: 1">
-              {{ info.weeks }}<span style="font-size: 22px">ª</span>
-              <span style="font-size: 20px; font-weight: 700; opacity: .9"> settimana</span>
+            <div class="display" style="color: #fff; font-size: 2.875rem; font-weight: 800; line-height: 1">
+              {{ info.weeks }}<span style="font-size: 1.375rem">ª</span>
+              <span style="font-size: 1.25rem; font-weight: 700; opacity: .9"> settimana</span>
             </div>
-            <div style="color: rgba(255,255,255,.85); font-size: 13.5px; margin-top: 4px">
+            <div style="color: rgba(255,255,255,.85); font-size: 0.8438rem; margin-top: 4px">
               {{ info.weeks }} settimane e {{ info.dayOfWeek }} {{ info.dayOfWeek === 1 ? "giorno" : "giorni" }}
             </div>
           </div>
@@ -39,41 +39,41 @@
 
           <div class="flex" style="margin-top: 14px; padding-top: 12px; border-top: 1px solid rgba(255,255,255,.22)">
             <div class="flex-1">
-              <div class="display tabular" style="color: #fff; font-size: 17px; font-weight: 700">{{ info.daysToDue }}</div>
-              <div style="color: rgba(255,255,255,.78); font-size: 10.5px">giorni al termine</div>
+              <div class="display tabular" style="color: #fff; font-size: 1.0625rem; font-weight: 700">{{ info.daysToDue }}</div>
+              <div style="color: rgba(255,255,255,.78); font-size: 0.6562rem">giorni al termine</div>
             </div>
             <div class="flex-1" style="border-left: 1px solid rgba(255,255,255,.2); padding-left: 10px">
-              <div class="display" style="color: #fff; font-size: 15px; font-weight: 700; text-transform: capitalize">
+              <div class="display" style="color: #fff; font-size: 0.9375rem; font-weight: 700; text-transform: capitalize">
                 {{ fmtShort(info.dueDate) }}
               </div>
-              <div style="color: rgba(255,255,255,.78); font-size: 10.5px">data presunta</div>
+              <div style="color: rgba(255,255,255,.78); font-size: 0.6562rem">data presunta</div>
             </div>
             <div class="flex-1" style="border-left: 1px solid rgba(255,255,255,.2); padding-left: 10px">
-              <div class="display tabular" style="color: #fff; font-size: 17px; font-weight: 700">{{ preg.upcoming.length }}</div>
-              <div style="color: rgba(255,255,255,.78); font-size: 10.5px">visite in programma</div>
+              <div class="display tabular" style="color: #fff; font-size: 1.0625rem; font-weight: 700">{{ preg.upcoming.length }}</div>
+              <div style="color: rgba(255,255,255,.78); font-size: 0.6562rem">visite in programma</div>
             </div>
           </div>
         </div>
       </div>
 
-      <p v-if="info.invalid" class="text-food rounded-2xl" style="padding: 11px 13px; background: var(--food-soft); font-size: 12.5px; line-height: 1.45">
+      <p v-if="info.invalid" class="text-food rounded-2xl" style="padding: 11px 13px; background: var(--food-soft); font-size: 0.7812rem; line-height: 1.45">
         La data inserita non sembra plausibile. Controllala toccando "Modifica la data".
       </p>
 
       <div class="flex gap-2.5 rise" style="animation-delay: 70ms">
         <button class="tap flex-1 rounded-full py-3.5 font-semibold flex items-center justify-center gap-2 grad-alcohol cta-glow-alcohol"
-          style="color: #fff; font-size: 15px" @click="openAppointment()">
+          style="color: #fff; font-size: 0.9375rem" @click="openAppointment()">
           <Plus :size="18" /> Visita
         </button>
         <button class="tap flex-1 rounded-full py-3.5 font-semibold flex items-center justify-center gap-2 bg-raised text-ink"
-          style="font-size: 15px; border: 1px solid var(--line)" @click="openDate()">
+          style="font-size: 0.9375rem; border: 1px solid var(--line)" @click="openDate()">
           <CalendarDays :size="18" color="var(--alcohol)" /> Modifica la data
         </button>
       </div>
 
       <!-- Prossime visite -->
       <div v-if="preg.upcoming.length" class="rise" style="animation-delay: 110ms">
-        <div class="display px-1 mb-2.5" style="font-weight: 700; font-size: 17px">Prossime visite</div>
+        <div class="display px-1 mb-2.5" style="font-weight: 700; font-size: 1.0625rem">Prossime visite</div>
         <div class="space-y-2">
           <AppointmentRow v-for="a in preg.upcoming" :key="a.id" :appointment="a"
             @open="openAppointment(a)" @toggle="preg.toggleDone(a.id)" />
@@ -88,21 +88,21 @@
             <div v-for="c in PRENATAL_SCHEDULE" :key="c.week" class="rounded-3xl" style="padding: 11px 13px"
               :style="{ background: c.week <= info.weeks ? 'var(--raised)' : 'var(--water-soft)' }">
               <div class="flex items-center justify-between gap-2">
-                <span class="text-ink" style="font-size: 14px; font-weight: 600">{{ c.title }}</span>
+                <span class="text-ink" style="font-size: 0.875rem; font-weight: 600">{{ c.title }}</span>
                 <span class="shrink-0 rounded-full" :style="{
-                  padding: '3px 9px', fontSize: '11px', fontWeight: 600,
+                  padding: '3px 9px', fontSize: '0.6875rem', fontWeight: 600,
                   background: c.week <= info.weeks ? 'var(--line)' : 'var(--water)',
                   color: c.week <= info.weeks ? 'var(--dim)' : '#fff',
                 }">{{ c.week }}ª sett.</span>
               </div>
-              <p class="text-dim" style="font-size: 12.5px; line-height: 1.4; margin-top: 4px">{{ c.detail }}</p>
-              <button class="tap text-alcohol" style="font-size: 12.5px; font-weight: 600; margin-top: 6px"
+              <p class="text-dim" style="font-size: 0.7812rem; line-height: 1.4; margin-top: 4px">{{ c.detail }}</p>
+              <button class="tap text-alcohol" style="font-size: 0.7812rem; font-weight: 600; margin-top: 6px"
                 @click="openAppointment(null, c.title, c.week)">
                 Metti in agenda
               </button>
             </div>
           </div>
-          <p class="text-faint" style="font-size: 12px; margin-top: 10px; line-height: 1.5">
+          <p class="text-faint" style="font-size: 0.75rem; margin-top: 10px; line-height: 1.5">
             Scaletta indicativa: le tempistiche esatte le stabilisce chi segue la gravidanza.
           </p>
         </Expandable>
@@ -123,9 +123,9 @@
     <BottomSheet v-model="dateOpen" title="Data di riferimento">
       <div class="space-y-3.5">
         <div>
-          <div class="text-faint mb-1.5" style="font-size: 12px">Che data conosci?</div>
+          <div class="text-faint mb-1.5" style="font-size: 0.75rem">Che data conosci?</div>
           <div class="grid grid-cols-2 gap-2">
-            <button v-for="b in bases" :key="b.key" class="tap rounded-2xl py-2.5 font-semibold" style="font-size: 13.5px"
+            <button v-for="b in bases" :key="b.key" class="tap rounded-2xl py-2.5 font-semibold" style="font-size: 0.8438rem"
               :class="form.basis === b.key ? 'grad-alcohol' : 'bg-raised text-dim'"
               :style="form.basis === b.key ? { color: '#fff' } : {}" @click="form.basis = b.key">
               {{ b.label }}
@@ -134,27 +134,27 @@
         </div>
 
         <div>
-          <div class="text-faint mb-1.5" style="font-size: 12px">
+          <div class="text-faint mb-1.5" style="font-size: 0.75rem">
             {{ form.basis === "mestruazione" ? "Primo giorno dell'ultima mestruazione" : "Giorno del concepimento" }}
           </div>
           <input v-model="form.date" type="date" class="bg-card border border-line text-ink rounded-2xl px-3 py-2.5 w-full" />
         </div>
 
-        <p class="text-dim rounded-2xl" style="padding: 11px 13px; background: var(--water-soft); font-size: 12.5px; line-height: 1.45">
+        <p class="text-dim rounded-2xl" style="padding: 11px 13px; background: var(--water-soft); font-size: 0.7812rem; line-height: 1.45">
           Le settimane di gravidanza si contano dall'ultima mestruazione, non dal concepimento: quando
           avviene il concepimento si è già a due settimane. Se indichi quella data, l'app fa la conversione.
         </p>
 
         <div v-if="preview" class="rounded-2xl" style="padding: 11px 13px; background: var(--alcohol-soft)">
-          <div class="text-ink" style="font-size: 13.5px; font-weight: 600">
+          <div class="text-ink" style="font-size: 0.8438rem; font-weight: 600">
             Saresti alla {{ preview.weeks }}ª settimana e {{ preview.dayOfWeek }} giorni
           </div>
-          <div class="text-dim" style="font-size: 12.5px; margin-top: 2px; text-transform: capitalize">
+          <div class="text-dim" style="font-size: 0.7812rem; margin-top: 2px; text-transform: capitalize">
             Data presunta del parto: {{ fmtLong(preview.dueDate) }}
           </div>
         </div>
 
-        <button class="tap w-full py-3.5 rounded-3xl font-semibold grad-alcohol" style="color: #fff; font-size: 15px"
+        <button class="tap w-full py-3.5 rounded-3xl font-semibold grad-alcohol" style="color: #fff; font-size: 0.9375rem"
           :disabled="!form.date" :style="!form.date ? { opacity: 0.5 } : {}" @click="saveDate">
           Salva
         </button>
@@ -165,46 +165,46 @@
     <BottomSheet v-model="apptOpen" :title="editingId ? 'Modifica la visita' : 'Nuova visita'">
       <div class="space-y-3.5">
         <div>
-          <div class="text-faint mb-1.5" style="font-size: 12px">Tipo di visita</div>
+          <div class="text-faint mb-1.5" style="font-size: 0.75rem">Tipo di visita</div>
           <input v-model="appt.title" class="bg-card border border-line text-ink rounded-2xl px-3 py-2.5 w-full"
             placeholder="Es. ecografia morfologica" />
         </div>
 
         <div class="flex gap-2.5">
           <div style="flex: 1.3">
-            <div class="text-faint mb-1.5" style="font-size: 12px">Data</div>
+            <div class="text-faint mb-1.5" style="font-size: 0.75rem">Data</div>
             <input v-model="appt.date" type="date" class="bg-card border border-line text-ink rounded-2xl px-3 py-2.5 w-full" />
           </div>
           <div style="flex: 1">
-            <div class="text-faint mb-1.5" style="font-size: 12px">Ora</div>
+            <div class="text-faint mb-1.5" style="font-size: 0.75rem">Ora</div>
             <input v-model="appt.time" type="time" class="bg-card border border-line text-ink rounded-2xl px-3 py-2.5 w-full" />
           </div>
         </div>
 
         <div>
-          <div class="text-faint mb-1.5" style="font-size: 12px">Dove</div>
+          <div class="text-faint mb-1.5" style="font-size: 0.75rem">Dove</div>
           <input v-model="appt.place" class="bg-card border border-line text-ink rounded-2xl px-3 py-2.5 w-full"
             placeholder="Ambulatorio, ospedale…" />
         </div>
 
         <div>
-          <div class="text-faint mb-1.5" style="font-size: 12px">Note</div>
+          <div class="text-faint mb-1.5" style="font-size: 0.75rem">Note</div>
           <textarea v-model="appt.notes" rows="3" style="resize: none"
             class="bg-card border border-line text-ink rounded-2xl px-3 py-2.5 w-full"
             placeholder="Cosa chiedere, esiti, esami da portare…" />
         </div>
 
-        <div v-if="apptWeek !== null" class="text-dim rounded-2xl" style="padding: 10px 13px; background: var(--water-soft); font-size: 12.5px">
+        <div v-if="apptWeek !== null" class="text-dim rounded-2xl" style="padding: 10px 13px; background: var(--water-soft); font-size: 0.7812rem">
           In quella data sarai alla {{ apptWeek }}ª settimana.
         </div>
 
-        <button class="tap w-full py-3.5 rounded-3xl font-semibold grad-alcohol" style="color: #fff; font-size: 15px"
+        <button class="tap w-full py-3.5 rounded-3xl font-semibold grad-alcohol" style="color: #fff; font-size: 0.9375rem"
           :disabled="!appt.date || !appt.title" :style="!appt.date || !appt.title ? { opacity: 0.5 } : {}"
           @click="saveAppointment">
           {{ editingId ? "Salva le modifiche" : "Aggiungi" }}
         </button>
 
-        <button v-if="editingId" class="tap w-full py-2.5 rounded-2xl text-faint" style="font-size: 13px" @click="removeAppointment">
+        <button v-if="editingId" class="tap w-full py-2.5 rounded-2xl text-faint" style="font-size: 0.8125rem" @click="removeAppointment">
           Elimina questa visita
         </button>
       </div>

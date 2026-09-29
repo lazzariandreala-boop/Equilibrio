@@ -23,7 +23,7 @@
           <component :is="item.icon" :size="20"
             :color="active(item.to) ? `var(--${item.tone})` : 'var(--faint)'" />
           <span :style="{
-            fontSize: '9.5px', fontWeight: 600, marginTop: '3px', whiteSpace: 'nowrap',
+            fontSize: '0.5938rem', fontWeight: 600, marginTop: '3px', whiteSpace: 'nowrap',
             color: active(item.to) ? `var(--${item.tone})` : 'var(--faint)',
           }">{{ item.label }}</span>
           <span v-if="active(item.to)" class="absolute rounded-full"

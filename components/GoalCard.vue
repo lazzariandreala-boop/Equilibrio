@@ -41,12 +41,12 @@
       </div>
 
       <div class="flex-1 min-w-0">
-        <div class="text-ink" style="font-size: 14.5px; font-weight: 500">
-          {{ label }}<span v-if="hint" class="text-faint" style="font-size: 12px"> ({{ hint }})</span>
+        <div class="text-ink" style="font-size: 0.9062rem; font-weight: 500">
+          {{ label }}<span v-if="hint" class="text-faint" style="font-size: 0.75rem"> ({{ hint }})</span>
         </div>
         <div class="display tabular flex items-baseline gap-1" style="margin-top: 1px">
-          <span :style="{ color: `var(--${tone})`, fontSize: '29px', fontWeight: 800, lineHeight: 1.05 }">{{ value }}</span>
-          <span class="text-dim" style="font-size: 14px; font-weight: 600">{{ unit }}</span>
+          <span :style="{ color: `var(--${tone})`, fontSize: '1.8125rem', fontWeight: 800, lineHeight: 1.05 }">{{ value }}</span>
+          <span class="text-dim" style="font-size: 0.875rem; font-weight: 600">{{ unit }}</span>
         </div>
       </div>
 
@@ -57,7 +57,7 @@
     <div v-if="note" class="relative flex items-start gap-2.5 rounded-3xl"
       :style="{ margin: '0 12px 12px', padding: '10px 12px', background: 'var(--card)', border: `1px solid var(--${tone}-soft)` }">
       <Info :size="16" :color="`var(--${tone})`" class="shrink-0" style="margin-top: 1px" />
-      <span class="text-dim" style="font-size: 12.5px; line-height: 1.4">{{ note }}</span>
+      <span class="text-dim" style="font-size: 0.7812rem; line-height: 1.4">{{ note }}</span>
     </div>
   </button>
 </template>

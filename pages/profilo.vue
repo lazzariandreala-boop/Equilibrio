@@ -10,14 +10,39 @@
         <User :size="24" color="#fff" />
       </div>
       <div class="flex-1 min-w-0">
-        <div class="display truncate" style="font-weight: 700; font-size: 18px">{{ user?.name }}</div>
-        <div class="text-faint truncate" style="font-size: 12.5px">{{ user?.demo ? "Modalità demo (dati locali)" : user?.email }}</div>
+        <div class="display truncate" style="font-weight: 700; font-size: 1.125rem">{{ user?.name }}</div>
+        <div class="text-faint truncate" style="font-size: 0.7812rem">{{ user?.demo ? "Modalità demo (dati locali)" : user?.email }}</div>
       </div>
       <button v-if="!user?.demo" class="tap text-dim rounded-full shrink-0"
-        style="padding: 9px 18px; font-size: 13.5px; font-weight: 600; border: 1px solid var(--line)"
+        style="padding: 9px 18px; font-size: 0.8438rem; font-weight: 600; border: 1px solid var(--line)"
         @click="signOut">
         Esci
       </button>
+    </div>
+
+    <!-- Dimensione del testo: in alto, è la prima cosa che cerca chi non legge bene -->
+    <div class="rise rounded-4xl desk-span" style="padding: 13px 14px"
+      :style="{ background: 'var(--card)', border: '1px solid var(--line)', boxShadow: 'var(--tile-shadow)' }">
+      <div class="flex items-center gap-3" style="margin-bottom: 10px">
+        <div class="rounded-2xl flex items-center justify-center shrink-0"
+          style="width: 40px; height: 40px; background: var(--water-soft)">
+          <Type :size="19" color="var(--water)" />
+        </div>
+        <div class="min-w-0">
+          <div class="text-ink" style="font-size: 0.9375rem; font-weight: 600">Dimensione del testo</div>
+          <div class="text-faint" style="font-size: 0.75rem">Si somma a quella impostata nel telefono</div>
+        </div>
+      </div>
+      <div class="grid grid-cols-3 gap-2" role="radiogroup" aria-label="Dimensione del testo">
+        <button v-for="o in textSizes" :key="o.value" class="tap rounded-2xl py-2.5 font-semibold"
+          role="radio" :aria-checked="settings.profile.textScale === o.value"
+          :style="settings.profile.textScale === o.value
+            ? { background: 'var(--water)', color: '#fff', fontSize: o.preview }
+            : { background: 'var(--raised)', color: 'var(--dim)', fontSize: o.preview }"
+          @click="settings.profile.textScale = o.value">
+          {{ o.label }}
+        </button>
+      </div>
     </div>
 
     <!-- Obiettivi -->
@@ -47,7 +72,7 @@
           <SettingToggleRow label="Sono incinta" tone="alcohol" :on="settings.profile.pregnant"
             @toggle="togglePregnant()" />
 
-          <p class="text-faint px-1" style="font-size: 12px; line-height: 1.5">
+          <p class="text-faint px-1" style="font-size: 0.75rem; line-height: 1.5">
             Con "sono incinta" attivo, aggiungendo un pasto l'app segnala gli alimenti sconsigliati
             in gravidanza e sospende le previsioni del ciclo.
           </p>
@@ -55,14 +80,14 @@
           <NuxtLink v-if="settings.profile.cycleTracking" to="/ciclo"
             class="tap rounded-3xl flex items-center gap-3" style="padding: 12px 14px; background: var(--raised)">
             <CalendarHeart :size="19" color="var(--alcohol)" />
-            <span class="text-ink flex-1" style="font-size: 14.5px; font-weight: 600">Apri il diario del ciclo</span>
+            <span class="text-ink flex-1" style="font-size: 0.9062rem; font-weight: 600">Apri il diario del ciclo</span>
             <ChevronRight :size="17" class="text-faint" />
           </NuxtLink>
 
           <NuxtLink v-if="settings.profile.pregnant" to="/gravidanza"
             class="tap rounded-3xl flex items-center gap-3" style="padding: 12px 14px; background: var(--raised)">
             <Baby :size="19" color="var(--alcohol)" />
-            <span class="text-ink flex-1" style="font-size: 14.5px; font-weight: 600">
+            <span class="text-ink flex-1" style="font-size: 0.9062rem; font-weight: 600">
               {{ pregSummary }}
             </span>
             <ChevronRight :size="17" class="text-faint" />
@@ -71,7 +96,7 @@
           <button v-if="settings.profile.pregnant" class="tap w-full rounded-3xl flex items-center gap-3"
             style="padding: 12px 14px; background: var(--raised)" @click="guideOpen = true">
             <BookOpen :size="19" color="var(--alcohol)" />
-            <span class="text-ink flex-1 text-left" style="font-size: 14.5px; font-weight: 600">
+            <span class="text-ink flex-1 text-left" style="font-size: 0.9062rem; font-weight: 600">
               Cosa evitare in gravidanza
             </span>
             <ChevronRight :size="17" class="text-faint" />
@@ -91,57 +116,57 @@
             <NuxtLink to="/glicemia" class="tap rounded-3xl flex items-center gap-3"
               style="padding: 12px 14px; background: var(--raised)">
               <Droplet :size="19" color="var(--water)" />
-              <span class="text-ink flex-1" style="font-size: 14.5px; font-weight: 600">Apri il diario glicemico</span>
+              <span class="text-ink flex-1" style="font-size: 0.9062rem; font-weight: 600">Apri il diario glicemico</span>
               <ChevronRight :size="17" class="text-faint" />
             </NuxtLink>
 
             <div class="rounded-3xl space-y-3" style="padding: 13px 14px; background: var(--raised)">
-              <div class="text-ink" style="font-size: 14px; font-weight: 600">Parametri glicemici</div>
+              <div class="text-ink" style="font-size: 0.875rem; font-weight: 600">Parametri glicemici</div>
 
               <div class="flex gap-2.5">
                 <div class="flex-1">
-                  <div class="text-faint mb-1" style="font-size: 11.5px">Obiettivo min</div>
+                  <div class="text-faint mb-1" style="font-size: 0.7188rem">Obiettivo min</div>
                   <input v-model.number="settings.diabetes.targetMin" type="number" inputmode="numeric" :class="numCls" />
                 </div>
                 <div class="flex-1">
-                  <div class="text-faint mb-1" style="font-size: 11.5px">Obiettivo max</div>
+                  <div class="text-faint mb-1" style="font-size: 0.7188rem">Obiettivo max</div>
                   <input v-model.number="settings.diabetes.targetMax" type="number" inputmode="numeric" :class="numCls" />
                 </div>
               </div>
 
               <div class="flex gap-2.5">
                 <div class="flex-1">
-                  <div class="text-faint mb-1" style="font-size: 11.5px">FSI (mg/dL per 1U)</div>
+                  <div class="text-faint mb-1" style="font-size: 0.7188rem">FSI (mg/dL per 1U)</div>
                   <input v-model.number="settings.diabetes.isf" type="number" inputmode="numeric" :class="numCls" />
-                  <div class="text-faint" style="font-size: 11px; margin-top: 3px">Di quanto scendi con 1 unità</div>
+                  <div class="text-faint" style="font-size: 0.6875rem; margin-top: 3px">Di quanto scendi con 1 unità</div>
                 </div>
                 <div class="flex-1">
-                  <div class="text-faint mb-1" style="font-size: 11.5px">I:C (g per 1U)</div>
+                  <div class="text-faint mb-1" style="font-size: 0.7188rem">I:C (g per 1U)</div>
                   <input v-model.number="settings.diabetes.icr" type="number" inputmode="numeric" :class="numCls" />
-                  <div class="text-faint" style="font-size: 11px; margin-top: 3px">Grammi coperti da 1 unità</div>
+                  <div class="text-faint" style="font-size: 0.6875rem; margin-top: 3px">Grammi coperti da 1 unità</div>
                 </div>
               </div>
 
               <div class="flex gap-2.5">
                 <div class="flex-1">
-                  <div class="text-faint mb-1" style="font-size: 11.5px">Insulina rapida</div>
+                  <div class="text-faint mb-1" style="font-size: 0.7188rem">Insulina rapida</div>
                   <input v-model="settings.diabetes.rapidInsulin" :class="numCls" placeholder="Es. Humalog" />
                 </div>
                 <div class="flex-1">
-                  <div class="text-faint mb-1" style="font-size: 11.5px">Insulina basale</div>
+                  <div class="text-faint mb-1" style="font-size: 0.7188rem">Insulina basale</div>
                   <input v-model="settings.diabetes.basalInsulin" :class="numCls" placeholder="Es. Toujeo" />
                 </div>
               </div>
 
               <div>
-                <div class="text-faint mb-1" style="font-size: 11.5px">Durata dell'insulina rapida (ore)</div>
+                <div class="text-faint mb-1" style="font-size: 0.7188rem">Durata dell'insulina rapida (ore)</div>
                 <input v-model.number="settings.diabetes.duration" type="number" inputmode="numeric" :class="numCls" />
-                <div class="text-faint" style="font-size: 11px; margin-top: 3px">
+                <div class="text-faint" style="font-size: 0.6875rem; margin-top: 3px">
                   Serve a sottrarre l'insulina ancora attiva dai boli successivi
                 </div>
               </div>
 
-              <p class="text-faint" style="font-size: 12px; line-height: 1.5">
+              <p class="text-faint" style="font-size: 0.75rem; line-height: 1.5">
                 Questi valori li stabilisce il diabetologo: inseriscili come sono nel tuo schema.
                 I calcoli dell'app sono stime costruite su di essi.
               </p>
@@ -153,7 +178,7 @@
 
     <!-- Promemoria -->
     <div class="rise" style="animation-delay: 120ms">
-      <div class="display mb-2.5 px-1" style="font-weight: 700; font-size: 19px">Promemoria</div>
+      <div class="display mb-2.5 px-1" style="font-weight: 700; font-size: 1.1875rem">Promemoria</div>
       <div class="grid grid-cols-2 gap-2.5">
         <ReminderCard :icon="Droplet" tone="water" label="Acqua"
           :detail="`${settings.reminders.waterTimes.length} volte al giorno`" :on="settings.reminders.water"
@@ -167,10 +192,10 @@
         <button class="tap rounded-4xl flex flex-col items-center justify-center gap-1.5"
           style="padding: 12px; background: var(--raised); border: 1px solid var(--line)" @click="enable">
           <BellRing :size="19" color="var(--move)" />
-          <span class="text-ink" style="font-size: 13px; font-weight: 600">Attiva notifiche</span>
+          <span class="text-ink" style="font-size: 0.8125rem; font-weight: 600">Attiva notifiche</span>
         </button>
       </div>
-      <p class="text-faint px-1" style="font-size: 12px; margin-top: 9px; line-height: 1.45">
+      <p class="text-faint px-1" style="font-size: 0.75rem; margin-top: 9px; line-height: 1.45">
         In background funzionano nell'app installata. Nel browser arrivano solo a finestra aperta.
         <button class="underline" @click="test">Fai una prova</button>
       </p>
@@ -187,8 +212,8 @@
             <Scale :size="21" :color="wConnected ? '#fff' : 'var(--dim)'" />
           </div>
           <div class="flex-1 min-w-0">
-            <div style="font-weight: 600; font-size: 15px">Withings</div>
-            <div class="text-dim" style="font-size: 12.5px">
+            <div style="font-weight: 600; font-size: 0.9375rem">Withings</div>
+            <div class="text-dim" style="font-size: 0.7812rem">
               <template v-if="wLoading">Verifico…</template>
               <template v-else-if="wConnected && wWeight != null">
                 {{ wWeight.toFixed(1) }} kg<template v-if="wFat != null"> · {{ wFat.toFixed(1) }}% grasso</template>
@@ -197,7 +222,7 @@
               <template v-else>{{ wReason || "Non collegato" }}</template>
             </div>
           </div>
-          <button v-if="!wLoading" class="tap rounded-2xl px-4 py-2.5 font-semibold shrink-0" style="font-size: 13px"
+          <button v-if="!wLoading" class="tap rounded-2xl px-4 py-2.5 font-semibold shrink-0" style="font-size: 0.8125rem"
             :class="wConnected ? 'bg-raised text-dim' : 'grad-move'" :style="wConnected ? {} : { color: '#fff' }"
             @click="wConnected ? wDisconnect() : wConnect()">
             {{ wConnected ? "Scollega" : "Collega" }}
@@ -214,12 +239,12 @@
             <HeartPulse :size="21" :color="health.connected.value ? '#fff' : 'var(--dim)'" />
           </div>
           <div class="flex-1 min-w-0">
-            <div style="font-weight: 600; font-size: 15px">Salute del telefono</div>
-            <div class="text-dim" style="font-size: 12.5px; line-height: 1.35">{{ health.label.value }}</div>
+            <div style="font-weight: 600; font-size: 0.9375rem">Salute del telefono</div>
+            <div class="text-dim" style="font-size: 0.7812rem; line-height: 1.35">{{ health.label.value }}</div>
           </div>
 
           <button v-if="health.native.value" class="tap rounded-2xl px-4 py-2.5 font-semibold shrink-0"
-            style="font-size: 13px"
+            style="font-size: 0.8125rem"
             :class="health.connected.value ? 'bg-raised text-dim' : 'grad-move'"
             :style="health.connected.value ? {} : { color: '#fff' }"
             :disabled="health.busy.value"
@@ -228,26 +253,26 @@
           </button>
         </div>
 
-        <p v-if="health.error.value" class="text-food" style="font-size: 12.5px; margin-top: 10px; line-height: 1.45">
+        <p v-if="health.error.value" class="text-food" style="font-size: 0.7812rem; margin-top: 10px; line-height: 1.45">
           {{ health.error.value }}
         </p>
 
         <div v-if="health.connected.value" class="flex gap-2" style="margin-top: 10px">
-          <button class="tap flex-1 rounded-2xl py-2.5 font-semibold bg-raised text-dim" style="font-size: 12.5px"
+          <button class="tap flex-1 rounded-2xl py-2.5 font-semibold bg-raised text-dim" style="font-size: 0.7812rem"
             :disabled="health.busy.value" @click="health.sync()">
             Aggiorna oggi
           </button>
-          <button class="tap flex-1 rounded-2xl py-2.5 font-semibold bg-raised text-dim" style="font-size: 12.5px"
+          <button class="tap flex-1 rounded-2xl py-2.5 font-semibold bg-raised text-dim" style="font-size: 0.7812rem"
             :disabled="health.busy.value" @click="health.importHistory(30)">
             Recupera 30 giorni
           </button>
         </div>
 
-        <p v-if="health.imported.value > 0" class="text-move" style="font-size: 12.5px; margin-top: 8px">
+        <p v-if="health.imported.value > 0" class="text-move" style="font-size: 0.7812rem; margin-top: 8px">
           Recuperate {{ health.imported.value }} voci dallo storico.
         </p>
 
-        <p class="text-faint" style="font-size: 12px; margin-top: 10px; line-height: 1.5">
+        <p class="text-faint" style="font-size: 0.75rem; margin-top: 10px; line-height: 1.5">
           Da qui arrivano passi e allenamenti scritti su <strong class="text-dim">Health Connect</strong>:
           Samsung Health, Garmin, Fitbit e Google Health lo fanno.
           <strong class="text-dim">Huawei Health no</strong> — usa un ecosistema separato e non scrive su Health Connect.
@@ -264,8 +289,8 @@
             <Sparkles :size="21" color="var(--food)" />
           </div>
           <div class="flex-1 min-w-0">
-            <div style="font-weight: 600; font-size: 15px">Riconoscimento dei pasti</div>
-            <div class="text-dim" style="font-size: 12.5px">
+            <div style="font-weight: 600; font-size: 0.9375rem">Riconoscimento dei pasti</div>
+            <div class="text-dim" style="font-size: 0.7812rem">
               {{ settings.keys.gemini ? "usa la tua chiave" : "usa la chiave condivisa dell'app" }}
             </div>
           </div>
@@ -273,9 +298,9 @@
 
         <input v-model="settings.keys.gemini" type="password" autocomplete="off"
           class="bg-raised border border-line text-ink rounded-2xl px-3 py-2.5 w-full"
-          style="font-size: 13.5px; margin-top: 10px" placeholder="Chiave Gemini (facoltativa)" />
+          style="font-size: 0.8438rem; margin-top: 10px" placeholder="Chiave Gemini (facoltativa)" />
 
-        <p class="text-faint" style="font-size: 12px; margin-top: 8px; line-height: 1.5">
+        <p class="text-faint" style="font-size: 0.75rem; margin-top: 8px; line-height: 1.5">
           Senza chiave il riconoscimento delle foto funziona lo stesso, ma consuma la quota condivisa.
           Puoi crearne una gratuita su Google AI Studio e incollarla qui: resta salvata solo nel tuo
           account e le richieste peseranno sul tuo.
@@ -289,10 +314,10 @@
           <Cloud :size="21" color="var(--water)" />
         </div>
         <div class="flex-1 min-w-0">
-          <div style="font-weight: 600; font-size: 15px">Backup su Firebase</div>
-          <div class="text-faint" style="font-size: 12.5px">I dati seguono l'account su ogni dispositivo</div>
+          <div style="font-weight: 600; font-size: 0.9375rem">Backup su Firebase</div>
+          <div class="text-faint" style="font-size: 0.7812rem">I dati seguono l'account su ogni dispositivo</div>
         </div>
-        <span class="rounded-full px-3 py-1.5 shrink-0" style="font-size: 12px; font-weight: 600"
+        <span class="rounded-full px-3 py-1.5 shrink-0" style="font-size: 0.75rem; font-weight: 600"
           :style="isDemo ? { background: 'var(--raised)', color: 'var(--faint)' } : { background: 'var(--move-soft)', color: 'var(--move)' }">
           {{ isDemo ? "non configurato" : "attivo" }}
         </span>
@@ -300,9 +325,9 @@
       </Expandable>
     </div>
 
-    <p class="text-faint text-center" style="font-size: 12.5px">
+    <p class="text-faint text-center" style="font-size: 0.7812rem">
       Equilibrio · un passo per volta<br />
-      <span style="font-size: 11px">build {{ buildStamp }}</span>
+      <span style="font-size: 0.6875rem">build {{ buildStamp }}</span>
     </p>
 
     <BottomSheet :model-value="goalOpen === 'water'" title="Obiettivo acqua" @update:model-value="goalOpen = null">
@@ -320,20 +345,20 @@
 
     <BottomSheet :model-value="reminderOpen === 'water'" title="Promemoria acqua" @update:model-value="reminderOpen = null">
       <div class="space-y-3">
-        <p class="text-dim" style="font-size: 13.5px; line-height: 1.5">
+        <p class="text-dim" style="font-size: 0.8438rem; line-height: 1.5">
           Un avviso a questi orari, per distribuire l'acqua durante la giornata invece di recuperarla la sera.
         </p>
         <div class="flex flex-wrap gap-2">
           <div v-for="(t, i) in settings.reminders.waterTimes" :key="i"
             class="rounded-full flex items-center gap-2" style="padding: 8px 12px; background: var(--water-soft)">
-            <input :value="t" type="time" class="tabular bg-transparent text-ink" style="font-size: 14px; border: none"
+            <input :value="t" type="time" class="tabular bg-transparent text-ink" style="font-size: 0.875rem; border: none"
               @change="settings.reminders.waterTimes[i] = ($event.target as HTMLInputElement).value" />
             <button class="text-faint" aria-label="Rimuovi" @click="settings.reminders.waterTimes.splice(i, 1)">
               <X :size="14" />
             </button>
           </div>
           <button class="tap rounded-full flex items-center gap-1.5"
-            style="padding: 8px 14px; background: var(--raised); border: 1px solid var(--line); font-size: 13.5px"
+            style="padding: 8px 14px; background: var(--raised); border: 1px solid var(--line); font-size: 0.8438rem"
             @click="settings.reminders.waterTimes.push('12:00')">
             <Plus :size="14" color="var(--water)" /> <span class="text-ink">Aggiungi orario</span>
           </button>
@@ -345,7 +370,7 @@
 
     <BottomSheet :model-value="reminderOpen === 'meal'" title="Promemoria pasti" @update:model-value="reminderOpen = null">
       <div class="space-y-3">
-        <p class="text-dim" style="font-size: 13.5px; line-height: 1.5">
+        <p class="text-dim" style="font-size: 0.8438rem; line-height: 1.5">
           Un avviso a colazione, pranzo e cena per registrare quello che hai mangiato finché te lo ricordi.
         </p>
         <SettingToggleRow label="Promemoria attivo" tone="food" :on="settings.reminders.meal"
@@ -355,11 +380,11 @@
 
     <BottomSheet :model-value="reminderOpen === 'evening'" title="Check serale" @update:model-value="reminderOpen = null">
       <div class="space-y-3">
-        <p class="text-dim" style="font-size: 13.5px; line-height: 1.5">
+        <p class="text-dim" style="font-size: 0.8438rem; line-height: 1.5">
           Una domanda a fine giornata su come è andata con l'alcol. Serve a chiudere il conto, senza giudizio.
         </p>
         <div class="rounded-3xl flex items-center justify-between" style="padding: 12px 14px; background: var(--raised)">
-          <span class="text-ink" style="font-size: 14.5px">Orario</span>
+          <span class="text-ink" style="font-size: 0.9062rem">Orario</span>
           <input :value="settings.reminders.eveningTime" type="time" class="tabular bg-card text-ink rounded-2xl"
             style="padding: 8px 12px; border: 1px solid var(--line)"
             @change="settings.reminders.eveningTime = ($event.target as HTMLInputElement).value" />
@@ -377,7 +402,7 @@
 
 <script setup lang="ts">
 import { User, GlassWater, Footprints, UtensilsCrossed, Scale, HeartPulse, Droplet, Moon, BellRing, Cloud, Target, Link2, X, Plus,
-  Baby, CalendarHeart, BookOpen, ChevronRight, Sparkles } from "lucide-vue-next";
+  Baby, CalendarHeart, BookOpen, ChevronRight, Sparkles, Type } from "lucide-vue-next";
 import { doc, getDoc, setDoc } from "firebase/firestore";
 import { useSettingsStore } from "~/stores/settings";
 import { usePregnancyStore } from "~/stores/pregnancy";
@@ -421,6 +446,12 @@ const womenSummary = computed(() => {
   if (settings.profile.cycleTracking) parts.push("ciclo monitorato");
   return parts.length ? parts.join(" · ") : "non attivi";
 });
+const textSizes = [
+  { value: 1, label: "Normale", preview: "0.8125rem" },
+  { value: 1.15, label: "Grande", preview: "0.9375rem" },
+  { value: 1.3, label: "Molto grande", preview: "1rem" },
+];
+
 const buildStamp = String(useRuntimeConfig().public.build || "dev").slice(0, 7);
 
 const connectionsSummary = computed(() => {

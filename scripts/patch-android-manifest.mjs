@@ -275,6 +275,30 @@ public class MainActivity extends BridgeActivity {
         // che avvengono durante l'inizializzazione dei plugin.
         CrashActivity.install(this);
         super.onCreate(savedInstanceState);
+        applySystemTextSize();
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        // L'utente può aver cambiato la dimensione del testo nelle
+        // impostazioni del telefono mentre l'app era in secondo piano.
+        applySystemTextSize();
+    }
+
+    /**
+     * La WebView non segue la dimensione del testo di sistema: di default
+     * resta al 100% anche se l'utente l'ha ingrandita. Qui la si allinea,
+     * così chi ha bisogno di caratteri grandi li trova anche nell'app.
+     */
+    private void applySystemTextSize() {
+        try {
+            float scale = getResources().getConfiguration().fontScale;
+            if (getBridge() != null && getBridge().getWebView() != null) {
+                getBridge().getWebView().getSettings().setTextZoom(Math.round(scale * 100));
+            }
+        } catch (Exception ignored) {
+        }
     }
 }
 `,

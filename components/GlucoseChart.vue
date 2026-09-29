@@ -32,16 +32,16 @@
         </template>
       </svg>
 
-      <div class="absolute text-faint tabular" style="top: -2px; right: 0; font-size: 10px">{{ max }}</div>
-      <div class="absolute text-faint tabular" style="bottom: -2px; right: 0; font-size: 10px">{{ min }}</div>
+      <div class="absolute text-faint tabular" style="top: -2px; right: 0; font-size: 0.625rem">{{ max }}</div>
+      <div class="absolute text-faint tabular" style="bottom: -2px; right: 0; font-size: 0.625rem">{{ min }}</div>
     </div>
 
     <!-- Etichette dell'asse orizzontale -->
     <div class="flex justify-between" style="margin-top: 6px">
-      <span v-for="(l, i) in axisLabels" :key="i" class="text-faint" style="font-size: 10.5px">{{ l }}</span>
+      <span v-for="(l, i) in axisLabels" :key="i" class="text-faint" style="font-size: 0.6562rem">{{ l }}</span>
     </div>
 
-    <p v-if="plotted.length < 2" class="text-faint text-center" style="font-size: 12.5px; margin-top: 10px">
+    <p v-if="plotted.length < 2" class="text-faint text-center" style="font-size: 0.7812rem; margin-top: 10px">
       Servono almeno due misurazioni in questo periodo per disegnare l'andamento.
     </p>
   </div>

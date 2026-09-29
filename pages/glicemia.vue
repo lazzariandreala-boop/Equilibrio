@@ -9,29 +9,29 @@
       <div class="relative flex items-center gap-4" style="padding: 14px 16px">
         <div class="min-w-0">
           <div class="display tabular flex items-baseline gap-1">
-            <span style="color: #fff; font-size: 44px; font-weight: 800; line-height: 1">{{ last.value }}</span>
+            <span style="color: #fff; font-size: 2.75rem; font-weight: 800; line-height: 1">{{ last.value }}</span>
             <span v-if="trend.kind !== 'sconosciuta'" class="display"
-              style="color: #fff; font-size: 30px; font-weight: 800; line-height: 1">{{ trend.arrow }}</span>
+              style="color: #fff; font-size: 1.875rem; font-weight: 800; line-height: 1">{{ trend.arrow }}</span>
           </div>
-          <div style="color: rgba(255,255,255,.88); font-size: 12.5px; margin-top: 2px">
+          <div style="color: rgba(255,255,255,.88); font-size: 0.7812rem; margin-top: 2px">
             mg/dL · {{ RANGE_LABEL[classify(last.value, params)] }}
           </div>
-          <div style="color: rgba(255,255,255,.72); font-size: 11.5px">{{ last.tag }} · {{ ago(last.at) }}</div>
+          <div style="color: rgba(255,255,255,.72); font-size: 0.7188rem">{{ last.tag }} · {{ ago(last.at) }}</div>
         </div>
 
         <div class="ml-auto text-right shrink-0">
-          <div class="display tabular" style="color: #fff; font-size: 16px; font-weight: 700">{{ iob }} U</div>
-          <div style="color: rgba(255,255,255,.75); font-size: 10.5px">attive</div>
-          <div class="display tabular" style="color: #fff; font-size: 16px; font-weight: 700; margin-top: 6px">
+          <div class="display tabular" style="color: #fff; font-size: 1rem; font-weight: 700">{{ iob }} U</div>
+          <div style="color: rgba(255,255,255,.75); font-size: 0.6562rem">attive</div>
+          <div class="display tabular" style="color: #fff; font-size: 1rem; font-weight: 700; margin-top: 6px">
             {{ todayUnits }} U
           </div>
-          <div style="color: rgba(255,255,255,.75); font-size: 10.5px">oggi</div>
+          <div style="color: rgba(255,255,255,.75); font-size: 0.6562rem">oggi</div>
         </div>
       </div>
 
       <!-- Il consiglio sta dentro l'intestazione: prima occupava una card a sé -->
       <div v-if="lowOrHigh" class="relative" style="padding: 10px 16px 12px; background: rgba(0,0,0,.18)">
-        <p style="color: rgba(255,255,255,.92); font-size: 12px; line-height: 1.4">{{ adviceText }}</p>
+        <p style="color: rgba(255,255,255,.92); font-size: 0.75rem; line-height: 1.4">{{ adviceText }}</p>
       </div>
     </div>
 
@@ -40,11 +40,11 @@
 
     <div class="flex gap-2.5 rise" style="animation-delay: 70ms">
       <button class="tap flex-1 rounded-full py-3.5 font-semibold flex items-center justify-center gap-2 grad-water cta-glow-water"
-        style="color: #fff; font-size: 15px" @click="openReading()">
+        style="color: #fff; font-size: 0.9375rem" @click="openReading()">
         <Plus :size="18" /> Glicemia
       </button>
       <button class="tap flex-1 rounded-full py-3.5 font-semibold flex items-center justify-center gap-2 grad-move cta-glow-move"
-        style="color: #fff; font-size: 15px" @click="openBolus()">
+        style="color: #fff; font-size: 0.9375rem" @click="openBolus()">
         <Syringe :size="18" /> Bolo
       </button>
     </div>
@@ -53,7 +53,7 @@
     <div v-if="glucose.readings.length" class="rise" style="animation-delay: 110ms">
       <div class="flex gap-1.5 p-1.5 rounded-3xl mb-2.5" style="background: var(--raised)">
         <button v-for="pr in periods" :key="pr.days" class="tap flex-1 py-2 rounded-2xl font-semibold"
-          style="font-size: 12.5px"
+          style="font-size: 0.7812rem"
           :style="period === pr.days
             ? { background: 'var(--card)', color: 'var(--ink)', boxShadow: 'var(--shadow)' }
             : { color: 'var(--dim)' }"
@@ -64,7 +64,7 @@
 
       <div class="rounded-4xl" style="padding: 14px"
         :style="{ background: 'var(--card)', border: '1px solid var(--line)', boxShadow: 'var(--tile-shadow)' }">
-        <p v-if="!stats.count" class="text-faint text-center" style="font-size: 13px; padding: 14px 8px">
+        <p v-if="!stats.count" class="text-faint text-center" style="font-size: 0.8125rem; padding: 14px 8px">
           Nessuna misurazione in questo periodo.
         </p>
 
@@ -79,10 +79,10 @@
         <!-- Una riga sola: le sei voci stavano su due blocchi separati -->
         <div class="flex flex-wrap" style="margin-top: 10px; gap: 4px 0">
           <div v-for="st in statCells" :key="st.label" style="flex: 0 0 33.333%">
-            <div class="display tabular" :style="{ color: st.color, fontSize: '18px', fontWeight: 800 }">
+            <div class="display tabular" :style="{ color: st.color, fontSize: '1.125rem', fontWeight: 800 }">
               {{ st.value }}
             </div>
-            <div class="text-dim" style="font-size: 10.5px">{{ st.label }}</div>
+            <div class="text-dim" style="font-size: 0.6562rem">{{ st.label }}</div>
           </div>
         </div>
 
@@ -90,8 +90,8 @@
 
         <div style="margin-top: 12px; padding-top: 12px; border-top: 1px solid var(--line)">
           <div class="flex items-center justify-between mb-1.5">
-            <span class="text-ink" style="font-size: 13px; font-weight: 600">Andamento</span>
-            <span class="text-faint" style="font-size: 11px">
+            <span class="text-ink" style="font-size: 0.8125rem; font-weight: 600">Andamento</span>
+            <span class="text-faint" style="font-size: 0.6875rem">
               {{ period > 7 ? "media giornaliera" : "ogni misurazione" }}
             </span>
           </div>
@@ -112,8 +112,8 @@
               <Syringe v-else :size="17" color="var(--move)" />
             </div>
             <div class="min-w-0 flex-1">
-              <div class="text-ink" style="font-size: 14.5px; font-weight: 600">{{ e.title }}</div>
-              <div class="text-dim truncate" style="font-size: 12.5px">{{ e.subtitle }}</div>
+              <div class="text-ink" style="font-size: 0.9062rem; font-weight: 600">{{ e.title }}</div>
+              <div class="text-dim truncate" style="font-size: 0.7812rem">{{ e.subtitle }}</div>
             </div>
             <button class="tap text-faint p-1.5 rounded-xl shrink-0" aria-label="Elimina" @click="removeEntry(e)">
               <Trash2 :size="15" />
@@ -128,15 +128,15 @@
       <div class="space-y-2.5">
         <!-- valore e andamento stanno insieme: si compilano di seguito -->
         <div class="rounded-4xl" style="padding: 11px 13px" :style="{ background: 'var(--raised)' }">
-          <div class="text-faint text-center" style="font-size: 11.5px; letter-spacing: .4px; text-transform: uppercase">
+          <div class="text-faint text-center" style="font-size: 0.7188rem; letter-spacing: .4px; text-transform: uppercase">
             Valore glicemico (mg/dL)
           </div>
           <input v-model.number="rf.value" type="number" inputmode="numeric"
             class="bg-transparent text-ink w-full text-center display tabular"
-            style="font-size: 42px; font-weight: 800; border: none; outline: none; padding: 2px 0" placeholder="—" />
+            style="font-size: 2.625rem; font-weight: 800; border: none; outline: none; padding: 2px 0" placeholder="—" />
 
           <div style="border-top: 1px solid var(--line); padding-top: 9px">
-            <div class="text-faint" style="font-size: 11.5px; letter-spacing: .4px; text-transform: uppercase">
+            <div class="text-faint" style="font-size: 0.7188rem; letter-spacing: .4px; text-transform: uppercase">
               Sta salendo o scendendo?
             </div>
             <div class="grid grid-cols-5 gap-1.5" style="margin-top: 8px">
@@ -148,12 +148,12 @@
                 :aria-label="t.label"
                 @click="rf.trend = rf.trend === t.key ? undefined : t.key">
                 <span class="display" :style="{
-                  fontSize: '20px', fontWeight: 800,
+                  fontSize: '1.25rem', fontWeight: 800,
                   color: rf.trend === t.key ? `var(--${TREND_TONE[t.key]})` : 'var(--dim)',
                 }">{{ t.arrow }}</span>
               </button>
             </div>
-            <div v-if="rf.trend" class="text-dim text-center" style="font-size: 12px; margin-top: 6px">
+            <div v-if="rf.trend" class="text-dim text-center" style="font-size: 0.75rem; margin-top: 6px">
               {{ TREND_OPTIONS.find((t) => t.key === rf.trend)?.label }}
             </div>
           </div>
@@ -165,15 +165,15 @@
           :style="{ background: `var(--${RANGE_TONE[classify(rf.value, params)]}-soft)`,
                     border: `1px solid var(--${RANGE_TONE[classify(rf.value, params)]})` }">
           <div class="min-w-0 flex-1">
-            <div class="text-ink" style="font-size: 14px; font-weight: 700">
+            <div class="text-ink" style="font-size: 0.875rem; font-weight: 700">
               {{ RANGE_LABEL[classify(rf.value, params)] }}
             </div>
-            <div class="text-dim" style="font-size: 12.5px">
+            <div class="text-dim" style="font-size: 0.7812rem">
               obiettivo {{ params.targetMin }}–{{ params.targetMax }} mg/dL
             </div>
           </div>
           <button class="tap rounded-2xl px-3.5 py-2 font-semibold shrink-0"
-            :style="{ background: `var(--${RANGE_TONE[classify(rf.value, params)]})`, color: '#fff', fontSize: '13px' }"
+            :style="{ background: `var(--${RANGE_TONE[classify(rf.value, params)]})`, color: '#fff', fontSize: '0.8125rem' }"
             @click="saveAndCorrect">
             {{ classify(rf.value, params) === "bassa" || classify(rf.value, params) === "molto-bassa"
               ? "Risali" : "Correggi" }} →
@@ -181,11 +181,11 @@
         </div>
 
         <div>
-          <div class="text-faint mb-1.5" style="font-size: 12px">Quando</div>
+          <div class="text-faint mb-1.5" style="font-size: 0.75rem">Quando</div>
           <!-- Una riga scorrevole: a capo occupavano tre righe intere -->
           <div class="flex gap-2 overflow-x-auto" style="scrollbar-width: none; padding-bottom: 2px">
             <button v-for="t in READING_TAGS" :key="t" class="tap rounded-full shrink-0"
-              style="padding: 7px 12px; font-size: 13px; white-space: nowrap"
+              style="padding: 7px 12px; font-size: 0.8125rem; white-space: nowrap"
               :style="rf.tag === t
                 ? { background: 'var(--water)', color: '#fff', fontWeight: 600 }
                 : { background: 'var(--raised)', color: 'var(--dim)' }"
@@ -196,7 +196,7 @@
         </div>
 
         <div>
-          <div class="text-faint mb-1.5" style="font-size: 12px">Stato d'animo</div>
+          <div class="text-faint mb-1.5" style="font-size: 0.75rem">Stato d'animo</div>
           <div class="grid grid-cols-5 gap-1.5">
             <button v-for="m in MOODS" :key="m.key" class="tap rounded-2xl flex flex-col items-center gap-0.5"
               style="padding: 7px 2px"
@@ -204,8 +204,8 @@
                 ? { background: 'var(--food-soft)', border: '1.5px solid var(--food)' }
                 : { background: 'var(--raised)', border: '1px solid transparent' }"
               @click="rf.mood = rf.mood === m.key ? undefined : m.key">
-              <span style="font-size: 19px">{{ m.emoji }}</span>
-              <span class="text-dim" style="font-size: 9.5px">{{ m.label }}</span>
+              <span style="font-size: 1.1875rem">{{ m.emoji }}</span>
+              <span class="text-dim" style="font-size: 0.5938rem">{{ m.label }}</span>
             </button>
           </div>
         </div>
@@ -213,12 +213,12 @@
         <button class="tap w-full rounded-3xl flex items-center gap-3" style="padding: 9px 13px; background: var(--raised)"
           @click="rf.sport = !rf.sport">
           <Activity :size="18" :color="rf.sport ? 'var(--move)' : 'var(--dim)'" />
-          <span class="text-ink flex-1 text-left" style="font-size: 14px; font-weight: 600">Attività fisica oggi</span>
+          <span class="text-ink flex-1 text-left" style="font-size: 0.875rem; font-weight: 600">Attività fisica oggi</span>
           <Toggle :on="!!rf.sport" tone="move" />
         </button>
 
         <input v-model="rf.notes" class="bg-card border border-line text-ink rounded-2xl px-3 py-2.5 w-full"
-          style="font-size: 14px" placeholder="Note (facoltative)" />
+          style="font-size: 0.875rem" placeholder="Note (facoltative)" />
 
         <div>
           <div class="flex gap-2">
@@ -226,14 +226,14 @@
               style="flex: 1.3; min-width: 0" />
             <input v-model="rf.time" type="time" class="bg-card border border-line text-ink rounded-2xl px-3 py-2.5 tabular"
               style="flex: 1; min-width: 0" />
-            <button class="tap rounded-2xl px-3 font-semibold bg-raised text-dim shrink-0" style="font-size: 12.5px"
+            <button class="tap rounded-2xl px-3 font-semibold bg-raised text-dim shrink-0" style="font-size: 0.7812rem"
               @click="setNow">
               Adesso
             </button>
           </div>
         </div>
 
-        <button class="tap w-full py-3 rounded-3xl font-semibold grad-water" style="color: #fff; font-size: 15px"
+        <button class="tap w-full py-3 rounded-3xl font-semibold grad-water" style="color: #fff; font-size: 0.9375rem"
           :disabled="!(rf.value > 0)" :style="!(rf.value > 0) ? { opacity: 0.5 } : {}" @click="saveReading()">
           Salva
         </button>

@@ -5,10 +5,10 @@
       style="box-shadow: 0 14px 34px -10px var(--alcohol-glow)">
       <div class="relative p-5 text-center">
         <Baby :size="26" color="#fff" style="margin: 0 auto" />
-        <div class="display" style="color: #fff; font-size: 20px; font-weight: 800; margin-top: 8px">
+        <div class="display" style="color: #fff; font-size: 1.25rem; font-weight: 800; margin-top: 8px">
           Gravidanza in corso
         </div>
-        <p style="color: rgba(255,255,255,.85); font-size: 13.5px; line-height: 1.5; margin-top: 6px">
+        <p style="color: rgba(255,255,255,.85); font-size: 0.8438rem; line-height: 1.5; margin-top: 6px">
           Le previsioni del ciclo sono sospese. Puoi comunque consultare lo storico qui sotto.
         </p>
       </div>
@@ -19,27 +19,27 @@
       <div class="relative p-5">
         <div class="flex items-center gap-2">
           <component :is="banner.icon" :size="18" color="#fff" />
-          <span style="color: #fff; font-size: 14px; font-weight: 700">{{ banner.title }}</span>
+          <span style="color: #fff; font-size: 0.875rem; font-weight: 700">{{ banner.title }}</span>
         </div>
-        <div class="display" style="color: #fff; font-size: 30px; font-weight: 800; line-height: 1.15; margin-top: 8px">
+        <div class="display" style="color: #fff; font-size: 1.875rem; font-weight: 800; line-height: 1.15; margin-top: 8px">
           {{ banner.headline }}
         </div>
-        <p style="color: rgba(255,255,255,.85); font-size: 13.5px; line-height: 1.45; margin-top: 4px">
+        <p style="color: rgba(255,255,255,.85); font-size: 0.8438rem; line-height: 1.45; margin-top: 4px">
           {{ banner.detail }}
         </p>
 
         <div class="flex" style="margin-top: 14px; padding-top: 12px; border-top: 1px solid rgba(255,255,255,.22)">
           <div class="flex-1">
-            <div class="display tabular" style="color: #fff; font-size: 17px; font-weight: 700">{{ cycle.averageLength }}</div>
-            <div style="color: rgba(255,255,255,.78); font-size: 10.5px">giorni di ciclo</div>
+            <div class="display tabular" style="color: #fff; font-size: 1.0625rem; font-weight: 700">{{ cycle.averageLength }}</div>
+            <div style="color: rgba(255,255,255,.78); font-size: 0.6562rem">giorni di ciclo</div>
           </div>
           <div v-if="cycle.averageDuration" class="flex-1" style="border-left: 1px solid rgba(255,255,255,.2); padding-left: 10px">
-            <div class="display tabular" style="color: #fff; font-size: 17px; font-weight: 700">{{ cycle.averageDuration }}</div>
-            <div style="color: rgba(255,255,255,.78); font-size: 10.5px">giorni di flusso</div>
+            <div class="display tabular" style="color: #fff; font-size: 1.0625rem; font-weight: 700">{{ cycle.averageDuration }}</div>
+            <div style="color: rgba(255,255,255,.78); font-size: 0.6562rem">giorni di flusso</div>
           </div>
           <div class="flex-1" style="border-left: 1px solid rgba(255,255,255,.2); padding-left: 10px">
-            <div class="display tabular" style="color: #fff; font-size: 17px; font-weight: 700">{{ cycle.entries.length }}</div>
-            <div style="color: rgba(255,255,255,.78); font-size: 10.5px">registrati</div>
+            <div class="display tabular" style="color: #fff; font-size: 1.0625rem; font-weight: 700">{{ cycle.entries.length }}</div>
+            <div style="color: rgba(255,255,255,.78); font-size: 0.6562rem">registrati</div>
           </div>
         </div>
       </div>
@@ -50,11 +50,11 @@
 
     <div class="flex gap-2.5 rise" style="animation-delay: 70ms">
       <button class="tap flex-1 rounded-full py-3.5 font-semibold flex items-center justify-center gap-2 grad-alcohol cta-glow-alcohol"
-        style="color: #fff; font-size: 15px" @click="openNew()">
+        style="color: #fff; font-size: 0.9375rem" @click="openNew()">
         <Plus :size="18" /> Registra
       </button>
       <button class="tap flex-1 rounded-full py-3.5 font-semibold flex items-center justify-center gap-2 bg-raised text-ink"
-        style="font-size: 15px; border: 1px solid var(--line)" @click="calendarOpen = true">
+        style="font-size: 0.9375rem; border: 1px solid var(--line)" @click="calendarOpen = true">
         <CalendarDays :size="18" color="var(--alcohol)" /> Calendario
       </button>
     </div>
@@ -67,12 +67,12 @@
         <CalendarClock :size="19" color="var(--alcohol)" />
       </div>
       <div class="min-w-0 flex-1">
-        <div class="text-ink" style="font-size: 14.5px; font-weight: 600">Prossimo previsto</div>
-        <div class="text-dim" style="font-size: 12.5px; text-transform: capitalize">
+        <div class="text-ink" style="font-size: 0.9062rem; font-weight: 600">Prossimo previsto</div>
+        <div class="text-dim" style="font-size: 0.7812rem; text-transform: capitalize">
           {{ fmtLong(st.predicted!) }}
         </div>
       </div>
-      <span class="text-faint" style="font-size: 12px">stima</span>
+      <span class="text-faint" style="font-size: 0.75rem">stima</span>
     </div>
 
     <!-- Storico -->
@@ -84,10 +84,10 @@
             style="padding: 12px 14px; background: var(--raised)" @click="openEdit(e)">
             <div class="flex items-center justify-between gap-3">
               <div class="min-w-0">
-                <div class="text-ink" style="font-weight: 600; font-size: 14.5px; text-transform: capitalize">
+                <div class="text-ink" style="font-weight: 600; font-size: 0.9062rem; text-transform: capitalize">
                   {{ fmtShortIt(e.start) }}<span v-if="e.end" class="text-dim"> → {{ fmtShortIt(e.end) }}</span>
                 </div>
-                <div class="text-dim" style="font-size: 12.5px; margin-top: 2px">
+                <div class="text-dim" style="font-size: 0.7812rem; margin-top: 2px">
                   <span v-if="e.end">{{ durationOf(e) }} giorni</span>
                   <span v-else class="text-alcohol">in corso</span>
                   <span v-if="e.flow"> · {{ e.flow }}</span>
@@ -96,7 +96,7 @@
               </div>
               <span v-if="deviationLabel(e)" class="rounded-full shrink-0"
                 :style="{
-                  padding: '4px 9px', fontSize: '11px', fontWeight: 600,
+                  padding: '4px 9px', fontSize: '0.6875rem', fontWeight: 600,
                   background: `var(--${deviationTone(e)}-soft)`, color: `var(--${deviationTone(e)})`,
                 }">
                 {{ deviationLabel(e) }}
@@ -105,9 +105,9 @@
 
             <div v-if="e.symptoms?.length" class="flex flex-wrap gap-1.5" style="margin-top: 8px">
               <span v-for="sx in e.symptoms" :key="sx" class="rounded-full text-dim"
-                style="padding: 3px 8px; font-size: 11px; background: var(--card)">{{ sx }}</span>
+                style="padding: 3px 8px; font-size: 0.6875rem; background: var(--card)">{{ sx }}</span>
             </div>
-            <p v-if="e.notes" class="text-faint" style="font-size: 12px; margin-top: 6px; line-height: 1.4">
+            <p v-if="e.notes" class="text-faint" style="font-size: 0.75rem; margin-top: 6px; line-height: 1.4">
               {{ e.notes }}
             </p>
           </button>
@@ -124,19 +124,19 @@
       <div class="space-y-3.5">
         <div class="flex gap-2.5">
           <div class="flex-1">
-            <div class="text-faint mb-1.5" style="font-size: 12px">Inizio</div>
+            <div class="text-faint mb-1.5" style="font-size: 0.75rem">Inizio</div>
             <input v-model="form.start" type="date" :class="inputCls" />
           </div>
           <div class="flex-1">
-            <div class="text-faint mb-1.5" style="font-size: 12px">Fine (se conclusa)</div>
+            <div class="text-faint mb-1.5" style="font-size: 0.75rem">Fine (se conclusa)</div>
             <input v-model="form.end" type="date" :class="inputCls" />
           </div>
         </div>
 
         <div>
-          <div class="text-faint mb-1.5" style="font-size: 12px">Flusso</div>
+          <div class="text-faint mb-1.5" style="font-size: 0.75rem">Flusso</div>
           <div class="grid grid-cols-3 gap-2">
-            <button v-for="f in flows" :key="f" class="tap rounded-2xl py-2.5 font-semibold" style="font-size: 13.5px"
+            <button v-for="f in flows" :key="f" class="tap rounded-2xl py-2.5 font-semibold" style="font-size: 0.8438rem"
               :class="form.flow === f ? 'grad-alcohol' : 'bg-raised text-dim'"
               :style="form.flow === f ? { color: '#fff' } : {}" @click="form.flow = f">
               {{ f }}
@@ -145,9 +145,9 @@
         </div>
 
         <div>
-          <div class="text-faint mb-1.5" style="font-size: 12px">Dolore</div>
+          <div class="text-faint mb-1.5" style="font-size: 0.75rem">Dolore</div>
           <div class="grid grid-cols-4 gap-2">
-            <button v-for="(lab, i) in pains" :key="i" class="tap rounded-2xl py-2.5 font-semibold" style="font-size: 13px"
+            <button v-for="(lab, i) in pains" :key="i" class="tap rounded-2xl py-2.5 font-semibold" style="font-size: 0.8125rem"
               :class="form.pain === i ? 'grad-alcohol' : 'bg-raised text-dim'"
               :style="form.pain === i ? { color: '#fff' } : {}" @click="form.pain = i">
               {{ lab }}
@@ -156,9 +156,9 @@
         </div>
 
         <div>
-          <div class="text-faint mb-1.5" style="font-size: 12px">Sintomi</div>
+          <div class="text-faint mb-1.5" style="font-size: 0.75rem">Sintomi</div>
           <div class="flex flex-wrap gap-2">
-            <button v-for="sx in SYMPTOMS" :key="sx" class="tap rounded-full" style="padding: 8px 12px; font-size: 13px"
+            <button v-for="sx in SYMPTOMS" :key="sx" class="tap rounded-full" style="padding: 8px 12px; font-size: 0.8125rem"
               :style="form.symptoms.includes(sx)
                 ? { background: 'var(--alcohol)', color: '#fff', fontWeight: 600 }
                 : { background: 'var(--raised)', color: 'var(--dim)' }"
@@ -169,23 +169,23 @@
         </div>
 
         <div>
-          <div class="text-faint mb-1.5" style="font-size: 12px">Note</div>
+          <div class="text-faint mb-1.5" style="font-size: 0.75rem">Note</div>
           <textarea v-model="form.notes" rows="3" :class="inputCls" style="resize: none"
             placeholder="Come è andata, cosa hai preso, cosa hai notato…" />
         </div>
 
-        <p v-if="alarming" class="rounded-2xl" style="padding: 11px 13px; background: var(--food-soft); font-size: 12.5px; line-height: 1.45">
+        <p v-if="alarming" class="rounded-2xl" style="padding: 11px 13px; background: var(--food-soft); font-size: 0.7812rem; line-height: 1.45">
           <span class="text-food" style="font-weight: 600">Vale la pena parlarne col medico.</span>
           <span class="text-dim"> Svenimenti, dolore forte o flusso molto abbondante non sono da sopportare
             e basta: spesso c'è una causa trattabile.</span>
         </p>
 
-        <button class="tap w-full py-3.5 rounded-3xl font-semibold grad-alcohol" style="color: #fff; font-size: 15px"
+        <button class="tap w-full py-3.5 rounded-3xl font-semibold grad-alcohol" style="color: #fff; font-size: 0.9375rem"
           :disabled="!form.start" :style="!form.start ? { opacity: 0.5 } : {}" @click="save">
           {{ editing ? "Salva le modifiche" : "Registra" }}
         </button>
 
-        <button v-if="editing" class="tap w-full py-2.5 rounded-2xl text-faint" style="font-size: 13px" @click="remove">
+        <button v-if="editing" class="tap w-full py-2.5 rounded-2xl text-faint" style="font-size: 0.8125rem" @click="remove">
           Elimina questa registrazione
         </button>
       </div>

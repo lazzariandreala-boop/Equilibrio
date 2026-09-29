@@ -7,7 +7,7 @@
            circolare lo faceva sembrare inscritto in un cerchio. -->
       <img :src="isDark ? logoDark : logoLight" alt="" width="104" height="104"
         style="border-radius: 26px; box-shadow: 0 0 0 1px var(--line), 0 14px 40px -8px var(--water-glow)" />
-      <div class="display text-ink" style="font-size: 24px; font-weight: 800; margin-top: 18px">Equilibrio</div>
+      <div class="display text-ink" style="font-size: 1.5rem; font-weight: 800; margin-top: 18px">Equilibrio</div>
       <div class="flex gap-1.5" style="margin-top: 16px">
         <span v-for="(t, i) in ['water', 'alcohol', 'move', 'food']" :key="t" class="rounded-full pulse-dot"
           :class="`grad-${t}`" :style="{ width: '9px', height: '9px', animationDelay: `${i * 140}ms` }" />
@@ -45,6 +45,17 @@ watch(
   },
 );
 const { user } = useAuth();
+
+// Dimensione del testo scelta nell'app: si somma a quella del sistema,
+// perché lavora sulla base dei rem invece che sul singolo elemento.
+watch(
+  () => settings.profile.textScale,
+  (k) => {
+    if (!import.meta.client) return;
+    document.documentElement.style.fontSize = k && k !== 1 ? `${k * 100}%` : "";
+  },
+  { immediate: true },
+);
 
 // Quando l'autenticazione si risolve, la rotta corrente va rivalutata:
 // il middleware era già passato quando ancora non si sapeva nulla.

@@ -4,7 +4,7 @@
     <div class="rise flex gap-1.5 p-1.5 rounded-4xl"
       style="background: var(--raised); border: 1px solid var(--line)">
       <button v-for="p in periods" :key="p.days" class="tap flex-1 py-2.5 rounded-3xl font-semibold"
-        style="font-size: 14px"
+        style="font-size: 0.875rem"
         :style="days === p.days
           ? { background: 'var(--card)', color: 'var(--ink)', boxShadow: `inset 0 0 0 1px var(--water), 0 0 16px -4px var(--water-glow)` }
           : { color: 'var(--dim)' }"
@@ -22,7 +22,7 @@
 
     <div v-else-if="busy && !data" class="rise text-center" style="padding: 40px 20px">
       <Loader2 :size="26" class="text-water animate-spin mx-auto" />
-      <p class="text-dim" style="font-size: 13.5px; margin-top: 10px">Leggo le misure…</p>
+      <p class="text-dim" style="font-size: 0.8438rem; margin-top: 10px">Leggo le misure…</p>
     </div>
 
     <template v-else-if="data">
@@ -36,24 +36,24 @@
                 style="width: 32px; height: 32px; background: var(--water-soft)">
                 <Scale :size="17" color="var(--water)" />
               </div>
-              <span class="text-dim" style="font-size: 14px; font-weight: 600">Peso</span>
+              <span class="text-dim" style="font-size: 0.875rem; font-weight: 600">Peso</span>
             </div>
             <div class="display tabular flex items-baseline gap-1.5" style="margin-top: 10px">
-              <span style="color: var(--water); font-size: 46px; font-weight: 800; line-height: 1">
+              <span style="color: var(--water); font-size: 2.875rem; font-weight: 800; line-height: 1">
                 {{ fmt(s.weight.last) }}
               </span>
-              <span class="text-dim" style="font-size: 18px; font-weight: 600">kg</span>
+              <span class="text-dim" style="font-size: 1.125rem; font-weight: 600">kg</span>
             </div>
             <div v-if="s.weight.delta !== null" class="flex items-center gap-1.5" style="margin-top: 4px">
               <component :is="s.weight.delta > 0 ? TrendingUp : s.weight.delta < 0 ? TrendingDown : Minus"
                 :size="15" :color="deltaColor(s.weight.delta, 'lower')" />
-              <span class="tabular" :style="{ color: deltaColor(s.weight.delta, 'lower'), fontSize: '13.5px', fontWeight: 600 }">
+              <span class="tabular" :style="{ color: deltaColor(s.weight.delta, 'lower'), fontSize: '0.8438rem', fontWeight: 600 }">
                 {{ signed(s.weight.delta) }} kg
               </span>
-              <span class="text-faint" style="font-size: 12.5px">in {{ days }} giorni</span>
+              <span class="text-faint" style="font-size: 0.7812rem">in {{ days }} giorni</span>
             </div>
           </div>
-          <div class="text-right text-faint" style="font-size: 11.5px">
+          <div class="text-right text-faint" style="font-size: 0.7188rem">
             <div>{{ measuredLabel }}</div>
             <div class="tabular" style="margin-top: 2px">{{ data.series.weight.length }} misure</div>
           </div>
@@ -95,19 +95,19 @@
             :value="fmt(s.boneMass.last)" unit="kg" :delta="s.boneMass.delta" better="neutral"
             :points="data.series.boneMass" compact />
 
-          <p v-if="!othersCount" class="text-faint text-center" style="font-size: 12.5px; padding: 10px">
+          <p v-if="!othersCount" class="text-faint text-center" style="font-size: 0.7812rem; padding: 10px">
             Nessun altro valore in questo periodo.
           </p>
         </div>
       </Expandable>
 
       <button class="tap w-full rounded-full py-3 font-semibold bg-raised text-dim"
-        style="font-size: 13.5px" :disabled="busy" @click="load(days)">
+        style="font-size: 0.8438rem" :disabled="busy" @click="load(days)">
         {{ busy ? "Aggiorno…" : "Aggiorna misure" }}
       </button>
     </template>
 
-    <p v-if="error" class="text-food text-center" style="font-size: 13px; line-height: 1.45">{{ error }}</p>
+    <p v-if="error" class="text-food text-center" style="font-size: 0.8125rem; line-height: 1.45">{{ error }}</p>
   </div>
 </template>
 

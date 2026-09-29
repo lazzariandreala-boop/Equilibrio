@@ -31,19 +31,19 @@
     <div class="relative" style="padding: 14px 16px 13px">
       <div class="flex items-center gap-2">
         <component :is="icon" :size="17" color="#fff" style="filter: drop-shadow(0 1px 2px rgba(0,0,0,.28))" />
-        <span style="color: #fff; font-size: 14px; font-weight: 700; text-shadow: 0 1px 2px rgba(0,0,0,.22)">
+        <span style="color: #fff; font-size: 0.875rem; font-weight: 700; text-shadow: 0 1px 2px rgba(0,0,0,.22)">
           {{ title }}
         </span>
       </div>
 
       <div class="text-center" style="margin-top: 10px">
         <div class="display tabular flex items-baseline justify-center gap-1">
-          <span style="color: #fff; font-size: 52px; font-weight: 800; line-height: 1; text-shadow: 0 2px 6px rgba(0,0,0,.22)">
+          <span style="color: #fff; font-size: 3.25rem; font-weight: 800; line-height: 1; text-shadow: 0 2px 6px rgba(0,0,0,.22)">
             {{ value }}
           </span>
-          <span style="color: #fff; font-size: 19px; font-weight: 700; opacity: .95">{{ unit }}</span>
+          <span style="color: #fff; font-size: 1.1875rem; font-weight: 700; opacity: .95">{{ unit }}</span>
         </div>
-        <div v-if="caption" style="color: rgba(255,255,255,.85); font-size: 13px; margin-top: 3px">{{ caption }}</div>
+        <div v-if="caption" style="color: rgba(255,255,255,.85); font-size: 0.8125rem; margin-top: 3px">{{ caption }}</div>
       </div>
 
       <div v-if="progress !== null" class="relative flex items-center" style="margin-top: 12px; height: 20px">
@@ -56,7 +56,7 @@
             left: `max(0px, min(calc(100% - 44px), calc(${clamped}% - 22px)))`,
             width: '44px', height: '20px',
             background: 'rgba(14,9,5,.85)', color: '#fff',
-            fontSize: '11px', fontWeight: 700,
+            fontSize: '0.6875rem', fontWeight: 700,
             boxShadow: '0 2px 6px rgba(0,0,0,.3)',
           }">
           {{ Math.round(clamped) }}%
@@ -75,10 +75,10 @@
             <component :is="s.icon" :size="15" color="#fff" />
           </div>
           <div class="min-w-0">
-            <div class="display tabular" style="color: #fff; font-size: 16px; font-weight: 700; line-height: 1.1">
-              {{ s.value }}<span v-if="s.unit" style="font-size: 11px; font-weight: 600"> {{ s.unit }}</span>
+            <div class="display tabular" style="color: #fff; font-size: 1rem; font-weight: 700; line-height: 1.1">
+              {{ s.value }}<span v-if="s.unit" style="font-size: 0.6875rem; font-weight: 600"> {{ s.unit }}</span>
             </div>
-            <div class="truncate" style="color: rgba(255,255,255,.8); font-size: 10px">{{ s.label }}</div>
+            <div class="truncate" style="color: rgba(255,255,255,.8); font-size: 0.625rem">{{ s.label }}</div>
           </div>
         </div>
       </div>

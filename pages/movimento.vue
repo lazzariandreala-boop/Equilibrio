@@ -7,13 +7,13 @@
       :progress="(day.moveMin / settings.goals.moveMin) * 100" :stats="stats" />
 
     <button class="tap w-full rounded-full py-3.5 font-semibold flex items-center justify-center gap-2.5 grad-move rise cta-glow-move"
-      style="color: #fff; font-size: 15.5px; animation-delay: 70ms" @click="pickerOpen = true">
+      style="color: #fff; font-size: 0.9688rem; animation-delay: 70ms" @click="pickerOpen = true">
       <Plus :size="19" /> Aggiungi un'attività
     </button>
 
     <!-- registrate oggi -->
     <div v-if="today.moves.length" class="rise" style="animation-delay: 140ms">
-      <div class="display px-1 mb-2.5" style="font-weight: 700; font-size: 17px">
+      <div class="display px-1 mb-2.5" style="font-weight: 700; font-size: 1.0625rem">
         {{ day.isToday ? "Registrate oggi" : "Registrate in questo giorno" }}
       </div>
       <div class="space-y-2">
@@ -24,8 +24,8 @@
               <component :is="icons[iconOf(m)]" :size="18" color="#fff" />
             </div>
             <div class="flex-1 min-w-0">
-              <div class="truncate" style="font-weight: 600; font-size: 15px">{{ m.type }}</div>
-              <div class="text-dim tabular" style="font-size: 12.5px">
+              <div class="truncate" style="font-weight: 600; font-size: 0.9375rem">{{ m.type }}</div>
+              <div class="text-dim tabular" style="font-size: 0.7812rem">
                 {{ m.min }} min<span v-if="m.kcal"> · ~{{ m.kcal }} kcal</span>
               </div>
             </div>
@@ -58,13 +58,13 @@
             <component :is="icons[a.icon]" :size="19" :color="a.color" />
           </div>
           <div class="flex-1 min-w-0">
-            <div class="text-ink" style="font-weight: 600; font-size: 15px">{{ a.name }}</div>
-            <div class="text-faint truncate" style="font-size: 11.5px">{{ a.note || `${a.met} MET` }}</div>
+            <div class="text-ink" style="font-weight: 600; font-size: 0.9375rem">{{ a.name }}</div>
+            <div class="text-faint truncate" style="font-size: 0.7188rem">{{ a.note || `${a.met} MET` }}</div>
           </div>
           <ShieldCheck v-if="a.safe" :size="16" class="text-move shrink-0" />
         </button>
 
-        <p v-if="!filtered.length" class="text-faint text-center" style="font-size: 13px; padding: 18px 12px">
+        <p v-if="!filtered.length" class="text-faint text-center" style="font-size: 0.8125rem; padding: 18px 12px">
           Nessuna attività trovata. Scegli <strong class="text-ink">Altro</strong> e scrivi il nome che preferisci.
         </p>
       </div>
@@ -74,7 +74,7 @@
     <BottomSheet :model-value="!!chosen" :title="chosen?.name || ''" @update:model-value="chosen = null">
       <div v-if="chosen">
         <div v-if="chosen.id === 'altro'" class="mb-4">
-          <div class="text-faint mb-1.5" style="font-size: 12px">Che attività hai fatto?</div>
+          <div class="text-faint mb-1.5" style="font-size: 0.75rem">Che attività hai fatto?</div>
           <input v-model="customName" placeholder="Es. arrampicata, padel…"
             class="bg-card border border-line text-ink rounded-2xl px-3 py-3 w-full" />
         </div>
@@ -83,13 +83,13 @@
           :style="{ background: tint(chosen.color, 0.13) }">
           <component :is="chosen.safe ? ShieldCheck : AlertTriangle" :size="15"
             :color="chosen.safe ? chosen.color : 'var(--food)'" style="margin-top: 2px; flex-shrink: 0" />
-          <span class="text-dim" style="font-size: 12.5px; line-height: 1.4">{{ chosen.note }}</span>
+          <span class="text-dim" style="font-size: 0.7812rem; line-height: 1.4">{{ chosen.note }}</span>
         </div>
 
-        <div class="display tabular text-center" :style="{ fontSize: '54px', fontWeight: 800, color: chosen.color, lineHeight: 1 }">
-          {{ min }}<span class="text-dim" style="font-size: 18px; font-weight: 600"> min</span>
+        <div class="display tabular text-center" :style="{ fontSize: '3.375rem', fontWeight: 800, color: chosen.color, lineHeight: 1 }">
+          {{ min }}<span class="text-dim" style="font-size: 1.125rem; font-weight: 600"> min</span>
         </div>
-        <div class="text-faint text-center tabular mb-5" style="font-size: 13px; margin-top: 4px">
+        <div class="text-faint text-center tabular mb-5" style="font-size: 0.8125rem; margin-top: 4px">
           ≈ {{ estimateKcal(chosen.met, min, settings.profile.weightKg) }} kcal bruciate
         </div>
 
@@ -105,13 +105,13 @@
 
         <div class="grid grid-cols-4 gap-2 mb-5">
           <button v-for="p in [15, 30, 45, 60]" :key="p" class="tap rounded-2xl py-2.5 font-semibold tabular"
-            style="font-size: 14px" :class="min === p ? '' : 'bg-raised text-dim'"
+            style="font-size: 0.875rem" :class="min === p ? '' : 'bg-raised text-dim'"
             :style="min === p ? { background: chosen.color, color: '#fff' } : {}" @click="min = p">
             {{ p }}′
           </button>
         </div>
 
-        <button class="tap w-full py-3.5 rounded-3xl font-semibold" :style="{ background: chosen.color, color: '#fff', fontSize: '15px' }" @click="save">
+        <button class="tap w-full py-3.5 rounded-3xl font-semibold" :style="{ background: chosen.color, color: '#fff', fontSize: '0.9375rem' }" @click="save">
           Salva attività
         </button>
       </div>

@@ -13,19 +13,19 @@
             :style="{ width: compact ? '28px' : '32px', height: compact ? '28px' : '32px', background: `var(--${tone}-soft)` }">
             <component :is="icon" :size="compact ? 15 : 17" :color="`var(--${tone})`" />
           </div>
-          <span class="text-dim truncate" style="font-size: 13.5px; font-weight: 600">{{ label }}</span>
+          <span class="text-dim truncate" style="font-size: 0.8438rem; font-weight: 600">{{ label }}</span>
         </div>
 
         <div class="display tabular flex items-baseline gap-1.5" style="margin-top: 8px">
           <span :style="{ color: `var(--${tone})`, fontSize: compact ? '26px' : '32px', fontWeight: 800, lineHeight: 1 }">
             {{ value }}
           </span>
-          <span class="text-dim" style="font-size: 13px; font-weight: 600">{{ unit }}</span>
+          <span class="text-dim" style="font-size: 0.8125rem; font-weight: 600">{{ unit }}</span>
         </div>
 
         <div v-if="delta !== null" class="flex items-center gap-1.5" style="margin-top: 3px">
           <component :is="delta > 0 ? TrendingUp : delta < 0 ? TrendingDown : Minus" :size="14" :color="color" />
-          <span class="tabular" :style="{ color, fontSize: '12.5px', fontWeight: 600 }">
+          <span class="tabular" :style="{ color, fontSize: '0.7812rem', fontWeight: 600 }">
             {{ delta > 0 ? "+" : "" }}{{ delta.toFixed(decimals) }} {{ unit }}
           </span>
         </div>
@@ -36,7 +36,7 @@
       </div>
     </div>
 
-    <p v-if="note" class="text-faint" style="font-size: 12px; line-height: 1.45; margin-top: 10px">{{ note }}</p>
+    <p v-if="note" class="text-faint" style="font-size: 0.75rem; line-height: 1.45; margin-top: 10px">{{ note }}</p>
   </div>
 </template>
 

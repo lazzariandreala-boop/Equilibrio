@@ -11,13 +11,13 @@
         class="tap rounded-4xl flex flex-col items-center justify-center gap-1 raised-3d" style="padding: 13px 4px; background: var(--water-soft); border: 1px solid var(--line)"
         @click="day.addWater(ml)">
         <GlassWater :size="20" color="var(--water)" />
-        <span class="display tabular text-water" style="font-size: 17px; font-weight: 700">+{{ ml }}</span>
-        <span class="text-faint" style="font-size: 10.5px">ml</span>
+        <span class="display tabular text-water" style="font-size: 1.0625rem; font-weight: 700">+{{ ml }}</span>
+        <span class="text-faint" style="font-size: 0.6562rem">ml</span>
       </button>
     </div>
 
     <button class="tap w-full rounded-full py-3.5 font-semibold flex items-center justify-center gap-2 bg-raised text-dim rise"
-      style="font-size: 14.5px; animation-delay: 120ms" @click="day.addWater(-250)">
+      style="font-size: 0.9062rem; animation-delay: 120ms" @click="day.addWater(-250)">
       <Minus :size="16" /> Togli 250 ml
     </button>
 
@@ -28,7 +28,7 @@
     <AppCard v-else class="rise" style="animation-delay: 170ms">
       <div class="flex items-start gap-3">
         <Info :size="18" class="text-water shrink-0" style="margin-top: 2px" />
-        <p class="text-dim" style="font-size: 13px; line-height: 1.5">
+        <p class="text-dim" style="font-size: 0.8125rem; line-height: 1.5">
           {{ remaining > 0
             ? `Ti mancano ${remaining} ml: sono circa ${Math.ceil(remaining / 250)} bicchieri.`
             : "Obiettivo raggiunto. Continuare a bere durante la giornata resta la cosa migliore." }}

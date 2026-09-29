@@ -58,8 +58,8 @@
         </svg>
         <div class="absolute inset-0 flex flex-col items-center justify-center">
           <div class="display tabular flex items-baseline text-ink">
-            <span style="font-size: 38px; font-weight: 800; line-height: 1">{{ shown }}</span>
-            <span style="font-size: 15px; font-weight: 700; opacity: .85">%</span>
+            <span style="font-size: 2.375rem; font-weight: 800; line-height: 1">{{ shown }}</span>
+            <span style="font-size: 0.9375rem; font-weight: 700; opacity: .85">%</span>
           </div>
           <Sprout :size="15" color="var(--food)" style="margin-top: 2px" />
         </div>
@@ -67,15 +67,15 @@
 
       <!-- lettura in parole: il numero da solo non dice cosa fare -->
       <div class="min-w-0 flex-1">
-        <div class="text-dim" style="font-size: 14.5px">{{ day.isToday ? "Equilibrio di oggi" : "Equilibrio del giorno" }}</div>
-        <div class="display" style="color: var(--food); font-size: 27px; font-weight: 800; line-height: 1.15; margin-top: 2px">
+        <div class="text-dim" style="font-size: 0.9062rem">{{ day.isToday ? "Equilibrio di oggi" : "Equilibrio del giorno" }}</div>
+        <div class="display" style="color: var(--food); font-size: 1.6875rem; font-weight: 800; line-height: 1.15; margin-top: 2px">
           {{ onTrack }} {{ onTrack === 1 ? "abitudine" : "abitudini" }}
         </div>
-        <div class="display" style="color: var(--food); font-size: 15px; font-weight: 700; opacity: .85">
+        <div class="display" style="color: var(--food); font-size: 0.9375rem; font-weight: 700; opacity: .85">
           su 4 ben avviate
         </div>
         <div class="flex items-center gap-1.5" style="margin-top: 8px">
-          <span class="text-dim" style="font-size: 13px">{{ message }}</span>
+          <span class="text-dim" style="font-size: 0.8125rem">{{ message }}</span>
           <Heart :size="14" color="var(--food)" />
         </div>
       </div>
