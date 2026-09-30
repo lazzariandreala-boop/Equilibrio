@@ -27,7 +27,7 @@ export function useCloudSync() {
     return JSON.stringify({
       day: { streak: day.streak, days: day.days },
       // profile era escluso: peso e preferenze non seguivano l'account.
-      settings: { goals: settings.goals, reminders: settings.reminders, profile: settings.profile, diabetes: settings.diabetes },
+      settings: { goals: settings.goals, reminders: settings.reminders, profile: settings.profile, diabetes: settings.diabetes, keys: settings.keys, favorites: settings.favorites },
       cycle: { entries: cycle.entries },
       pregnancy: {
         reference: pregnancy.reference,
@@ -68,7 +68,7 @@ export function useCloudSync() {
         day: { streak: day.streak, days: day.days },
         // Deve coincidere con snapshot(): se qui manca qualcosa, la firma
         // cambia ma il dato non viene mai salvato davvero.
-        settings: { goals: settings.goals, reminders: settings.reminders, profile: settings.profile, diabetes: settings.diabetes },
+        settings: { goals: settings.goals, reminders: settings.reminders, profile: settings.profile, diabetes: settings.diabetes, keys: settings.keys, favorites: settings.favorites },
         cycle: { entries: cycle.entries },
         pregnancy: {
           reference: pregnancy.reference,

@@ -51,6 +51,13 @@
         </div>
 
         <div class="flex" style="padding: 0 8px 8px">
+          <button class="tap flex-1 rounded-2xl py-2 flex items-center justify-center gap-1.5"
+            style="font-size: 0.7812rem"
+            :style="{ color: settings.isFavorite(m.name) ? 'var(--food)' : 'var(--dim)' }"
+            :aria-pressed="settings.isFavorite(m.name)" @click="toggleFav(m)">
+            <Star :size="14" :fill="settings.isFavorite(m.name) ? 'var(--food)' : 'none'" />
+            {{ settings.isFavorite(m.name) ? "Preferito" : "Preferiti" }}
+          </button>
           <button class="tap flex-1 rounded-2xl py-2 text-dim" style="font-size: 0.7812rem" @click="edit(i)">
             Modifica
           </button>
@@ -69,7 +76,7 @@
 </template>
 
 <script setup lang="ts">
-import { Camera, Flame, Salad, Wheat, Dna, Droplet, Leaf, Coffee, Sun, Moon, UtensilsCrossed, Pencil } from "lucide-vue-next";
+import { Camera, Flame, Salad, Wheat, Dna, Droplet, Leaf, Coffee, Sun, Moon, UtensilsCrossed, Pencil, Star } from "lucide-vue-next";
 import { useDayStore } from "~/stores/day";
 import { estimateLocally } from "~/utils/foods";
 import { useSettingsStore } from "~/stores/settings";
@@ -156,6 +163,16 @@ function splitLegacy(m: any) {
     if (diff) (items[items.length - 1] as any)[k] += diff;
   }
   return items;
+}
+
+/** Aggiunge o toglie il pasto dai preferiti, con le sue voci. */
+function toggleFav(m: any) {
+  settings.toggleFavorite({
+    name: m.name,
+    items: m.items?.length
+      ? m.items
+      : [{ name: m.name, qty: "", kcal: m.kcal, cho: m.cho, pro: m.pro, fat: m.fat, fib: m.fib ?? 0, alc: m.alc ?? 0 }],
+  });
 }
 
 function onMeal(m: any) {

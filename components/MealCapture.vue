@@ -2,6 +2,35 @@
   <div>
     <!-- SCELTA -->
     <div v-if="phase === 'start'" class="space-y-3">
+      <!-- Chi mangia spesso le stesse cose le ritrova qui, senza reinserirle -->
+      <div v-if="settings.favorites.length" class="space-y-1.5">
+        <div class="text-faint flex items-center gap-1.5" style="font-size: 0.75rem; font-weight: 600">
+          <Star :size="13" color="var(--food)" fill="var(--food)" /> Preferiti
+        </div>
+        <div class="flex gap-2 overflow-x-auto" style="scrollbar-width: none; padding-bottom: 2px">
+          <button v-for="f in settings.favorites" :key="f.name" class="tap rounded-2xl shrink-0 text-left"
+            style="padding: 9px 12px; max-width: 220px; background: var(--food-soft); border: 1px solid var(--food-soft)"
+            @click="useSaved(f.items)">
+            <div class="text-ink truncate" style="font-size: 0.8125rem; font-weight: 600">{{ f.name }}</div>
+            <div class="text-dim tabular" style="font-size: 0.6875rem">{{ kcalOf(f.items) }} kcal</div>
+          </button>
+        </div>
+      </div>
+
+      <div v-if="recents.length" class="space-y-1.5">
+        <div class="text-faint flex items-center gap-1.5" style="font-size: 0.75rem; font-weight: 600">
+          <History :size="13" /> Mangiati di recente
+        </div>
+        <div class="flex gap-2 overflow-x-auto" style="scrollbar-width: none; padding-bottom: 2px">
+          <button v-for="r in recents" :key="r.name" class="tap rounded-2xl shrink-0 text-left"
+            style="padding: 9px 12px; max-width: 220px; background: var(--raised); border: 1px solid var(--line)"
+            @click="useSaved(r.items)">
+            <div class="text-ink truncate" style="font-size: 0.8125rem; font-weight: 600">{{ r.name }}</div>
+            <div class="text-dim tabular" style="font-size: 0.6875rem">{{ kcalOf(r.items) }} kcal · {{ r.when }}</div>
+          </button>
+        </div>
+      </div>
+
       <p class="text-dim" style="font-size: 0.875rem; line-height: 1.5">
         Fotografa il piatto oppure scrivi cosa hai mangiato: stimo io calorie e valori nutrizionali, poi puoi correggere tutto.
       </p>
@@ -150,12 +179,13 @@
 </template>
 
 <script setup lang="ts">
-import { Camera, Images, PenLine, Sparkles, X, Plus, Search, AlertTriangle, Syringe, ChevronRight } from "lucide-vue-next";
+import { Camera, Images, PenLine, Sparkles, X, Plus, Search, AlertTriangle, Syringe, ChevronRight, Star, History } from "lucide-vue-next";
 import type { RecognizedItem } from "~/composables/useRecognition";
 import { estimateLocally } from "~/utils/foods";
 import { checkFoods, SEVERITY_TONE } from "~/utils/pregnancy";
 import { suggestBolus } from "~/utils/diabetes";
 import { useSettingsStore } from "~/stores/settings";
+import { useDayStore } from "~/stores/day";
 
 const props = withDefaults(defineProps<{ initialItems?: RecognizedItem[] | null }>(), {
   initialItems: null,
@@ -165,6 +195,49 @@ const { recognizeBase64, estimate, fileToBase64 } = useRecognition();
 const settings = useSettingsStore();
 
 // Gli avvisi si aggiornano man mano che le voci cambiano.
+const day = useDayStore();
+
+/**
+ * Pasti degli ultimi 21 giorni, senza doppioni e dal più recente: chi mangia
+ * spesso le stesse cose li ritrova qui invece di reinserirli ogni volta.
+ */
+const recents = computed(() => {
+  const seen = new Set<string>();
+  const out: { name: string; items: any[]; when: string }[] = [];
+  const keys = Object.keys(day.days).sort().reverse().slice(0, 21);
+  for (const k of keys) {
+    const meals = [...(day.days[k]?.meals ?? [])].sort((a, b) => b.at - a.at);
+    for (const m of meals) {
+      if (!m.name || seen.has(m.name) || settings.isFavorite(m.name)) continue;
+      seen.add(m.name);
+      out.push({
+        name: m.name,
+        items: m.items?.length
+          ? m.items
+          : [{ name: m.name, qty: "", kcal: m.kcal, cho: m.cho, pro: m.pro, fat: m.fat, fib: m.fib ?? 0, alc: m.alc ?? 0 }],
+        when: relDay(k),
+      });
+      if (out.length >= 8) return out;
+    }
+  }
+  return out;
+});
+
+function relDay(key: string) {
+  const diff = Math.round((Date.now() - new Date(`${key}T12:00:00`).getTime()) / 86400000);
+  if (diff <= 0) return "oggi";
+  if (diff === 1) return "ieri";
+  return `${diff} giorni fa`;
+}
+
+const kcalOf = (items: any[]) => Math.round(items.reduce((a, i) => a + (+i.kcal || 0), 0));
+
+/** Riprende le voci di un pasto già fatto: si possono poi correggere. */
+function useSaved(list: any[]) {
+  items.value = list.map((i) => ({ ...i }));
+  phase.value = "edit";
+}
+
 const mealBolus = computed(
   () => suggestBolus({ carbs: sum.value.cho, params: settings.diabetes }).rounded,
 );

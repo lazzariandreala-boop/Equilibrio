@@ -6,6 +6,14 @@ export interface Goals {
   moveMin: number;
   kcal: number;
 }
+export interface FavoriteMeal {
+  name: string;
+  items: {
+    name: string; qty: string; kcal: number; cho: number;
+    pro: number; fat: number; fib: number; alc: number;
+  }[];
+}
+
 export interface Profile {
   weightKg: number; // serve a stimare le calorie bruciate
   /** Attiva gli avvisi sugli alimenti sconsigliati in gravidanza. */
@@ -32,6 +40,8 @@ export const useSettingsStore = defineStore("settings", {
     diabetes: <DiabetesParams>{ ...DEFAULT_PARAMS },
     /** Chiavi personali: se presenti, le richieste usano queste invece di quelle condivise. */
     keys: { gemini: "" },
+    /** Pasti salvati come preferiti, da riaggiungere con un tocco. */
+    favorites: [] as FavoriteMeal[],
     reminders: <Reminders>{
       water: true,
       waterTimes: ["10:00", "13:00", "16:00", "19:00"],
@@ -41,12 +51,21 @@ export const useSettingsStore = defineStore("settings", {
     },
   }),
   actions: {
+    isFavorite(name: string) {
+      return this.favorites.some((f) => f.name === name);
+    },
+    toggleFavorite(meal: FavoriteMeal) {
+      const i = this.favorites.findIndex((f) => f.name === meal.name);
+      if (i >= 0) this.favorites.splice(i, 1);
+      else this.favorites.unshift({ name: meal.name, items: meal.items.map((x) => ({ ...x })) });
+    },
     hydrate(raw: any) {
       if (!raw) return;
       if (raw.goals) this.goals = { ...this.goals, ...raw.goals };
       if (raw.profile) this.profile = { ...this.profile, ...raw.profile };
       if (raw.diabetes) this.diabetes = { ...this.diabetes, ...raw.diabetes };
       if (raw.keys) this.keys = { ...this.keys, ...raw.keys };
+      if (Array.isArray(raw.favorites)) this.favorites = raw.favorites;
       if (raw.reminders) this.reminders = { ...this.reminders, ...raw.reminders };
     },
   },
