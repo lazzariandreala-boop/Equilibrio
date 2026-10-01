@@ -24,7 +24,7 @@ export default defineEventHandler((event) => {
   setResponseHeaders(event, {
     "Access-Control-Allow-Origin": origin,
     "Access-Control-Allow-Credentials": "true",
-    "Access-Control-Allow-Headers": "content-type",
+    "Access-Control-Allow-Headers": "content-type, authorization",
     "Access-Control-Allow-Methods": "GET,POST,OPTIONS",
     Vary: "Origin",
   });

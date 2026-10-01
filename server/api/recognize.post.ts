@@ -1,6 +1,10 @@
+import { requireAi } from "../utils/requireAi";
 // POST /api/recognize  { image: base64, media: "image/jpeg" }  ->  { alimenti: [...] }
 // Riconoscimento foto del cibo con Google Gemini (tier gratuito).
 export default defineEventHandler(async (event) => {
+  // Prima di tutto chi chiede e se può: l'IA ha un costo per ogni richiesta.
+  await requireAi(event);
+
   const { geminiApiKey } = useRuntimeConfig();
   const body = await readBody<{ image?: string; media?: string }>(event);
 

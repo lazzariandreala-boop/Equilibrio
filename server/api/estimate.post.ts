@@ -1,7 +1,11 @@
+import { requireAi } from "../utils/requireAi";
 // POST /api/estimate  { text: "pasta al pomodoro, mezzo piatto" }  ->  { alimenti: [...] }
 // Stima dei valori nutrizionali a partire da una descrizione scritta:
 // serve quando non c'è una foto, così l'utente non deve digitare i grammi a mano.
 export default defineEventHandler(async (event) => {
+  // Prima di tutto chi chiede e se può: l'IA ha un costo per ogni richiesta.
+  await requireAi(event);
+
   const { geminiApiKey } = useRuntimeConfig();
   const body = await readBody<{ text?: string }>(event);
 
