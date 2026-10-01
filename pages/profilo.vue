@@ -340,6 +340,70 @@
       </Expandable>
     </div>
 
+    <!-- I tuoi dati: esportazione ed eliminazione -->
+    <div class="rise desk-span" style="animation-delay: 220ms">
+      <Expandable title="I tuoi dati" :icon="FileDown" tone="food" subtitle="esporta in PDF o elimina l'account">
+        <div class="space-y-3">
+          <div class="rounded-3xl space-y-2.5" style="padding: 13px 14px; background: var(--raised)">
+            <div class="text-ink" style="font-size: 0.875rem; font-weight: 600">Scarica un rapporto in PDF</div>
+            <p class="text-faint" style="font-size: 0.75rem; line-height: 1.5">
+              Pensato anche per il medico: numeri principali, tabelle e i tuoi parametri, con l'intestazione di Equilibrio.
+            </p>
+
+            <div class="flex gap-2">
+              <select v-model="exportSection" aria-label="Sezione da esportare"
+                class="bg-card border border-line text-ink rounded-2xl px-3 py-2.5" style="flex: 1.6; min-width: 0">
+                <option v-for="o in exportSections" :key="o.key" :value="o.key">{{ o.label }}</option>
+              </select>
+              <select v-model.number="exportPeriod" aria-label="Periodo"
+                class="bg-card border border-line text-ink rounded-2xl px-3 py-2.5" style="flex: 1; min-width: 0">
+                <option :value="30">30 giorni</option>
+                <option :value="90">3 mesi</option>
+                <option :value="365">1 anno</option>
+              </select>
+            </div>
+
+            <button class="tap w-full rounded-full py-3 font-semibold flex items-center justify-center gap-2 grad-food cta-glow-food"
+              style="color: #fff; font-size: 0.9375rem" :disabled="exporting" @click="runExport">
+              <FileDown :size="17" /> {{ exporting ? "Preparo il PDF…" : "Crea il PDF" }}
+            </button>
+            <p v-if="exportError" class="text-food" style="font-size: 0.75rem">{{ exportError }}</p>
+          </div>
+
+          <div class="rounded-3xl" style="padding: 13px 14px; background: var(--raised); border: 1px solid var(--alcohol-soft)">
+            <div class="text-ink" style="font-size: 0.875rem; font-weight: 600">Elimina il mio account</div>
+            <p class="text-faint" style="font-size: 0.75rem; line-height: 1.5; margin-top: 4px">
+              Cancella definitivamente l'account e tutti i dati, sul cloud e su questo dispositivo.
+              Non si può annullare: se ti servono, scarica prima il rapporto.
+            </p>
+            <button class="tap w-full rounded-full py-2.5 font-semibold" style="font-size: 0.875rem; margin-top: 10px;
+              background: var(--alcohol-soft); color: var(--alcohol)" @click="deleteOpen = true">
+              Elimina account
+            </button>
+          </div>
+        </div>
+      </Expandable>
+    </div>
+
+    <BottomSheet v-model="deleteOpen" title="Eliminare l'account?">
+      <div class="space-y-3.5">
+        <p class="text-dim" style="font-size: 0.875rem; line-height: 1.5">
+          Verranno cancellati per sempre pasti, movimento, misure, glicemie, cicli, visite e impostazioni.
+          Per confermare scrivi <strong class="text-ink">ELIMINA</strong>.
+        </p>
+        <input v-model="deleteConfirm" autocomplete="off" autocapitalize="characters"
+          class="bg-card border border-line text-ink rounded-2xl px-3 py-2.5 w-full" placeholder="ELIMINA" />
+        <p v-if="deleteMessage" class="text-food" style="font-size: 0.8125rem; line-height: 1.45">{{ deleteMessage }}</p>
+        <button class="tap w-full py-3 rounded-3xl font-semibold"
+          style="color: #fff; font-size: 0.9375rem; background: var(--alcohol)"
+          :disabled="deleteConfirm.trim().toUpperCase() !== 'ELIMINA' || deleting"
+          :style="deleteConfirm.trim().toUpperCase() !== 'ELIMINA' ? { opacity: 0.45 } : {}"
+          @click="runDelete">
+          {{ deleting ? "Elimino…" : "Elimina definitivamente" }}
+        </button>
+      </div>
+    </BottomSheet>
+
     <p class="text-faint text-center" style="font-size: 0.7812rem">
       Equilibrio · un passo per volta<br />
       <span style="font-size: 0.6875rem">build {{ buildStamp }}</span>
@@ -417,7 +481,7 @@
 
 <script setup lang="ts">
 import { User, GlassWater, Footprints, UtensilsCrossed, Scale, HeartPulse, Droplet, Moon, BellRing, Cloud, Target, Link2, X, Plus,
-  Baby, CalendarHeart, BookOpen, ChevronRight, Sparkles, Type } from "lucide-vue-next";
+  Baby, CalendarHeart, BookOpen, ChevronRight, Sparkles, Type, FileDown } from "lucide-vue-next";
 import { doc, getDoc, setDoc } from "firebase/firestore";
 import { useSettingsStore } from "~/stores/settings";
 import { usePregnancyStore } from "~/stores/pregnancy";
@@ -476,6 +540,44 @@ const womenSummary = computed(() => {
   if (settings.profile.cycleTracking) parts.push("ciclo monitorato");
   return parts.length ? parts.join(" · ") : "non attivi";
 });
+// ── esportazione ed eliminazione ──
+const { sections: exportSections, exportPdf, deleteAccount } = useDataExport();
+const exportSection = ref<any>("tutto");
+const exportPeriod = ref(30);
+const exporting = ref(false);
+const exportError = ref("");
+
+async function runExport() {
+  exporting.value = true;
+  exportError.value = "";
+  try {
+    await exportPdf(exportSection.value, exportPeriod.value);
+  } catch (e: any) {
+    // Chiudere il pannello di condivisione senza scegliere non è un errore.
+    if (!/cancel/i.test(String(e?.message || e))) exportError.value = `Non sono riuscito a creare il PDF: ${e?.message || e}`;
+  } finally {
+    exporting.value = false;
+  }
+}
+
+const deleteOpen = ref(false);
+const deleteConfirm = ref("");
+const deleteMessage = ref("");
+const deleting = ref(false);
+
+async function runDelete() {
+  deleting.value = true;
+  deleteMessage.value = "";
+  const r = await deleteAccount();
+  deleting.value = false;
+  if (!r.ok) {
+    deleteMessage.value = r.message;
+    return;
+  }
+  // Ricaricare azzera anche lo stato in memoria, oltre ai dati salvati.
+  window.location.replace("/login");
+}
+
 const textSizes = [
   { value: 1, label: "Normale", preview: "0.8125rem" },
   { value: 1.15, label: "Grande", preview: "0.9375rem" },
