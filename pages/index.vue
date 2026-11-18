@@ -10,7 +10,7 @@
     </div>
 
     <!-- Con il ciclo monitorato la sintesi si stringe e cede metà spazio alla card del ciclo -->
-    <div v-if="settings.profile.cycleTracking || settings.profile.pregnant"
+    <div v-if="settings.profile.cycleTracking || access.pregnancy"
       class="grid grid-cols-2 gap-3.5 rise" style="min-height: 150px">
       <BalanceMini :marks="marks" :message="message" />
       <CycleMini />
@@ -65,7 +65,7 @@
 
     <!-- Colonna di fianco alle voci: sul telefono diventano due righe normali -->
     <div class="side-stack d4">
-      <NuxtLink v-if="settings.profile.diabetes" to="/glicemia" class="tap block rounded-4xl rise"
+      <NuxtLink v-if="access.diabetes" to="/glicemia" class="tap block rounded-4xl rise"
         style="padding: 12px 14px; animation-delay: 230ms"
         :style="{ background: 'var(--card)', border: `1px solid var(--${glucoseTone}-soft)`, boxShadow: 'var(--tile-shadow)' }">
         <div class="flex items-center gap-3">
@@ -221,6 +221,7 @@ import { lastNDays, keyToDate, fmtIT } from "~/utils/date";
 
 const day = useDayStore();
 const settings = useSettingsStore();
+const access = useAccess();
 const today = computed(() => day.today);
 const fullDate = fmtIT();
 

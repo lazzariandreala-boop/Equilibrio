@@ -38,6 +38,7 @@
         <button class="tap grad-food flex-1 py-3.5 rounded-3xl font-semibold flex items-center justify-center gap-2"
           style="color: #fff; font-size: 0.9375rem" @click="fromPhoto('camera')">
           <Camera :size="18" /> Scatta ora
+          <span v-if="!access.ai" class="rounded-full" style="padding: 1px 7px; background: rgba(255,255,255,.28); font-size: 0.6875rem; font-weight: 700">Premium</span>
         </button>
         <button class="tap bg-raised text-ink flex-1 py-3.5 rounded-3xl font-semibold flex items-center justify-center gap-2"
           style="font-size: 0.9375rem" @click="fromPhoto('gallery')">
@@ -137,7 +138,7 @@
       </div>
 
       <!-- Stima del bolo: si modifica qui dentro, senza lasciare il pasto in corso -->
-      <div v-if="settings.profile.diabetes && sum.cho > 0" class="rounded-3xl" style="background: var(--move-soft)">
+      <div v-if="access.diabetes && sum.cho > 0" class="rounded-3xl" style="background: var(--move-soft)">
         <button class="tap w-full flex items-center gap-3 text-left" style="padding: 12px 13px"
           :aria-expanded="bolusOpen" @click="bolusOpen = !bolusOpen">
           <Syringe :size="18" color="var(--move)" class="shrink-0" />
@@ -201,6 +202,7 @@ const props = withDefaults(defineProps<{ initialItems?: RecognizedItem[] | null 
 const emit = defineEmits<{ save: [any] }>();
 const { recognizeBase64, estimate, fileToBase64 } = useRecognition();
 const settings = useSettingsStore();
+const access = useAccess();
 
 // Gli avvisi si aggiornano man mano che le voci cambiano.
 const day = useDayStore();
@@ -268,7 +270,7 @@ const mealBolus = computed(
 );
 
 const risks = computed(() =>
-  settings.profile.pregnant ? checkFoods(items.value.map((i) => i.name).filter(Boolean)) : [],
+  access.pregnancy ? checkFoods(items.value.map((i) => i.name).filter(Boolean)) : [],
 );
 const { isNative, pickNative, pickWeb } = useImagePicker();
 
@@ -438,6 +440,11 @@ function messageOf(e: any, fallback: string) {
 
 async function fromPhoto(source: "camera" | "gallery") {
   err.value = "";
+  // Il riconoscimento della foto è dell'IA: senza piano si spiega cosa offre Premium.
+  if (!access.ai) {
+    await navigateTo("/premium?piano=premium&da=foto");
+    return;
+  }
 
   // Nell'app installata "Scatta" apre direttamente la fotocamera; nel browser
   // si ripiega sull'input file, che con `capture` propone comunque lo scatto.
@@ -471,6 +478,16 @@ async function runEstimate() {
   loadingLabel.value = "Sto stimando i valori…";
   phase.value = "loading";
   err.value = "";
+  // Senza IA la descrizione si confronta con la banca dati locale, gratis e offline.
+  if (!access.ai) {
+    const local = estimateLocally(description.value);
+    items.value = local.length ? local : [{ ...blank(), name: description.value }];
+    err.value = local.length
+      ? "Valori dalla banca dati degli alimenti: controlla le quantità. Con Premium la stima la fa l'IA."
+      : "Non ho trovato questi alimenti nella banca dati: cercali qui sotto o inserisci i valori a mano.";
+    phase.value = "edit";
+    return;
+  }
   try {
     const list = await estimate(description.value);
     items.value = list.length ? list : [{ ...blank(), name: description.value }];

@@ -24,6 +24,7 @@ const HEALTH_ROUTES = ["/salute", "/corpo", "/storico"];
  */
 export function useNavItems() {
   const settings = useSettingsStore();
+  const access = useAccess();
   const route = useRoute();
 
   /** Barra in basso del telefono: fissa, sempre cinque voci. */
@@ -46,8 +47,8 @@ export function useNavItems() {
   /** Moduli facoltativi attivi: compaiono solo se la loro spunta è accesa. */
   const modules = computed<NavItem[]>(() => {
     const list: NavItem[] = [];
-    if (settings.profile.diabetes) list.push({ to: "/glicemia", icon: Droplet, label: "Glicemia", tone: "water" });
-    if (settings.profile.pregnant) list.push({ to: "/gravidanza", icon: Baby, label: "Gravidanza", tone: "alcohol" });
+    if (access.diabetes) list.push({ to: "/glicemia", icon: Droplet, label: "Glicemia", tone: "water" });
+    if (access.pregnancy) list.push({ to: "/gravidanza", icon: Baby, label: "Gravidanza", tone: "alcohol" });
     if (settings.profile.cycleTracking) list.push({ to: "/ciclo", icon: CalendarHeart, label: "Ciclo", tone: "alcohol" });
     return list;
   });

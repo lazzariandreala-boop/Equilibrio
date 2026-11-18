@@ -34,9 +34,10 @@ import { checkFoods } from "~/utils/pregnancy";
 
 const props = defineProps<{ recipe: Recipe; wide?: boolean }>();
 const settings = useSettingsStore();
+const access = useAccess();
 const fav = computed(() => settings.isRecipeFavorite(props.recipe.id));
-const showCarbs = computed(() => settings.profile.diabetes);
+const showCarbs = computed(() => access.diabetes);
 const warn = computed(
-  () => settings.profile.pregnant && checkFoods(props.recipe.ing.map((i) => i[0])).some((r) => r.severity === "evitare"),
+  () => access.pregnancy && checkFoods(props.recipe.ing.map((i) => i[0])).some((r) => r.severity === "evitare"),
 );
 </script>

@@ -97,7 +97,7 @@
           <span class="tabular text-ink" :style="{ fontWeight: row.sub ? 500 : 700, fontSize: '0.9375rem' }">{{ row.value }}</span>
         </div>
       </div>
-      <div v-if="settings.profile.diabetes" class="rounded-3xl flex items-center gap-3" style="margin-top: 10px; padding: 12px 14px; background: var(--move-soft)">
+      <div v-if="access.diabetes" class="rounded-3xl flex items-center gap-3" style="margin-top: 10px; padding: 12px 14px; background: var(--move-soft)">
         <Syringe :size="18" color="var(--move)" class="shrink-0" />
         <span class="text-ink" style="font-size: 0.875rem">
           {{ recipe.cho }} g di carboidrati a porzione · bolo stimato {{ bolus }} unità (rapporto 1:{{ settings.diabetes.icr }})
@@ -168,6 +168,7 @@ import { suggestBolus } from "~/utils/diabetes";
 const route = useRoute();
 const router = useRouter();
 const settings = useSettingsStore();
+const access = useAccess();
 const day = useDayStore();
 
 // La pagina è generata statica: il contenuto dipende dall'indirizzo e va mostrato solo nel browser.
@@ -200,7 +201,7 @@ const tags = computed(() => {
   ];
 });
 
-const risks = computed(() => (settings.profile.pregnant && recipe.value ? checkFoods(recipe.value.ing.map((i) => i[0])) : []));
+const risks = computed(() => (access.pregnancy && recipe.value ? checkFoods(recipe.value.ing.map((i) => i[0])) : []));
 
 const nutrients = computed(() => {
   const r = recipe.value!;

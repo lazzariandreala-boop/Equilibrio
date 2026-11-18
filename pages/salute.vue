@@ -53,7 +53,7 @@
     </div>
 
     <!-- ── Glicemia ── -->
-    <div v-if="settings.profile.diabetes" class="panel d6">
+    <div v-if="access.diabetes" class="panel d6">
       <div class="flex items-center justify-between" style="margin-bottom: 12px">
         <div class="flex items-center gap-2">
           <Droplet :size="18" :color="`var(--${glucoseTone})`" />
@@ -104,7 +104,7 @@
     </div>
 
     <!-- ── Gravidanza (sostituisce il ciclo quando attiva) ── -->
-    <div v-if="settings.profile.pregnant" class="panel d6">
+    <div v-if="access.pregnancy" class="panel d6">
       <div class="flex items-center justify-between" style="margin-bottom: 12px">
         <div class="flex items-center gap-2">
           <Baby :size="18" color="var(--alcohol)" />
@@ -245,6 +245,7 @@ import { lastNDays, fmtShort, keyToDate } from "~/utils/date";
 
 const day = useDayStore();
 const settings = useSettingsStore();
+const access = useAccess();
 const glucose = useGlucoseStore();
 const gu = useGlucoseUnit();
 const cycle = useCycleStore();
@@ -323,7 +324,7 @@ function cycleDay(key: string) {
 
 const cycleView = computed(() => {
   // In gravidanza le previsioni non hanno senso: si mostra il diario.
-  if (settings.profile.pregnant) {
+  if (access.pregnancy) {
     return { tone: "alcohol", headline: "Previsioni sospese", label: "il diario resta consultabile" };
   }
   const s = cycle.status;

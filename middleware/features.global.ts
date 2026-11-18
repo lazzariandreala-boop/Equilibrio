@@ -1,5 +1,5 @@
 import { useSettingsStore } from "~/stores/settings";
-import { isRouteAllowed } from "~/utils/features";
+import { routeRedirect } from "~/utils/features";
 
 /**
  * Impedisce di aprire le sezioni facoltative quando la relativa funzione
@@ -12,5 +12,7 @@ import { isRouteAllowed } from "~/utils/features";
 export default defineNuxtRouteMiddleware((to) => {
   if (import.meta.server) return;
   const settings = useSettingsStore();
-  if (!isRouteAllowed(to.path, settings)) return navigateTo("/", { replace: true });
+  const { has } = useEntitlements();
+  const target = routeRedirect(to.path, settings, has);
+  if (target) return navigateTo(target, { replace: true });
 });

@@ -13,6 +13,9 @@ import { getEntitlements, consumeAiQuota } from "./entitlements";
  */
 export async function requireAi(event: H3Event) {
   if (!adminApp()) return;
+  // Chi usa la propria chiave paga lui le richieste: non serve il piano.
+  const body = await readBody<{ key?: unknown }>(event).catch(() => null);
+  if (typeof body?.key === "string" && body.key.trim().length > 20) return;
   const user = await requireUser(event);
   const ent = await getEntitlements(user.uid, user.email);
   if (!ent.features.includes("ai")) {

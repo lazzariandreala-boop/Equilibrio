@@ -10,6 +10,7 @@ import logoDark from "~/assets/logo-dark.png";
 export function useDataExport() {
   const day = useDayStore();
   const settings = useSettingsStore();
+  const access = useAccess();
   const glucose = useGlucoseStore();
   const cycle = useCycleStore();
   const preg = usePregnancyStore();
@@ -18,9 +19,9 @@ export function useDataExport() {
   /** Sezioni esportabili: quelle dei moduli spenti non compaiono. */
   const sections = computed(() => {
     const list: ReportSection[] = ["tutto", "pasti", "movimento", "acqua"];
-    if (settings.profile.diabetes) list.push("glicemia");
+    if (access.diabetes) list.push("glicemia");
     if (settings.profile.cycleTracking) list.push("ciclo");
-    if (settings.profile.pregnant) list.push("gravidanza");
+    if (access.pregnancy) list.push("gravidanza");
     return list.map((key) => ({ key, label: SECTION_LABEL[key] }));
   });
 

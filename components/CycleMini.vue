@@ -1,5 +1,5 @@
 <template>
-  <NuxtLink :to="settings.profile.pregnant ? '/gravidanza' : '/ciclo'"
+  <NuxtLink :to="access.pregnancy ? '/gravidanza' : '/ciclo'"
     class="tap block rounded-4xl relative overflow-hidden h-full"
     :class="`grad-${tone}`" :style="{ boxShadow: `0 10px 24px -8px var(--${tone}-glow)` }">
     <div class="absolute rounded-full pointer-events-none"
@@ -39,6 +39,7 @@ import { keyToDate } from "~/utils/date";
 
 const cycle = useCycleStore();
 const settings = useSettingsStore();
+const access = useAccess();
 const preg = usePregnancyStore();
 
 const MONTHS = ["gen", "feb", "mar", "apr", "mag", "giu", "lug", "ago", "set", "ott", "nov", "dic"];
@@ -49,7 +50,7 @@ const fmtShort = (key: string) => {
 
 const view = computed(() => {
   // Con entrambi attivi vince la gravidanza, che è l'informazione del momento.
-  if (settings.profile.pregnant) {
+  if (access.pregnancy) {
     if (!preg.configured) {
       return { tone: "alcohol", icon: Baby, headline: "In attesa", label: "imposta la data", predicted: "" };
     }

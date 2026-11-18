@@ -29,6 +29,7 @@ export function useRecognition() {
   const userKey = () => settings.keys?.gemini?.trim() || undefined;
 
   const base = useRuntimeConfig().public.apiBase || "";
+  const { authHeader } = useEntitlements();
 
   function readDataUrl(file: File): Promise<string> {
     return new Promise((resolve, reject) => {
@@ -78,6 +79,7 @@ export function useRecognition() {
   async function recognizeBase64(data: string, media: string): Promise<RecognizedItem[]> {
     const res = await $fetch<{ alimenti: RecognizedItem[] }>(`${base}/api/recognize`, {
       method: "POST",
+      headers: await authHeader(),
       body: { image: data, media, key: userKey() },
     });
     return (res.alimenti || []).map(normalize);
@@ -87,6 +89,7 @@ export function useRecognition() {
   async function estimate(text: string): Promise<RecognizedItem[]> {
     const res = await $fetch<{ alimenti: RecognizedItem[] }>(`${base}/api/estimate`, {
       method: "POST",
+      headers: await authHeader(),
       body: { text, key: userKey() },
     });
     return (res.alimenti || []).map(normalize);

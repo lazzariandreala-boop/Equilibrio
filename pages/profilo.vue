@@ -20,6 +20,19 @@
       </button>
     </div>
 
+    <!-- Abbonamento -->
+    <NuxtLink to="/premium" class="rise tap rounded-4xl flex items-center gap-3.5 desk-span" style="padding: 13px 14px"
+      :style="{ background: 'var(--card)', border: '1px solid var(--line)', boxShadow: 'var(--tile-shadow)' }">
+      <div class="rounded-2xl flex items-center justify-center shrink-0 grad-food" style="width: 40px; height: 40px">
+        <Crown :size="19" color="#fff" />
+      </div>
+      <div class="flex-1 min-w-0">
+        <div style="font-weight: 700; font-size: 0.9688rem">Piani e abbonamento</div>
+        <div class="text-dim truncate" style="font-size: 0.7812rem">{{ planSummary }}</div>
+      </div>
+      <ChevronRight :size="17" class="text-faint shrink-0" />
+    </NuxtLink>
+
     <!-- Dimensione del testo: in alto, è la prima cosa che cerca chi non legge bene -->
     <div class="rise rounded-4xl desk-span" style="padding: 13px 14px"
       :style="{ background: 'var(--card)', border: '1px solid var(--line)', boxShadow: 'var(--tile-shadow)' }">
@@ -480,8 +493,8 @@
 </template>
 
 <script setup lang="ts">
-import { User, GlassWater, Footprints, UtensilsCrossed, Scale, HeartPulse, Droplet, Moon, BellRing, Cloud, Target, Link2, X, Plus,
-  Baby, CalendarHeart, BookOpen, ChevronRight, Sparkles, Type, FileDown } from "lucide-vue-next";
+import { PLANS } from "~/utils/plans";
+import { User, GlassWater, Footprints, UtensilsCrossed, Scale, HeartPulse, Droplet, Moon, BellRing, Cloud, Target, Link2, X, Plus, Baby, CalendarHeart, BookOpen, ChevronRight, Sparkles, Type, FileDown, Crown } from "lucide-vue-next";
 import { doc, getDoc, setDoc } from "firebase/firestore";
 import { useSettingsStore } from "~/stores/settings";
 import { usePregnancyStore } from "~/stores/pregnancy";
@@ -547,7 +560,18 @@ const exportPeriod = ref(30);
 const exporting = ref(false);
 const exportError = ref("");
 
+const entState = useEntitlements();
+const planSummary = computed(() => {
+  if (!entState.active.value) return "Ogni funzione è sbloccata finché gli abbonamenti non sono attivi";
+  const subs = entState.status.value.subscriptions.map((x) => PLANS.find((p) => p.productId === x.productId)?.name).filter(Boolean);
+  return subs.length ? `Attivo: ${subs.join(", ")}` : "Piano gratuito · Premium da 2,99 € al mese";
+});
+
 async function runExport() {
+  if (!useEntitlements().has("export")) {
+    await navigateTo("/premium?piano=premium&da=pdf");
+    return;
+  }
   exporting.value = true;
   exportError.value = "";
   try {

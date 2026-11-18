@@ -1,7 +1,7 @@
 <template>
   <div class="space-y-3.5 desk-grid">
     <!-- Stato attuale -->
-    <div v-if="settings.profile.pregnant" class="rise rounded-5xl relative overflow-hidden grad-alcohol"
+    <div v-if="access.pregnancy" class="rise rounded-5xl relative overflow-hidden grad-alcohol"
       style="box-shadow: 0 14px 34px -10px var(--alcohol-glow)">
       <div class="relative p-5 text-center">
         <Baby :size="26" color="#fff" style="margin: 0 auto" />
@@ -203,6 +203,7 @@ import { todayKey, keyToDate } from "~/utils/date";
 
 const cycle = useCycleStore();
 const settings = useSettingsStore();
+const access = useAccess();
 
 const inputCls = "bg-card border border-line text-ink rounded-2xl px-3 py-2.5 w-full";
 const flows = ["leggero", "normale", "abbondante"] as const;

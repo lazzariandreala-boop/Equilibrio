@@ -23,7 +23,7 @@
 <script setup lang="ts">
 import { useDayStore } from "~/stores/day";
 import { useSettingsStore } from "~/stores/settings";
-import { isRouteAllowed } from "~/utils/features";
+import { routeRedirect } from "~/utils/features";
 import logoDark from "~/assets/logo-dark.png";
 import logoLight from "~/assets/logo-light.png";
 
@@ -38,13 +38,23 @@ const settings = useSettingsStore();
 // Spegnendo una funzione dal Profilo mentre la sua pagina è aperta (per
 // esempio da un'altra scheda o da un altro dispositivo sincronizzato)
 // non si deve restare su una sezione che non dovrebbe più esistere.
+const { user } = useAuth();
+const ent = useEntitlements();
 watch(
-  () => [route.path, settings.profile.cycleTracking, settings.profile.pregnant, settings.profile.diabetes],
+  () => [route.path, settings.profile.cycleTracking, settings.profile.pregnant, settings.profile.diabetes, ent.status.value.features.join(), ent.status.value.configured],
   () => {
-    if (!isRouteAllowed(route.path, settings)) navigateTo("/", { replace: true });
+    const target = routeRedirect(route.path, settings, ent.has);
+    if (target) navigateTo(target, { replace: true });
   },
 );
-const { user } = useAuth();
+// Abbonamenti: si rileggono a ogni accesso e al ritorno nell'app.
+watch(
+  () => user.value?.uid,
+  (uid) => {
+    if (uid && import.meta.client) ent.refresh();
+  },
+  { immediate: true },
+);
 
 // Dimensione del testo scelta nell'app: si somma a quella del sistema,
 // perché lavora sulla base dei rem invece che sul singolo elemento.
