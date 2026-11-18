@@ -136,20 +136,27 @@
         </div>
       </div>
 
-      <!-- Stima del bolo: compare solo con la gestione del diabete attiva -->
-      <NuxtLink v-if="settings.profile.diabetes && sum.cho > 0" to="/glicemia"
-        class="tap rounded-3xl flex items-center gap-3" style="padding: 12px 13px; background: var(--move-soft)">
-        <Syringe :size="18" color="var(--move)" class="shrink-0" />
-        <div class="min-w-0 flex-1">
-          <div class="text-ink" style="font-size: 0.8438rem; font-weight: 600">
-            Bolo stimato per il pasto: {{ mealBolus }} unità
+      <!-- Stima del bolo: si modifica qui dentro, senza lasciare il pasto in corso -->
+      <div v-if="settings.profile.diabetes && sum.cho > 0" class="rounded-3xl" style="background: var(--move-soft)">
+        <button class="tap w-full flex items-center gap-3 text-left" style="padding: 12px 13px"
+          :aria-expanded="bolusOpen" @click="bolusOpen = !bolusOpen">
+          <Syringe :size="18" color="var(--move)" class="shrink-0" />
+          <div class="min-w-0 flex-1">
+            <div class="text-ink" style="font-size: 0.8438rem; font-weight: 600">
+              <template v-if="bolusSaved">Bolo da registrare col pasto: {{ bolusSaved }} unità</template>
+              <template v-else>Bolo stimato per il pasto: {{ mealBolus }} unità</template>
+            </div>
+            <div class="text-dim" style="font-size: 0.75rem">
+              {{ sum.cho }} g con rapporto 1:{{ settings.diabetes.icr }} ·
+              {{ bolusOpen ? "chiudi" : bolusSaved ? "tocca per cambiarlo" : "tocca per modificarlo e registrarlo" }}
+            </div>
           </div>
-          <div class="text-dim" style="font-size: 0.75rem">
-            {{ sum.cho }} g con rapporto 1:{{ settings.diabetes.icr }} · apri il calcolo completo
-          </div>
+          <ChevronDown :size="16" class="text-faint shrink-0 transition-transform" :style="bolusOpen ? { transform: 'rotate(180deg)' } : {}" />
+        </button>
+        <div v-if="bolusOpen" style="padding: 0 13px 13px">
+          <BolusCalculator :initial-glucose="recentGlucose" :initial-carbs="sum.cho" save-label="Usa questa dose per il pasto" @save="saveMealBolus" />
         </div>
-        <ChevronRight :size="16" class="text-faint shrink-0" />
-      </NuxtLink>
+      </div>
 
       <div class="rounded-4xl p-3.5" style="background: var(--raised)">
         <FoodSearch @pick="onSearchPick" />
@@ -179,13 +186,14 @@
 </template>
 
 <script setup lang="ts">
-import { Camera, Images, PenLine, Sparkles, X, Plus, Search, AlertTriangle, Syringe, ChevronRight, Star, History } from "lucide-vue-next";
+import { Camera, Images, PenLine, Sparkles, X, Plus, Search, AlertTriangle, Syringe, ChevronRight, ChevronDown, Star, History } from "lucide-vue-next";
 import type { RecognizedItem } from "~/composables/useRecognition";
 import { estimateLocally } from "~/utils/foods";
 import { checkFoods, SEVERITY_TONE } from "~/utils/pregnancy";
 import { suggestBolus } from "~/utils/diabetes";
 import { useSettingsStore } from "~/stores/settings";
 import { useDayStore } from "~/stores/day";
+import { useGlucoseStore } from "~/stores/glucose";
 
 const props = withDefaults(defineProps<{ initialItems?: RecognizedItem[] | null }>(), {
   initialItems: null,
@@ -236,6 +244,23 @@ const kcalOf = (items: any[]) => Math.round(items.reduce((a, i) => a + (+i.kcal 
 function useSaved(list: any[]) {
   items.value = list.map((i) => ({ ...i }));
   phase.value = "edit";
+}
+
+const glucoseStore = useGlucoseStore();
+const bolusOpen = ref(false);
+const bolusSaved = ref<number | null>(null);
+const pendingBolus = ref<any>(null);
+// Una misurazione delle ultime 2 ore entra già nel calcolo della correzione.
+const recentGlucose = computed(() => {
+  const r = glucoseStore.lastReading;
+  return r && Date.now() - r.at < 2 * 3600_000 ? r.value : null;
+});
+// Il bolo resta in sospeso e si registra insieme al pasto: chiudendo senza salvare
+// non lascia boli orfani, e modificarlo di nuovo non lo somma al precedente.
+function saveMealBolus(data: any) {
+  pendingBolus.value = { ...data };
+  bolusSaved.value = data.units;
+  bolusOpen.value = false;
 }
 
 const mealBolus = computed(
@@ -486,6 +511,7 @@ function save() {
   const name = items.value.map((i) => i.name).filter(Boolean).join(", ") || "Pasto";
   // Le voci vengono salvate insieme ai totali: senza, riaprire il pasto
   // mostrerebbe solo un nome e dei numeri aggregati.
+  if (pendingBolus.value) glucoseStore.addBolus(pendingBolus.value);
   emit("save", { name, ...sum.value, items: items.value.map((i) => ({ ...i })) });
 }
 </script>

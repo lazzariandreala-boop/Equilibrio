@@ -73,7 +73,7 @@
 
     <button class="tap w-full py-3.5 rounded-3xl font-semibold grad-move" style="color: #fff; font-size: 0.9375rem"
       :disabled="units <= 0" :style="units <= 0 ? { opacity: 0.5 } : {}" @click="save">
-      Registra il bolo
+      {{ saveLabel }}
     </button>
   </div>
 </template>
@@ -85,8 +85,8 @@ import { useSettingsStore } from "~/stores/settings";
 import { suggestBolus, insulinOnBoard, targetMid } from "~/utils/diabetes";
 
 const props = withDefaults(
-  defineProps<{ initialGlucose?: number | null; initialCarbs?: number }>(),
-  { initialGlucose: null, initialCarbs: 0 },
+  defineProps<{ initialGlucose?: number | null; initialCarbs?: number; saveLabel?: string }>(),
+  { initialGlucose: null, initialCarbs: 0, saveLabel: "Registra il bolo" },
 );
 const emit = defineEmits<{ save: [any] }>();
 
