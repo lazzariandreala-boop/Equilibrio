@@ -16,6 +16,7 @@ export interface FavoriteMeal {
 
 export interface Profile {
   weightKg: number; // serve a stimare le calorie bruciate
+  goalWeightKg?: number; // obiettivo di peso, facoltativo
   /** Attiva gli avvisi sugli alimenti sconsigliati in gravidanza. */
   pregnant: boolean;
   /** Mostra la sezione dedicata al ciclo mestruale. */
@@ -56,6 +57,8 @@ export const useSettingsStore = defineStore("settings", {
     recipeFavorites: [] as string[],
     /** Lista della spesa, sincronizzata con l'account. */
     shopping: [] as ShopItem[],
+    /** Pesate inserite a mano, una per giorno (chiave AAAA-MM-GG). */
+    weights: [] as { d: string; kg: number }[],
     reminders: <Reminders>{
       water: true,
       waterTimes: ["10:00", "13:00", "16:00", "19:00"],
@@ -109,6 +112,17 @@ export const useSettingsStore = defineStore("settings", {
     clearShoppingDone() {
       this.shopping = this.shopping.filter((s) => !s.done);
     },
+    /** Registra il peso del giorno: sostituisce quello già inserito nella stessa data. */
+    logWeight(d: string, kg: number) {
+      const v = Math.round(kg * 10) / 10;
+      const i = this.weights.findIndex((w) => w.d === d);
+      if (i >= 0) this.weights[i].kg = v;
+      else this.weights.push({ d, kg: v });
+      this.weights.sort((a, b) => a.d.localeCompare(b.d));
+      // L'ultimo peso è anche quello usato per stimare le calorie bruciate.
+      const last = this.weights[this.weights.length - 1];
+      if (last) this.profile.weightKg = last.kg;
+    },
     hydrate(raw: any) {
       if (!raw) return;
       if (raw.goals) this.goals = { ...this.goals, ...raw.goals };
@@ -118,6 +132,7 @@ export const useSettingsStore = defineStore("settings", {
       if (Array.isArray(raw.favorites)) this.favorites = raw.favorites;
       if (Array.isArray(raw.recipeFavorites)) this.recipeFavorites = raw.recipeFavorites;
       if (Array.isArray(raw.shopping)) this.shopping = raw.shopping;
+      if (Array.isArray(raw.weights)) this.weights = raw.weights;
       if (raw.reminders) this.reminders = { ...this.reminders, ...raw.reminders };
     },
   },

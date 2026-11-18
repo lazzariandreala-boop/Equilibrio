@@ -1,5 +1,7 @@
 <template>
   <div class="space-y-3.5 desk-grid">
+    <GreenCalendar class="desk-span rise" />
+
     <!-- periodo -->
     <div class="rise flex gap-1.5 p-1.5 rounded-4xl"
       style="background: var(--raised); border: 1px solid var(--line)">
