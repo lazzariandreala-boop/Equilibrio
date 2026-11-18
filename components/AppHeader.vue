@@ -49,7 +49,7 @@ const date = fmtIT();
 const route = useRoute();
 const tone = computed(() => {
   const p = route.path;
-  if (p.startsWith("/pasti")) return "food";
+  if (["/pasti", "/ricett", "/spesa"].some((x) => p.startsWith(x))) return "food";
   if (p.startsWith("/movimento")) return "move";
   if (["/alcol", "/ciclo", "/gravidanza", "/salute", "/storico"].some((x) => p.startsWith(x))) return "alcohol";
   return "water";

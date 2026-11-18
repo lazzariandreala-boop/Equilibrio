@@ -1,5 +1,6 @@
 <template>
   <div class="space-y-3.5 desk-grid">
+    <MealsTabs class="desk-span" />
     <DayNav class="desk-span" />
 
     <HeroCard class="desk-span" tone="food" :icon="Flame" :title="day.isToday ? 'Pasti di oggi' : 'Pasti del giorno'"

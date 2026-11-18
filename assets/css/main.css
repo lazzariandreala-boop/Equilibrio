@@ -281,3 +281,8 @@ html.dark .raised-3d {
     display: block;
   }
 }
+
+/* Caroselli orizzontali (ricette): si scorrono col dito senza barra visibile. */
+.no-scrollbar { scrollbar-width: none; -webkit-overflow-scrolling: touch; scroll-snap-type: x proximity; }
+.no-scrollbar::-webkit-scrollbar { display: none; }
+.no-scrollbar > * { scroll-snap-align: start; }

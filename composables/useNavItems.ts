@@ -1,5 +1,5 @@
 import {
-  Home, Utensils, Activity, User, HeartPulse, Droplet, Baby, CalendarHeart,
+  Home, Utensils, Activity, User, HeartPulse, Droplet, Baby, CalendarHeart, ChefHat,
 } from "lucide-vue-next";
 import { useSettingsStore } from "~/stores/settings";
 
@@ -38,6 +38,7 @@ export function useNavItems() {
   /** Menù laterale del desktop: pasti e sport vivono nella dashboard. */
   const desktopItems = computed<NavItem[]>(() => [
     { to: "/", icon: Home, label: "Oggi", tone: "water" },
+    { to: "/ricette", icon: ChefHat, label: "Ricette e spesa", tone: "food" },
     { to: "/salute", icon: HeartPulse, label: "Salute", tone: "alcohol" },
     { to: "/profilo", icon: User, label: "Profilo", tone: "water" },
   ]);
@@ -54,6 +55,8 @@ export function useNavItems() {
   const isActive = (to: string) => {
     if (to === "/") return ["/", "/acqua", "/alcol"].includes(route.path);
     if (to === "/salute") return HEALTH_ROUTES.includes(route.path);
+    if (to === "/pasti") return ["/pasti", "/ricette", "/ricetta", "/spesa"].includes(route.path);
+    if (to === "/ricette") return ["/ricette", "/ricetta", "/spesa"].includes(route.path);
     return route.path === to;
   };
 

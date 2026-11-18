@@ -118,7 +118,7 @@ export const FOOD_RISKS: FoodRisk[] = [
   },
   {
     id: "pesce-crudo",
-    match: ["sushi", "sashimi", "pesce crudo", "ostriche", "tartare di pesce", "ceviche", "carpaccio di pesce", "vongole crude"],
+    match: ["sushi", "sashimi", "pesce crudo", "salmone crudo", "tonno crudo", "crudo abbattuto", "poke", "ostriche", "tartare di pesce", "ceviche", "carpaccio di pesce", "vongole crude"],
     title: "Pesce e molluschi crudi",
     severity: "evitare",
     reason: "Rischio di listeria e parassiti come l'anisakis.",
@@ -215,6 +215,19 @@ export interface RiskHit extends FoodRisk {
   food: string;
 }
 
+/**
+ * Il termine deve comparire come parola intera: altrimenti "olio extravergine"
+ * conteneva "gin" e "tortillas di frumento" conteneva "rum".
+ */
+function hasTerm(text: string, term: string): boolean {
+  const esc = term.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+  const re = new RegExp(`(^|[^a-zà-ÿ])${esc}(?=$|[^a-zà-ÿ])`, "i");
+  if (!re.test(text)) return false;
+  // "Amaro" è anche un aggettivo: cacao amaro, caffè amaro, cioccolato amaro.
+  if (term === "amaro" && /(cacao|caff[eè]|cioccolat[oa]|gusto)\s+amar[oa]/i.test(text)) return false;
+  return true;
+}
+
 /** Cerca nel nome di un alimento i rischi noti in gravidanza. */
 export function checkFood(name: string): RiskHit[] {
   const t = ` ${String(name || "").toLowerCase()} `;
@@ -229,7 +242,7 @@ export function checkFood(name: string): RiskHit[] {
 
   for (const risk of ordered) {
     if (seen.has(risk.id)) continue;
-    const term = risk.match.find((m) => t.includes(m));
+    const term = risk.match.find((m) => hasTerm(t, m));
     if (!term) continue;
 
     // Se un rischio più specifico copre già queste parole, si evita il doppione.
